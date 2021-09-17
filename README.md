@@ -18,4 +18,4 @@ Soredemo Sekai wa Utsukushii !!!
 
 1.  swagger访问路径:http://localhost:post/swagger-ui/index.html
 2.  swagger的doc访问路径:http://localhost:post/doc.html
-3.  druid访问路径:http://localhost:port/druid/index.html captain 123
+3.  druid访问路径:http://localhost:port/druid/index.html admin 123
