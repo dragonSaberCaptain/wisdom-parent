@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>wisdom-parent</artifactId>
+        <groupId>com.wisdom</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>example-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <!--项目的名字,maven产生的文档用-->
+    <name>${project.artifactId}</name>
+    <!--项目主页的URL,maven产生的文档用-->
+    <url>http://www.${project.artifactId}.com</url>
+    <!--项目描述-->
+    <description>${project.artifactId}-${version} project for wisdom</description>
+    <modules>
+        <module>example-core</module>
+        <module>example-generation</module>
+    </modules>
+
+    <properties>
+
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.wisdom</groupId>
+            <artifactId>common-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!--定义了编译、打包、部署的项目名称-->
+        <finalName>${project.artifactId}-${version}</finalName>
+    </build>
+</project>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+#if(${enableCache})
+    <!-- 开启二级缓存 开启前提是保证crud在同一个命名空间下,即一表对应一个xml -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+#end
+#if(${baseResultMap})
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})##生成主键排在第一位
+        <id column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+#foreach($field in ${table.commonFields})##生成公共字段
+        <result column="${field.name}" property="${field.propertyName}"/>
+#end
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})##生成普通字段
+        <result column="${field.name}" property="${field.propertyName}"/>
+#end
+#end
+    </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+#foreach($field in ${table.commonFields})
+        ${field.columnName},
+#end
+        ${table.fieldNames}
+    </sql>
+
+#end
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="searchBy">
+        <trim prefix="where" prefixOverrides="and|or">
+            <!-- 生成公共字段 -->
+#foreach($field in ${table.commonFields})##生成公共字s段
+            <if test="${field.propertyName} != null">${field.name}=#{${field.propertyName}}</if>
+#end
+            <!-- 生成普通字段 -->
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})##生成普通字段
+            <if test="${field.propertyName} != null">${field.name}=#{${field.propertyName}}</if>
+#end
+#end
+        </trim>
+    </sql>
+
+    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from ${table.Name}
+        <include refid="searchBy"/>
+    </select>
+</mapper>

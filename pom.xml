@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.2.RELEASE</version>
+        <relativePath/>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wisdom</groupId>
+    <artifactId>wisdom-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>common-parent</module>
+        <module>example-parent</module>
+        <module>gateway-parent</module>
+        <module>auth-parent</module>
+    </modules>
+
+    <!--项目的名字,maven产生的文档用-->
+    <name>${project.artifactId}</name>
+    <!--项目主页的URL,maven产生的文档用-->
+    <url>http://www.${project.artifactId}.com</url>
+    <!--项目描述-->
+    <description>${project.artifactId}-${version} project for wisdom</description>
+
+    <properties>
+        <java_version>11</java_version>
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+        <!--springframework-->
+        <spring_cloud_version>Hoxton.SR9</spring_cloud_version>
+        <alibaba_nacos_version>2.2.6.RELEASE</alibaba_nacos_version>
+
+        <!--mysql驱动-->
+        <mysql_version>8.0.23</mysql_version>
+        <!--oracle驱动-->
+        <ojdbc6_version>11.2.0</ojdbc6_version>
+        <!--ORM框架及持久层框架-->
+        <mybatis_plus_version>3.4.0</mybatis_plus_version>
+        <!--druid连接池-->
+        <druid_version>1.1.10</druid_version>
+        <!--JSON处理-->
+        <fastjson_version>1.2.47</fastjson_version>
+
+        <!--redis缓存-->
+        <jedis_version>2.9.0</jedis_version>
+        <!--日志-->
+        <commons_logging_version>1.2</commons_logging_version>
+        <slf4j_version>1.7.30</slf4j_version>
+        <log4j_version>1.2.7</log4j_version>
+
+        <!--google guava工具集-->
+        <guava_version>30.1.1-jre</guava_version>
+        <!--apache 通用工具集-->
+        <commons_lang3_version>3.7</commons_lang3_version>
+        <!--apache 摘要运算、编码解码-->
+        <commons_codec_version>1.11</commons_codec_version>
+        <!--apache 模板引擎-->
+        <velocity_version>1.7</velocity_version>
+        <!--分页-->
+        <pagehelper_version>5.1.4</pagehelper_version>
+        <!--接口文档-->
+        <swagger_version>3.0.0</swagger_version>
+        <!--图片-->
+        <thumbnailator_version>0.4.8</thumbnailator_version>
+        <!--测试-->
+        <junit_version>4.12</junit_version>
+        <!--代码简化-->
+        <lombok_version>1.18.20</lombok_version>
+        <!--excel文件-->
+        <poi_version>4.1.2</poi_version>
+        <!--html标签解析-->
+        <jsoup_version>1.13.1</jsoup_version>
+        <!--yaml文件解析-->
+        <snakeyaml_version>1.29</snakeyaml_version>
+        <!--httpclient 网络请求-->
+        <httpclient_version>4.5.13</httpclient_version>
+        <!--security_oauth2 权限-->
+        <security_oauth2_version>2.3.2.RELEASE</security_oauth2_version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons_lang3_version}</version>
+        </dependency>
+
+        <!-- ====================lombok ======================== -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok_version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ====================nacos属性刷新 ======================== -->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-spring-context</artifactId>
+            <version>0.3.5</version>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring_cloud_version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${alibaba_nacos_version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ====================commons-logging ======================== -->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons_logging_version}</version>
+            </dependency>
+
+            <!-- ====================fastjson ======================== -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson_version}</version>
+            </dependency>
+
+            <!-- ====================guava ======================== -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit_version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- ====================mysql ======================== -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql_version}</version>
+            </dependency>
+
+            <!-- ====================oracle ======================== -->
+            <dependency>
+                <groupId>oracle.jdbc.driver</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${ojdbc6_version}</version>
+            </dependency>
+
+            <!-- ====================mybatis ======================== -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis_plus_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis_plus_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity_version}</version>
+            </dependency>
+
+            <!-- ====================druid ======================== -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid_version}</version>
+            </dependency>
+
+            <!-- ====================redis ======================== -->
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis_version}</version>
+            </dependency>
+
+            <!-- ====================swagger ======================== -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger_version}</version>
+            </dependency>
+
+            <!-- ====================poi start======================== -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-schemas</artifactId>
+                <version>${poi_version}</version>
+            </dependency>
+
+            <!-- ====================thumbnailator======================== -->
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>${thumbnailator_version}</version>
+            </dependency>
+
+            <!-- ====================html标签解析 ======================== -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup_version}</version>
+            </dependency>
+
+            <!-- ====================yaml文件解析 ======================== -->
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml_version}</version>
+            </dependency>
+
+            <!-- ====================httpclient======================== -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient_version}</version>
+            </dependency>
+
+            <!-- ====================security-oauth2======================== -->
+            <dependency>
+                <groupId>org.springframework.security.oauth</groupId>
+                <artifactId>spring-security-oauth2</artifactId>
+                <version>${security_oauth2_version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!--定义了编译、打包、部署的项目名称-->
+        <finalName>${project.artifactId}-${version}</finalName>
+
+        <plugins>
+            <!--maven中的编译器，可以指定编译jdk版本-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>${java_version}</source>
+                    <target>${java_version}</target>
+                    <!--指定编译的格式-->
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

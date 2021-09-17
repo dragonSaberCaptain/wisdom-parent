@@ -1,0 +1,14 @@
+mybatis-plus:
+    configuration:
+        #下划线与驼峰转换
+        map-underscore-to-camel-case: true
+        auto-mapping-behavior: full
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    mapper-locations: classpath*:/mapper/**/*.xml,com/wisdom/**/mapper/**/*.xml
+    type-aliases-package: com.wisdom.auth.entity
+    global-config:
+        db-config:
+            logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+            logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+

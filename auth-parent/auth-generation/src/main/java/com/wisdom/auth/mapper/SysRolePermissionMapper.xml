@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.auth.dao.SysRolePermissionDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysRolePermission">
+        <result column="ID" property="id"/>
+        <result column="CREATE_DATE_TIME" property="createDateTime"/>
+        <result column="CREATE_ID" property="createId"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+        <result column="REMARK" property="remark"/>
+        <result column="UP_DATE_TIME" property="upDateTime"/>
+        <result column="UPDATE_ID" property="updateId"/>
+        <result column="VERSION" property="version"/>
+        <result column="PERMISSION_ID" property="permissionId"/>
+        <result column="ROLE_ID" property="roleId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_DATE_TIME,
+        CREATE_ID,
+        DEL_FLAG,
+        REMARK,
+        UP_DATE_TIME,
+        UPDATE_ID,
+        VERSION,
+        PERMISSION_ID, ROLE_ID
+    </sql>
+
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="searchBy">
+        <trim prefix="where" prefixOverrides="and|or">
+            <!-- 生成公共字段 -->
+            <if test="id != null">ID=#{id}</if>
+            <if test="createDateTime != null">CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">REMARK=#{remark}</if>
+            <if test="upDateTime != null">UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">UPDATE_ID=#{updateId}</if>
+            <if test="version != null">VERSION=#{version}</if>
+            <!-- 生成普通字段 -->
+            <if test="permissionId != null">PERMISSION_ID=#{permissionId}</if>
+            <if test="roleId != null">ROLE_ID=#{roleId}</if>
+        </trim>
+    </sql>
+
+    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role_permission
+        <include refid="searchBy"/>
+    </select>
+</mapper>

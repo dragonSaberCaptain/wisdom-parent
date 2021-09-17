@@ -1,0 +1,10 @@
+logging:
+    level:
+        org:
+            springframework:
+                security: warn
+        com:
+            alibaba:
+                nacos: info
+    file:
+        path: ../logs/${spring.application.name}4

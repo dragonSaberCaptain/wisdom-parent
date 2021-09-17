@@ -1,0 +1,30 @@
+server:
+    port: 9527
+spring:
+    profiles:
+        active: dev
+    application:
+        name: example
+    cloud:
+        nacos:
+            discovery:
+                #指定注册中心位置
+                server-addr: 127.0.0.1:8849
+                #注册中心的命名空间id,不指定默认为Public命名空间
+                namespace: 069ccfff-dacb-47d7-ab0a-d40a5ec700f8
+                #指定注册群组 --如果是Public命名空间 则可以省略群组配置DEFAULT_GROUP
+                group: WISDOM_GROUP
+            config:
+                #指定配置中心位置
+                server-addr: 127.0.0.1:8849
+                #配置中心的命名空间id,不指定默认为Public命名空间
+                namespace: 069ccfff-dacb-47d7-ab0a-d40a5ec700f8
+                #指定配置群组 --如果是Public命名空间 则可以省略群组配置DEFAULT_GROUP
+                group: WISDOM_GROUP
+                #指定在配置中心的配置文件后缀
+                file-extension: yaml
+                extension-configs:
+                    #指定公共配置参数
+                    -   data-id: wisdom.yaml
+                        group: WISDOM_GROUP
+                        refresh: true
