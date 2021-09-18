@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- * 网关中心:简单的跳转重定向，用户的验证登录，解决跨域，日志拦截，权限控制，限流，熔断，负载均衡，黑名单和白名单机制等
+ * 网关中心:跳转重定向，用户的验证登录，解决跨域，日志拦截，权限控制，限流，熔断，负载均衡，黑名单和白名单机制等
  *
  * @author captain
  * @version 1.0

@@ -9,14 +9,14 @@ spring:
         nacos:
             discovery:
                 #指定注册中心位置
-                server-addr: 127.0.0.1:8849
+                server-addr: 127.0.0.1:8850
                 #注册中心的命名空间id,不指定默认为Public命名空间
                 namespace: 069ccfff-dacb-47d7-ab0a-d40a5ec700f8
                 #指定注册群组 --如果是Public命名空间 则可以省略群组配置DEFAULT_GROUP
                 group: WISDOM_GROUP
             config:
                 #指定配置中心位置
-                server-addr: 127.0.0.1:8849
+                server-addr: 127.0.0.1:8850
                 #配置中心的命名空间id,不指定默认为Public命名空间
                 namespace: 069ccfff-dacb-47d7-ab0a-d40a5ec700f8
                 #指定配置群组 --如果是Public命名空间 则可以省略群组配置DEFAULT_GROUP
