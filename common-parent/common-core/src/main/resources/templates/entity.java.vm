@@ -9,9 +9,6 @@ import io.swagger.annotations.ApiModelProperty;
 #end
 #if(${entityLombokModel})
 import lombok.Data;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 #if(${chainModel})
 import lombok.experimental.Accessors;
@@ -36,9 +33,6 @@ import javax.persistence.Entity;
  */
 #if(${entityLombokModel})
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 #if(${superEntityClass})
 @EqualsAndHashCode(callSuper = true)
 #else

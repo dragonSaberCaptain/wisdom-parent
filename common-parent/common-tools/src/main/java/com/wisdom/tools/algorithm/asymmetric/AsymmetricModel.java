@@ -11,7 +11,7 @@ import java.security.PublicKey;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * 非对称加密算法模板类用于:RSA、DSA、ECDSA
+ * 非对称加密算法模板类用于:RSA、DSA、EC(即ECDSA,默认)
  *
  * @author captain
  * @version 1.0
@@ -19,15 +19,16 @@ import java.security.PublicKey;
  */
 @Slf4j
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class AsymmetricModel {
+    public final String ALGORITHM_EC = "EC";
+    public final String ALGORITHM_RSA = "RSA";
+    public final String ALGORITHM_DSA = "DSA";
+
     /**
      * 当前生效的算法
      * 支持算法：RSA、DSA、EC(即ECDSA,默认)
      */
-    private String currentAlgorithm = "EC";
+    private String currentAlgorithm;
 
     /**
      * 支持的签名算法:
@@ -54,11 +55,11 @@ public class AsymmetricModel {
      * 机数生成器(RNG)算法名称
      * SHA1PRNG
      */
-    private String rngAlgorithm = "SHA1PRNG";
+    private String rngAlgorithm;
     /**
      * 默认的种子
      */
-    private String defaultSeed = "dragonSaberCaptain";
+    private String defaultSeed;
 
     /**
      * 是否使用默认种子 默认使用:true
@@ -98,10 +99,36 @@ public class AsymmetricModel {
     /**
      * 是否支持加解密
      */
-    private boolean openEad = true;
+    private boolean openEad;
 
-    AsymmetricModel(String currentAlgorithm) {
-        this.currentAlgorithm = currentAlgorithm;
+    AsymmetricModel() {
+        this.currentAlgorithm = ALGORITHM_EC;
+        this.rngAlgorithm = "SHA1PRNG";
+        this.defaultSeed = "dragonSaberCaptain";
+        this.openEad = true;
+        this.algorithmSize = 256;
+        this.signAlgorithm = "SHA256withECDSA";
+        this.eadAlgorithm = "ECIES";
+    }
+
+    public AsymmetricModel initDefault(String currentAlgorithm) {
+        AsymmetricModel asymmetricModel = new AsymmetricModel();
+        asymmetricModel.setCurrentAlgorithm(currentAlgorithm);
+        if (ALGORITHM_EC.equalsIgnoreCase(asymmetricModel.getCurrentAlgorithm())) {
+            return asymmetricModel; //EC算法直接返回
+        }
+        if (ALGORITHM_DSA.equalsIgnoreCase(asymmetricModel.getCurrentAlgorithm())) {
+            asymmetricModel.setAlgorithmSize(64 * 12); //768
+            asymmetricModel.setSignAlgorithm("SHA256withDSA");
+            asymmetricModel.setOpenEad(false);
+            return asymmetricModel;
+        }
+        if (ALGORITHM_RSA.equalsIgnoreCase(asymmetricModel.getCurrentAlgorithm())) {
+            asymmetricModel.setAlgorithmSize(64 * 16); //1024
+            asymmetricModel.setSignAlgorithm("SHA256withRSA");
+            return asymmetricModel;
+        }
+        return null;
     }
 
     /**

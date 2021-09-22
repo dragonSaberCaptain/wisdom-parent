@@ -28,8 +28,6 @@ import java.io.Serializable;
  * @datetime 2018/05/10 10:31 星期三
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)

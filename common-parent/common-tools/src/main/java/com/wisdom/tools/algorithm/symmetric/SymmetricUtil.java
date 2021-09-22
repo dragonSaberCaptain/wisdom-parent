@@ -21,16 +21,14 @@ import java.security.Security;
  */
 @Slf4j
 public class SymmetricUtil {
-    private static final String ALGORITHM_AES = "AES";
-
 
     public static void main(String[] args) throws Exception {
-        SymmetricModel algorithmModel = new SymmetricModel(ALGORITHM_AES);
-        algorithmModel.setKey("dragonSaberCaptain");
+        SymmetricModel algorithmModel = new SymmetricModel().initDefault("AES");
 
         algorithmModel.setDataSource("加密数据：挖槽");
         encryptData(algorithmModel);
         System.out.println("加密后的数据:" + algorithmModel.getDataSourceEncrypt());
+//        System.out.println("模拟数据篡改");
 //        algorithmModel.setKey("captain");
         decodeData(algorithmModel);
         System.out.println("解密后的数据:" + algorithmModel.getDataSourceDecrypt());
@@ -42,26 +40,13 @@ public class SymmetricUtil {
      */
 
     private static SecretKeySpec initKey(SymmetricModel symmetricModel) {
-        if (ALGORITHM_AES.equals(symmetricModel.getCurrentAlgorithm())) {
-            if (symmetricModel.getAlgorithmSize() == 0) {
-                symmetricModel.setAlgorithmSize(64 * 3);
-            } else if (symmetricModel.getAlgorithmSize() > 256) { //秘钥最大长度
-                symmetricModel.setAlgorithmSize(64 * 4);
-            } else if (symmetricModel.getAlgorithmSize() < 128) { //秘钥最小长度
-                symmetricModel.setAlgorithmSize(64 * 2);
-            }
-            if (StringUtils.isBlank(symmetricModel.getEadAlgorithm())) { //默认加解密算法
-                symmetricModel.setEadAlgorithm("AES/ECB/PKCS7Padding");
-            }
-        }
         String keyMD5 = DigestUtils.md5Hex(symmetricModel.getKey());
         return new SecretKeySpec(keyMD5.getBytes(), symmetricModel.getCurrentAlgorithm());
     }
 
     public static SymmetricModel encryptData(SymmetricModel symmetricModel) throws Exception {
-
+        String keyMD5 = DigestUtils.md5Hex(symmetricModel.getKey());
         SecretKeySpec secretKeySpec = initKey(symmetricModel);
-
         Security.addProvider(new BouncyCastleProvider());
         // 创建密码器
         Cipher cipher = Cipher.getInstance(symmetricModel.getEadAlgorithm());

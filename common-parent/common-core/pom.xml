@@ -53,17 +53,5 @@
     <build>
         <!--定义了编译、打包、部署的项目名称-->
         <finalName>${project.artifactId}-${project.version}</finalName>
-
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 </project>

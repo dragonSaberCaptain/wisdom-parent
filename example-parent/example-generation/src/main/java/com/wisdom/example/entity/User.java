@@ -28,9 +28,6 @@ import javax.persistence.Entity;
  * @datetime 2021-09-15 13:44:52 星期三
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "USER")
 @Table(appliesTo = "USER", comment = "用户表")

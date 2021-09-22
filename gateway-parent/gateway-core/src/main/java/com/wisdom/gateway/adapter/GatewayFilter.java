@@ -80,10 +80,10 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
         //验证token
-        String baseToken = serverHttpRequest.getHeaders().getFirst(tokenKey);
-        if (StringUtil.isBlank(baseToken)) {
-            return ResponseUtil.resultMsgToMono(ResultEnum.TOKEN_IS_EMPTY, serverHttpResponse);
-        }
+//        String baseToken = serverHttpRequest.getHeaders().getFirst(tokenKey);
+//        if (StringUtil.isBlank(baseToken)) {
+//            return ResponseUtil.resultMsgToMono(ResultEnum.TOKEN_IS_EMPTY, serverHttpResponse);
+//        }
         //给请求头添加签名
         return chain.filter(exchange);
     }

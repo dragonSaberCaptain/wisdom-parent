@@ -28,9 +28,6 @@ import javax.persistence.Entity;
  * @datetime 2021-09-15 13:45:02 星期三
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "SYS_PERMISSION")
 @Table(appliesTo = "SYS_PERMISSION", comment = "系统权限表")

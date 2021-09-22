@@ -1,21 +1,15 @@
 package com.wisdom.tools.algorithm.symmetric;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.KeyPair;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * 非对称加密算法模板类用于:RSA、DSA、ECDSA
+ * 对称加密算法模板类用于:AES(默认)
  *
  * @author captain
  * @version 1.0
@@ -23,15 +17,14 @@ import java.security.KeyPair;
  */
 @Slf4j
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class SymmetricModel {
+    public final String ALGORITHM_AES = "AES";
+
     /**
      * 当前生效的算法
      * 支持算法：AES
      */
-    private String currentAlgorithm = "AES";
+    private String currentAlgorithm;
 
     /**
      * 加解密特有的算法:
@@ -65,8 +58,29 @@ public class SymmetricModel {
      */
     private String dataSourceDecrypt;
 
-    SymmetricModel(String currentAlgorithm) {
+    SymmetricModel() {
+        this.currentAlgorithm = ALGORITHM_AES;
+        this.algorithmSize = 64 * 3; //192
+        this.eadAlgorithm = "AES/ECB/PKCS7Padding";
+        this.key = "dragonSaberCaptain";
+    }
+
+    public SymmetricModel initDefault(String currentAlgorithm) {
+        SymmetricModel symmetricModel = new SymmetricModel();
+        symmetricModel.setCurrentAlgorithm(currentAlgorithm);
+
+        if (ALGORITHM_AES.equalsIgnoreCase(symmetricModel.getCurrentAlgorithm())) {
+            this.algorithmSize = 64 * 3; //192
+            this.eadAlgorithm = "AES/ECB/PKCS7Padding";
+            return symmetricModel;
+        }
+        return null;
+    }
+
+    SymmetricModel(String currentAlgorithm, int algorithmSize, String eadAlgorithm) {
         this.currentAlgorithm = currentAlgorithm;
+        this.algorithmSize = algorithmSize;
+        this.eadAlgorithm = eadAlgorithm;
     }
 
     public byte[] getDataSourceEncoded() {

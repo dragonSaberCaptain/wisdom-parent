@@ -5,8 +5,6 @@ import com.wisdom.config.exception.ResultException;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jcajce.provider.util.BadBlockException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
@@ -31,12 +29,12 @@ import java.security.spec.X509EncodedKeySpec;
 @Slf4j
 public class AsymmetricUtil {
 
-    private static final String ALGORITHM_EC = "EC";
-    private static final String ALGORITHM_RSA = "RSA";
-    private static final String ALGORITHM_DSA = "DSA";
-
     public static void main(String[] args) throws Exception {
-        AsymmetricModel asymmetricModel = new AsymmetricModel(ALGORITHM_EC);
+        AsymmetricModel asymmetricModel = new AsymmetricModel().initDefault("EC");
+        if (asymmetricModel == null) {
+            System.out.println("暂不支持该算法");
+            return;
+        }
         //初始化密钥对
         AsymmetricUtil.initKeyPair(asymmetricModel);
         //公钥
@@ -83,57 +81,10 @@ public class AsymmetricUtil {
         System.out.println("服务器公钥验签结果:" + asymmetricModel.isSignVerifyResult());
     }
 
-    public static AsymmetricModel init(AsymmetricModel asymmetricModel) throws Exception {
-        if (ALGORITHM_RSA.equals(asymmetricModel.getCurrentAlgorithm())) {
-            if (asymmetricModel.getAlgorithmSize() == 0) {
-                asymmetricModel.setAlgorithmSize(64 * 16);
-            } else if (asymmetricModel.getAlgorithmSize() > 65536) { //秘钥最大长度
-                asymmetricModel.setAlgorithmSize(64 * 1024);
-            } else if (asymmetricModel.getAlgorithmSize() < 512) { //秘钥最小长度
-                asymmetricModel.setAlgorithmSize(64 * 8);
-            }
-            if (StringUtils.isBlank(asymmetricModel.getSignAlgorithm())) { //默认验签算法
-                asymmetricModel.setSignAlgorithm("SHA256withRSA");
-            }
-        }
-
-        if (ALGORITHM_DSA.equals(asymmetricModel.getCurrentAlgorithm())) {
-            if (asymmetricModel.getAlgorithmSize() == 0) {
-                asymmetricModel.setAlgorithmSize(64 * 16);
-            } else if (asymmetricModel.getAlgorithmSize() > 1024) { //秘钥最大长度
-                asymmetricModel.setAlgorithmSize(64 * 16);
-            } else if (asymmetricModel.getAlgorithmSize() < 512) { //秘钥最小长度
-                asymmetricModel.setAlgorithmSize(64 * 8);
-            }
-            if (StringUtils.isBlank(asymmetricModel.getSignAlgorithm())) { //默认验签算法
-                asymmetricModel.setSignAlgorithm("SHA256withDSA");
-            }
-            //DSA算法不支持加解密功能
-            asymmetricModel.setOpenEad(false);
-        }
-
-        if (ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
-            if (asymmetricModel.getAlgorithmSize() == 0) {
-                asymmetricModel.setAlgorithmSize(256); //默认秘钥长度
-            } else if (asymmetricModel.getAlgorithmSize() > 571) { //秘钥最大长度
-                asymmetricModel.setAlgorithmSize(571);
-            }
-            if (StringUtils.isBlank(asymmetricModel.getSignAlgorithm())) { //默认验签算法
-                asymmetricModel.setSignAlgorithm("SHA256withECDSA");
-            }
-
-            if (StringUtils.isBlank(asymmetricModel.getEadAlgorithm())) { //默认加解密算法
-                asymmetricModel.setEadAlgorithm("ECIES");
-            }
-        }
-        return asymmetricModel;
-    }
-
     /**
      * 初始化密钥对
      */
     public static AsymmetricModel initKeyPair(AsymmetricModel asymmetricModel) throws Exception {
-        init(asymmetricModel);
         // 初始化随机产生器
         SecureRandom secureRandom = SecureRandom.getInstance(asymmetricModel.getRngAlgorithm());
         String seed = asymmetricModel.getDefaultSeed() + "@" + DateUtilByZoned.getNowDateUnMilli();
@@ -169,7 +120,7 @@ public class AsymmetricUtil {
         PublicKey publicKey = keyFactory.generatePublic(x509KeySpec);
 
         Cipher cipher;
-        if (ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
+        if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
             Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
         } else {
@@ -200,7 +151,7 @@ public class AsymmetricUtil {
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
         Cipher cipher;
-        if (ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
+        if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
             Security.addProvider(new BouncyCastleProvider());
             cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
         } else {
