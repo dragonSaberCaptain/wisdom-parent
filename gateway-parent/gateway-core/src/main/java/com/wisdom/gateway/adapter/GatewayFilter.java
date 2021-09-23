@@ -1,20 +1,11 @@
 package com.wisdom.gateway.adapter;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.wisdom.config.dto.ResultDto;
-import com.wisdom.config.enums.EnumDao;
-import com.wisdom.config.enums.ResultEnum;
-import com.wisdom.gateway.tools.response.ResponseUtil;
-import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -23,7 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
+import javax.annotation.Resource;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -40,7 +31,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     @Value("${common.params.token_key:token}")
     private String tokenKey;
 
-    @Autowired
+    @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Override

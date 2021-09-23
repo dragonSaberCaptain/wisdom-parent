@@ -14,12 +14,12 @@ import com.wisdom.tools.mybatisplus.MybatisplusUtil;
 import com.wisdom.tools.string.StringUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Map;
  */
 @Slf4j
 public class BaseController<M extends BaseService<T>, T> {
-    @Autowired
+    @Resource
     protected M baseService;
 
     protected T baseEntity;
@@ -43,30 +43,6 @@ public class BaseController<M extends BaseService<T>, T> {
     protected Class<T> entityClass = currentModelClass();
 
     protected Class<T> serviceClass = currenServiceClass();
-
-    public M getBaseService() {
-        return baseService;
-    }
-
-    public T getBaseEntity() {
-//        if (baseEntity == null) {
-//            try {
-//                this.baseEntity = entityClass.getDeclaredConstructor().newInstance();
-//            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//                e.printStackTrace();
-//                log.error("实例化baseEntity失败");
-//            }
-//        }
-        return baseEntity;
-    }
-
-    protected Class<T> currenServiceClass() {
-        return (Class<T>) ReflectionKit.getSuperClassGenericType(getClass(), 0);
-    }
-
-    protected Class<T> currentModelClass() {
-        return (Class<T>) ReflectionKit.getSuperClassGenericType(getClass(), 1);
-    }
 
     @ResponseBody
     @PostMapping("/findBySelective")
@@ -343,4 +319,21 @@ public class BaseController<M extends BaseService<T>, T> {
         }
         return entityList;
     }
+
+    public M getBaseService() {
+        return baseService;
+    }
+
+    public T getBaseEntity() {
+        return baseEntity;
+    }
+
+    protected Class<T> currenServiceClass() {
+        return (Class<T>) ReflectionKit.getSuperClassGenericType(getClass(), 0);
+    }
+
+    protected Class<T> currentModelClass() {
+        return (Class<T>) ReflectionKit.getSuperClassGenericType(getClass(), 1);
+    }
+
 }

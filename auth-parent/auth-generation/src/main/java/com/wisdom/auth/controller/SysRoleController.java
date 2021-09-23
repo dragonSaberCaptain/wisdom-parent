@@ -1,13 +1,14 @@
 package com.wisdom.auth.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.wisdom.auth.service.SysRoleService;
 import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import com.wisdom.common.controller.BaseController;
 import com.wisdom.auth.entity.SysRole;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Resource;
 
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth/sysRole")
 @Api(value = "SysRoleController API", tags = "sys_role:系统角色表相关接口")
 public class SysRoleController extends BaseController<SysRoleService, SysRole> {
-    @Autowired
+    @Resource
     private SysRoleService sysRoleService;
 
 }

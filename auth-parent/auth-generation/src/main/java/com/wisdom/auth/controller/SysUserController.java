@@ -1,13 +1,14 @@
 package com.wisdom.auth.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.wisdom.auth.service.SysUserService;
 import io.swagger.annotations.Api;
 import org.springframework.stereotype.Controller;
 import com.wisdom.common.controller.BaseController;
 import com.wisdom.auth.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Resource;
 
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/auth/sysUser")
 @Api(value = "SysUserController API", tags = "sys_user:系统用户表相关接口")
 public class SysUserController extends BaseController<SysUserService, SysUser> {
-    @Autowired
+    @Resource
     private SysUserService sysUserService;
 
 }

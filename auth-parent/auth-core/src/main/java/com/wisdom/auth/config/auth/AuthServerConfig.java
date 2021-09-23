@@ -1,7 +1,6 @@
 package com.wisdom.auth.config.auth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +15,7 @@ import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeSe
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 /**
@@ -32,7 +32,7 @@ import javax.sql.DataSource;
 @EnableAuthorizationServer
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    @Autowired
+    @Resource
     public DataSource dataSource;
 
     @Bean

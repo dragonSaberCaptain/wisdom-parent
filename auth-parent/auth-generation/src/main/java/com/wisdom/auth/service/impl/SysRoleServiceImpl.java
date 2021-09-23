@@ -5,8 +5,10 @@ import com.wisdom.auth.dao.SysRoleDao;
 import com.wisdom.auth.service.SysRoleService;
 import com.wisdom.common.service.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Resource;
+
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
  *
@@ -21,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole> implements SysRoleService {
-    @Autowired
+    @Resource
     private SysRoleDao sysRoleDao;
 
 }

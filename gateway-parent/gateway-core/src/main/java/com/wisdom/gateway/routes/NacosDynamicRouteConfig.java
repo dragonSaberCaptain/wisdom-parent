@@ -6,9 +6,6 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.RouteDefinition;
@@ -19,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -53,7 +51,7 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     @Value("${spring.cloud.nacos.config.namespace:properties}")
     private String serverNamespace;
 
-    @Autowired
+    @Resource
     private RouteDefinitionWriter routeDefinitionWriter;
 
     private ApplicationEventPublisher applicationEventPublisher;
