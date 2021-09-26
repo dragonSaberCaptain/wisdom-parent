@@ -5,10 +5,9 @@ import com.wisdom.example.entity.Test;
 import com.wisdom.example.service.TestService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.annotation.Resource;
 
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
@@ -26,7 +25,7 @@ import javax.annotation.Resource;
 @RequestMapping("/example/test")
 @Api(value = "TestController API", tags = "test:测试表相关接口")
 public class TestController extends BaseController<TestService, Test> {
-    @Resource
+    @Autowired
     private TestService testService;
 
 }

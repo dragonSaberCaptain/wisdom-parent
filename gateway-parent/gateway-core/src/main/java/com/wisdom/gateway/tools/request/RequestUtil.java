@@ -1,10 +1,13 @@
 package com.wisdom.gateway.tools.request;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -19,6 +22,13 @@ import java.net.UnknownHostException;
 public class RequestUtil {
     public static String getIpAddress(final HttpServletRequest request) {
         String ipAddress = request.getHeader("x-forwarded-for");
+        if (ipAddress != null && ipAddress.length() != 0 && !"unknown".equalsIgnoreCase(ipAddress)) {
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+            if (ipAddress.contains(",")) {
+                ipAddress = ipAddress.split(",")[0];
+            }
+        }
+
         if (ipAddress == null || ipAddress.length() == 0
                 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("Proxy-Client-IP");
@@ -27,29 +37,58 @@ public class RequestUtil {
                 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (ipAddress == null || ipAddress.length() == 0
-                || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
-            if ("127.0.0.1".equals(ipAddress)
-                    || "0:0:0:0:0:0:0:1".equals(ipAddress)) {
-                // 根据网卡取本机配置的IP
-                InetAddress inet = null;
-                try {
-                    inet = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                ipAddress = inet.getHostAddress();
-            }
-        }
-        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
-        // "***.***.***.***".length()
-        if (ipAddress != null && ipAddress.length() > 15) {
-            // = 15
-            if (".".indexOf(ipAddress) > 0) {
-                ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
+            if ("127.0.0.1".equals(ipAddress) || "0:0:0:0:0:0:0:1".equals(ipAddress) || "localhost".equals(ipAddress)) {
+                ipAddress = getLocalIpFromWin();
             }
         }
         return ipAddress;
+    }
+
+    public static String getIpAddress(final ServerHttpRequest request) {
+        HttpHeaders headers = request.getHeaders();
+        String ipAddress = headers.getFirst("x-forwarded-for");
+        if (ipAddress != null && ipAddress.length() != 0 && !"unknown".equalsIgnoreCase(ipAddress)) {
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+            if (ipAddress.contains(",")) {
+                ipAddress = ipAddress.split(",")[0];
+            }
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("HTTP_X_FORWARDED_FOR");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = headers.getFirst("X-Real-IP");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
+            if ("127.0.0.1".equals(ipAddress) || "0:0:0:0:0:0:0:1".equals(ipAddress) || "localhost".equals(ipAddress)) {
+                ipAddress = getLocalIpFromWin();
+            }
+        }
+        return ipAddress;
+    }
+
+    /**
+     * 获取Windows服务器的本地IP
+     */
+    private static String getLocalIpFromWin() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

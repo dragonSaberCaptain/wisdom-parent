@@ -74,7 +74,7 @@ public enum HttpEnum implements EnumDao {
 
     REQUEST_ENTITY_TOO_LARGE("413", "请求实体过大"),
 
-    REQUEST_URI_TOO_LONG("414", "请求的 URI 过长"),
+    REQUEST_URI_TOO_LONG("414", "请求的URI过长"),
 
     UNSUPPORTED_MEDIA_TYPE("415", "不支持的媒体类型"),
 

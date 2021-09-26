@@ -2,6 +2,7 @@ package com.wisdom.auth.config.auth;
 
 import com.wisdom.auth.service.SysUserServiceExt;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,8 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
-import javax.annotation.Resource;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -30,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.application.name:auth}")
     private String appName;
 
-    @Resource
+    @Autowired
     private SysUserServiceExt sysUserServiceExt;
 
     /**

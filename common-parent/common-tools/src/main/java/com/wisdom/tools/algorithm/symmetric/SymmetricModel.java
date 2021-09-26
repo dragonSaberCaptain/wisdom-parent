@@ -58,7 +58,7 @@ public class SymmetricModel {
      */
     private String dataSourceDecrypt;
 
-    SymmetricModel() {
+    public SymmetricModel() {
         this.currentAlgorithm = ALGORITHM_AES;
         this.algorithmSize = 64 * 3; //192
         this.eadAlgorithm = "AES/ECB/PKCS7Padding";

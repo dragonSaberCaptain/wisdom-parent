@@ -1,6 +1,7 @@
 package com.wisdom.gateway.swagger;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.context.annotation.Primary;
@@ -9,7 +10,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +38,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
     /**
      * 网关路由
      */
-    @Resource
+    @Autowired
     private RouteLocator routeLocator;
 
     /**

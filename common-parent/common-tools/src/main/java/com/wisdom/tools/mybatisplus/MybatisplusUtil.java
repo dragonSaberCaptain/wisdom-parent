@@ -22,8 +22,8 @@ public class MybatisplusUtil {
         QueryWrapper<T> wrapper = new QueryWrapper<>();
 
         Field[] declaredFields = entity.getClass().getDeclaredFields();
-        for (Field field : declaredFields) {
-            try {
+        try {
+            for (Field field : declaredFields) {
                 field.setAccessible(true);
                 //驼峰转大写下划线, userName -> USER_NAME
                 String dbKey = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, field.getName());
@@ -41,9 +41,9 @@ public class MybatisplusUtil {
                         wrapper.eq(dbKey, value);
                     }
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
             }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
         return wrapper;
     }

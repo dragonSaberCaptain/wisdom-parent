@@ -14,14 +14,17 @@ public class StringUtil extends StringUtils {
         String testStr = "dragonSaberCaptain";
         String phoneStr = "12345678910";
         String idCardStr = "123456789101112131";
+        String testNull = "null";
 
-        System.out.println("替换从开始到结束内的" + replaceRangeIndex(testStr, 2, 7));
-        System.out.println("替换前N个和后N个的" + replaceRangeNum(testStr, 4, 4));
-        System.out.println("手机号替换的" + replaceRangeToPhone(phoneStr));
-        System.out.println("身份证号替换的" + replaceRangeToIdCard(idCardStr));
-        System.out.println("保留前N个和后N个的，其他用4个代替" + retainFour(testStr, 2, 2));
-        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
-        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
+//        System.out.println("替换从开始到结束内的" + replaceRangeIndex(testStr, 2, 7));
+//        System.out.println("替换前N个和后N个的" + replaceRangeNum(testStr, 4, 4));
+//        System.out.println("手机号替换的" + replaceRangeToPhone(phoneStr));
+//        System.out.println("身份证号替换的" + replaceRangeToIdCard(idCardStr));
+//        System.out.println("保留前N个和后N个的，其他用4个代替" + retainFour(testStr, 2, 2));
+//        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
+//        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
+//        System.out.println(isBlank(testNull));
+//        System.out.println(isNotBlank(testNull));
     }
 
     /**
@@ -133,11 +136,79 @@ public class StringUtil extends StringUtils {
         return retainFour(sourceStr, 3, 4);
     }
 
+    /**
+     * StringUtils.isEmpty(null)      = true
+     * StringUtils.isEmpty("null")    = true
+     * StringUtils.isEmpty("")        = true
+     * StringUtils.isEmpty(" ")       = false
+     * StringUtils.isEmpty("bob")     = false
+     * StringUtils.isEmpty("  bob  ") = false
+     *
+     * @param cs 字符串
+     * @return boolean
+     * @author admin
+     * @datetime 2021-09-23 10:14:37
+     */
+    public static boolean isEmpty(final CharSequence cs) {
+        return cs == null || cs.length() == 0 || "null".contentEquals(cs);
+    }
 
-    public static boolean isNotBlank(String str) {
-        if (StringUtils.isNotBlank(str) && !"null".equals(str)) {
+    /**
+     * StringUtils.isNotEmpty(null)      = false
+     * StringUtils.isNotEmpty("null")    = false
+     * StringUtils.isNotEmpty("")        = false
+     * StringUtils.isNotEmpty(" ")       = true
+     * StringUtils.isNotEmpty("bob")     = true
+     * StringUtils.isNotEmpty("  bob  ") = true
+     *
+     * @param cs 字符串
+     * @return boolean
+     * @author admin
+     * @datetime 2021-09-23 10:14:37
+     */
+    public static boolean isNotEmpty(final CharSequence cs) {
+        return !isEmpty(cs);
+    }
+
+    /**
+     * StringUtils.isBlank(null)      = true
+     * StringUtils.isBlank("null")    = true
+     * StringUtils.isBlank("")        = true
+     * StringUtils.isBlank(" ")       = true
+     * StringUtils.isBlank("bob")     = false
+     * StringUtils.isBlank("  bob  ") = false
+     *
+     * @param cs 字符串
+     * @author captain
+     * @datetime 2021-09-23 10:01:58
+     */
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0 || "null".contentEquals(cs)) {
             return true;
         }
-        return false;
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
+
+    /**
+     * StringUtils.isNotBlank(null)      = false
+     * StringUtils.isNotBlank("")        = false
+     * StringUtils.isNotBlank(" ")       = false
+     * StringUtils.isNotBlank("null")    = false
+     * StringUtils.isNotBlank("bob")     = true
+     * StringUtils.isNotBlank("  bob  ") = true
+     *
+     * @param cs 字符串
+     * @author captain
+     * @datetime 2021-09-23 10:01:58
+     */
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
+    }
+
 }

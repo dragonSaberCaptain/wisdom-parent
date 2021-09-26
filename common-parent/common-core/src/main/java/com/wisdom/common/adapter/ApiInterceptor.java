@@ -1,7 +1,21 @@
 package com.wisdom.common.adapter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.wisdom.common.tools.request.RequestUtil;
+import com.wisdom.common.tools.response.ResponseUtil;
+import com.wisdom.config.enums.HttpEnum;
+import com.wisdom.config.enums.ResultEnum;
+import com.wisdom.config.exception.ResultException;
+import com.wisdom.tools.algorithm.asymmetric.AsymmetricModel;
+import com.wisdom.tools.algorithm.asymmetric.AsymmetricUtil;
+import com.wisdom.tools.algorithm.asymmetric.MyKeyPair;
+import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -9,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -21,32 +36,82 @@ import java.util.Map;
  */
 @Slf4j
 public class ApiInterceptor implements HandlerInterceptor {
-    private Map<String, Object> getParams(HttpServletRequest request) {
-        Map<String, String[]> rec = request.getParameterMap();
-        Map<String, Object> result = new LinkedHashMap<>();
+    @Value("${spring.profiles.active:dev}")
+    private String appActive;
 
-        for (Map.Entry<String, String[]> entry : rec.entrySet()) {
-            String name = entry.getKey();
-            Object value = entry.getValue()[0];
-            result.put(name, value);
-            log.info("请求参数:" + name + ", value:" + value);
-        }
-        return result;
-    }
+    @Value("${common.params.token_key:token}")
+    private String tokenKey;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    private final String METHOD_VALUE = "methodValue";
+    private final String URL = "url";
+    private final String PORT = "port";
+    private final String URL_PARAM_MAP = "urlParamMap";
+    private final String BODY_PARAM_MAP = "bodyParamMap";
+    private final String SALT = "pq$69.salt";
+
 
     /**
      * controller 执行之前调用
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String url = request.getRequestURI();
-        log.info("请求地址： " + url);
-        String ip = RequestUtil.getIpAddress(request);
-        log.info("请求ip： " + ip);
-        String agent = request.getHeader("User-Agent");
-        log.info("请求来源： " + agent);
+        String ipAddress = RequestUtil.getIpAddress(request);
+        log.info("请求ip【{}】", ipAddress);
+        log.info("请求url【{}】", request.getRequestURL());
+        String userAgent = request.getHeader("User-Agent");
+        log.info("请求来源【{}】", userAgent);
 
-        //        判断请求是否来自手机 返回true表示是手机
+        //开发环境和本地环境关闭所有验证
+        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
+//            return true;
+        }
+
+        //来自网关的服务器名称
+        String gatewayName = request.getHeader("gateway_name");
+        //来自网关的客户端url
+        String gatewayUrl = request.getHeader(gatewayName + "_url");
+        //来自网关的签名
+        String gatewaySign = request.getHeader(gatewayName + "_sign");
+
+        //获取网关信息,只处理从网关过来的请求
+        if (StringUtil.isBlank(gatewayName) || StringUtil.isBlank(gatewayUrl) || StringUtil.isBlank(gatewaySign)) {
+            log.error("数据来源异常,gatewayName={},gatewayUrl={},gatewaySign={}", gatewayName, gatewayUrl, gatewaySign);
+            throw new ResultException(HttpEnum.BAD_GATEWAY);
+        }
+
+        String methodValue = request.getMethod();
+
+        Map<String, String[]> urlParamMap = request.getParameterMap();
+
+        //处理url参数数据,升序排序
+        Map<String, String[]> sortUrlParamMap = new TreeMap<>(urlParamMap);
+
+        TreeMap<String, Object> bodyMap = null;
+        if ("POST".equalsIgnoreCase(methodValue)) {
+            String bodyString = RepeatedlyReadRequestWrapper.getBodyToString(request);
+            bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
+            });
+        }
+
+        Map<String, Object> signDataMap = new TreeMap<>();
+        signDataMap.put(URL, gatewayUrl);
+        signDataMap.put(METHOD_VALUE, methodValue);
+        signDataMap.put(URL_PARAM_MAP, sortUrlParamMap);
+        signDataMap.put(BODY_PARAM_MAP, bodyMap);
+
+        String signData = JSONObject.toJSONString(signDataMap);
+        log.info("》》》》签名验证开始【{}】签名验证结束《《《《", signData);
+
+        //验证签名是否通过
+        boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + SALT + "_KeyPair");
+        if (!check) {
+            throw new ResultException(HttpEnum.BAD_GATEWAY);
+        }
+
+//        判断请求是否来自手机 返回true表示是手机
 //        boolean judgeismoblie = VerifyUtil.judgeIsMoblie(httpServletRequest);
 //        log.info("是否来自手机:" + judgeismoblie);
 //        if (Global.OPEN_DEV && !judgeismoblie) {
@@ -54,11 +119,8 @@ public class ApiInterceptor implements HandlerInterceptor {
 //        }
         Map<String, Object> rec = new LinkedHashMap<>();
 
-        Map<String, Object> requestMap = getParams(request);
 
-        String token = (String) requestMap.get("token");
-        String signMsg = (String) requestMap.get("signMsg");
-        String uuid = (String) requestMap.get("uuid");
+//        String token = (String) requestMap.get(tokenKey);
 
 //        if (StringUtil.isBlank(token)) {
 //            rec.put(Global.CODE, UserEnum.TOKEN_NOT_EMPTY.getCode());
@@ -109,5 +171,34 @@ public class ApiInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         System.out.println("------afterCompletion-----");
+    }
+
+//    private Map<String, Object> getParams(HttpServletRequest request) {
+//        Map<String, String[]> rec = request.getParameterMap();
+//        Map<String, Object> result = new TreeMap<>();
+//
+//        for (Map.Entry<String, String[]> entry : rec.entrySet()) {
+//            String name = entry.getKey();
+//            Object value = entry.getValue()[0];
+//            result.put(name, value);
+//        }
+//        return result;
+//    }
+
+    public boolean checkSignByCache(String jsonDataSrc, String signSrc, String key) {
+        //获取密匙对
+        String keyPairStr = stringRedisTemplate.opsForValue().get(key);
+        if (keyPairStr == null) {
+            return false;
+        }
+        MyKeyPair myKeyPair = JSON.parseObject(keyPairStr, MyKeyPair.class);
+
+        AsymmetricModel asymmetricModel = new AsymmetricModel();
+        asymmetricModel.setMyKeyPair(myKeyPair);
+        asymmetricModel.setDataSource(jsonDataSrc);
+        asymmetricModel.setSign(signSrc);
+        AsymmetricUtil.signVerify(asymmetricModel);
+
+        return asymmetricModel.isSignVerifyResult();
     }
 }

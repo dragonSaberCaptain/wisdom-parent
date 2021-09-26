@@ -32,13 +32,13 @@
             <groupId>com.wisdom</groupId>
             <artifactId>common-tools</artifactId>
             <version>${project.parent.version}</version>
-            <!--            <exclusions>-->
-            <!--                &lt;!&ndash; gateway,要排除其他依赖的spring-boot-starter-web,因为会与gateway的webflux冲突&ndash;&gt;-->
-            <!--                <exclusion>-->
-            <!--                    <groupId>org.springframework.boot</groupId>-->
-            <!--                    <artifactId>spring-boot-starter-web</artifactId>-->
-            <!--                </exclusion>-->
-            <!--            </exclusions>-->
+<!--            <exclusions>-->
+<!--                &lt;!&ndash; gateway,要排除依赖的spring-boot-starter-web,与webflux冲突&ndash;&gt;-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                    <artifactId>spring-boot-starter-web</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
 
         <dependency>

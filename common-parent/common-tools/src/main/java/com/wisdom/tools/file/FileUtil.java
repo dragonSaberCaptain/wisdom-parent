@@ -1,8 +1,6 @@
 package com.wisdom.tools.file;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +13,8 @@ import java.util.List;
  * @apiNote 文件操作相关工具类
  * @date 2021/7/5 16:39 星期一
  */
+@Slf4j
 public class FileUtil {
-    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     public static void main(String[] args) {
         List<File> fileList = getFilesByPath("D:\\BaiduNetdiskDownload\\IdeaProjects\\wisdom");

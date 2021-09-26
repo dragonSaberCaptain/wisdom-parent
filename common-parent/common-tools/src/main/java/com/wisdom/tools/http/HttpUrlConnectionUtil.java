@@ -1,8 +1,7 @@
 package com.wisdom.tools.http;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.BufferedReader;
@@ -28,8 +27,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * @apiNote java自带的标准类HttpURLConnection去实现
  * @date 2021/6/28 10:05 星期一
  */
+@Slf4j
 public class HttpUrlConnectionUtil {
-    private static final Logger logger = LoggerFactory.getLogger(HttpUrlConnectionUtil.class);
 
     private static final ScheduledExecutorService scheduledExecutorService;
 
@@ -97,7 +96,7 @@ public class HttpUrlConnectionUtil {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.info("IO异常");
+            log.info("IO异常");
         } finally {
             try {
                 if (outputStream != null) {

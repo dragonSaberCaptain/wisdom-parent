@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -37,15 +38,6 @@ public class AsymmetricUtil {
         }
         //初始化密钥对
         AsymmetricUtil.initKeyPair(asymmetricModel);
-        //公钥
-        PublicKey publicKey = asymmetricModel.getKeyPair().getPublic();
-        String publicKeyStr = getPublicKey(publicKey);
-        //私钥
-        PrivateKey privateKey = asymmetricModel.getKeyPair().getPrivate();
-        String privateKeyStr = getPrivateKey(privateKey);
-
-        System.out.println("公钥：/n" + publicKeyStr);
-        System.out.println("私钥：/n" + privateKeyStr);
 
         if (asymmetricModel.isOpenEad()) {
             System.out.println("================模拟服务器向用户发送加密数据==============");
@@ -84,20 +76,29 @@ public class AsymmetricUtil {
     /**
      * 初始化密钥对
      */
-    public static AsymmetricModel initKeyPair(AsymmetricModel asymmetricModel) throws Exception {
-        // 初始化随机产生器
-        SecureRandom secureRandom = SecureRandom.getInstance(asymmetricModel.getRngAlgorithm());
-        String seed = asymmetricModel.getDefaultSeed() + "@" + DateUtilByZoned.getNowDateUnMilli();
-        secureRandom.setSeed(seed.getBytes());
+    public static AsymmetricModel initKeyPair(AsymmetricModel asymmetricModel) {
+        try {
+            // 初始化随机产生器
+            SecureRandom secureRandom = null;
 
-        //实例化密钥生成器
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(asymmetricModel.getCurrentAlgorithm());
-        //初始化密钥生成器
-        keyPairGenerator.initialize(asymmetricModel.getAlgorithmSize(), secureRandom);
+            secureRandom = SecureRandom.getInstance(asymmetricModel.getRngAlgorithm());
 
-        //生成密钥对
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        asymmetricModel.setKeyPair(keyPair);
+            String seed = asymmetricModel.getDefaultSeed() + "@" + DateUtilByZoned.getNowDateUnMilli();
+            secureRandom.setSeed(seed.getBytes());
+
+            //实例化密钥生成器
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(asymmetricModel.getCurrentAlgorithm());
+            //初始化密钥生成器
+            keyPairGenerator.initialize(asymmetricModel.getAlgorithmSize(), secureRandom);
+
+            //生成密钥对
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            String publicKey = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+            String privateKey = Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
+            asymmetricModel.setMyKeyPair(new MyKeyPair(publicKey, privateKey));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return asymmetricModel;
     }
 
@@ -108,27 +109,34 @@ public class AsymmetricUtil {
      * @author captain
      * @datetime 2021-09-16 17:57:13
      */
-    public static AsymmetricModel publicKeyEncrypt(AsymmetricModel asymmetricModel) throws Exception {
-        if (!asymmetricModel.isOpenEad()) {
-            throw new ResultException(HttpEnum.METHOD_NOT_ALLOWED);
-        }
-        //取得转换公钥
-        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(asymmetricModel.getPublicEncoded());
-        //实例化密钥工厂
-        KeyFactory keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
-        //产生公钥
-        PublicKey publicKey = keyFactory.generatePublic(x509KeySpec);
+    public static AsymmetricModel publicKeyEncrypt(AsymmetricModel asymmetricModel) {
+        try {
+            if (!asymmetricModel.isOpenEad()) {
+                throw new ResultException(HttpEnum.METHOD_NOT_ALLOWED);
+            }
+            //取得转换公钥
+            X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(Base64.decodeBase64(asymmetricModel.getMyKeyPair().getPublicKey()));
+            //实例化密钥工厂
+            KeyFactory keyFactory = null;
 
-        Cipher cipher;
-        if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-            cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
-        } else {
-            cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+            keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
+
+            //产生公钥
+            PublicKey publicKey = keyFactory.generatePublic(x509KeySpec);
+
+            Cipher cipher;
+            if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
+                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+                cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
+            } else {
+                cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+            }
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            String encryptData = Base64.encodeBase64String(cipher.doFinal(asymmetricModel.getDataSourceEncoded()));
+            asymmetricModel.setDataSourceEncrypt(encryptData);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        String encryptData = Base64.encodeBase64String(cipher.doFinal(asymmetricModel.getDataSourceEncoded()));
-        asymmetricModel.setDataSourceEncrypt(encryptData);
         return asymmetricModel;
     }
 
@@ -144,7 +152,7 @@ public class AsymmetricUtil {
             throw new ResultException(HttpEnum.METHOD_NOT_ALLOWED);
         }
         //取得转换私钥
-        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(asymmetricModel.getPrivateEncoded());
+        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(asymmetricModel.getMyKeyPair().getPrivateKey()));
         //实例化密钥工厂
         KeyFactory keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
         //生成私钥
@@ -168,62 +176,60 @@ public class AsymmetricUtil {
     }
 
     /**
-     * 取得私钥
-     */
-    public static String getPrivateKey(PrivateKey privateKey) {
-        return Base64.encodeBase64String(privateKey.getEncoded());
-    }
-
-    /**
-     * 取得公钥
-     */
-    public static String getPublicKey(PublicKey publicKey) {
-        return Base64.encodeBase64String(publicKey.getEncoded());
-    }
-
-    /**
      * 用私钥进行数字签名
      */
-    public static AsymmetricModel sign(AsymmetricModel asymmetricModel) throws Exception {
-        // 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
+    public static AsymmetricModel sign(AsymmetricModel asymmetricModel) {
+        try {
+            // 指定的加密算法
+            KeyFactory keyFactory = null;
 
-        // 用私钥对信息生成数字签名
-        Signature signature = Signature.getInstance(asymmetricModel.getSignAlgorithm());
+            keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
 
-        // 取得转换私钥
-        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(asymmetricModel.getPrivateEncoded());
+            // 用私钥对信息生成数字签名
+            Signature signature = Signature.getInstance(asymmetricModel.getSignAlgorithm());
 
-        // 产生私钥
-        PrivateKey privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
-        signature.initSign(privateKey);
+            // 取得转换私钥
+            PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Base64.decodeBase64(asymmetricModel.getMyKeyPair().getPrivateKey()));
 
-        signature.update(asymmetricModel.getDataSourceEncoded());
-        String sign = Base64.encodeBase64String(signature.sign());
-        asymmetricModel.setSign(sign);
+            // 产生私钥
+            PrivateKey privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
+            signature.initSign(privateKey);
+
+            signature.update(asymmetricModel.getDataSourceEncoded());
+            String sign = Base64.encodeBase64String(signature.sign());
+            asymmetricModel.setSign(sign);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return asymmetricModel;
     }
 
     /**
      * 公钥验签
      */
-    public static AsymmetricModel signVerify(AsymmetricModel asymmetricModel) throws Exception {
-        // 构造X509EncodedKeySpec对象
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(asymmetricModel.getPublicEncoded());
+    public static AsymmetricModel signVerify(AsymmetricModel asymmetricModel) {
+        try {
+            // 构造X509EncodedKeySpec对象
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.decodeBase64(asymmetricModel.getMyKeyPair().getPublicKey()));
 
-        // 指定的加密算法
-        KeyFactory keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
+            // 指定的加密算法
+            KeyFactory keyFactory = null;
 
-        // 取公钥匙对象
-        PublicKey pubKey = keyFactory.generatePublic(keySpec);
+            keyFactory = KeyFactory.getInstance(asymmetricModel.getCurrentAlgorithm());
 
-        Signature signature = Signature.getInstance(asymmetricModel.getSignAlgorithm());
-        signature.initVerify(pubKey);
-        signature.update(asymmetricModel.getDataSourceEncoded());
+            // 取公钥匙对象
+            PublicKey pubKey = keyFactory.generatePublic(keySpec);
 
-        // 验证签名是否正常
-        boolean verify = signature.verify(Base64.decodeBase64(asymmetricModel.getSign()));
-        asymmetricModel.setSignVerifyResult(verify);
+            Signature signature = Signature.getInstance(asymmetricModel.getSignAlgorithm());
+            signature.initVerify(pubKey);
+            signature.update(asymmetricModel.getDataSourceEncoded());
+
+            // 验证签名是否正常
+            boolean verify = signature.verify(Base64.decodeBase64(asymmetricModel.getSign()));
+            asymmetricModel.setSignVerifyResult(verify);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return asymmetricModel;
     }
 }

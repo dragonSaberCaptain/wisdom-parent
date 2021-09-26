@@ -27,4 +27,17 @@ public class ResultException extends RuntimeException {
             this.subMsg = enumInterface.getSubMsg();
         }
     }
+
+    public ResultException(String code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public ResultException(String code, String msg, String subMsg) {
+        this.code = code;
+        this.msg = msg;
+        this.subMsg = subMsg;
+    }
+
+
 }

@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -17,7 +18,6 @@ import java.security.PublicKey;
  * @version 1.0
  * @datetime 2021/9/16 13:45 星期四
  */
-@Slf4j
 @Data
 public class AsymmetricModel {
     public final String ALGORITHM_EC = "EC";
@@ -69,7 +69,7 @@ public class AsymmetricModel {
     /**
      * 密钥对
      */
-    private KeyPair keyPair;
+    private MyKeyPair myKeyPair;
 
     /**
      * 数据源
@@ -101,7 +101,7 @@ public class AsymmetricModel {
      */
     private boolean openEad;
 
-    AsymmetricModel() {
+    public AsymmetricModel() {
         this.currentAlgorithm = ALGORITHM_EC;
         this.rngAlgorithm = "SHA1PRNG";
         this.defaultSeed = "dragonSaberCaptain";
@@ -131,29 +131,7 @@ public class AsymmetricModel {
         return null;
     }
 
-    /**
-     * 取得私钥
-     */
-    public String getPrivateKey() {
-        return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
-    }
-
-    /**
-     * 取得公钥
-     */
-    public String getPublicKey() {
-        return Base64.encodeBase64String(keyPair.getPublic().getEncoded());
-    }
-
-    public byte[] getPrivateEncoded() {
-        return keyPair.getPrivate().getEncoded();
-    }
-
-    public byte[] getPublicEncoded() {
-        return keyPair.getPublic().getEncoded();
-    }
-
     public byte[] getDataSourceEncoded() {
-        return dataSource.getBytes();
+        return dataSource.getBytes(StandardCharsets.UTF_8);
     }
 }

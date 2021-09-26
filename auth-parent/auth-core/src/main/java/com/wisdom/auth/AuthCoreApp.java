@@ -4,6 +4,7 @@ import com.wisdom.tools.system.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 
@@ -16,7 +17,7 @@ import org.springframework.context.ApplicationContext;
  * @datetime 2021/8/30 10:45 星期一
  */
 @Slf4j
-@SpringBootApplication(scanBasePackages = "com.wisdom.*")
+@SpringBootApplication(scanBasePackages = "com.wisdom.*", exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient
 public class AuthCoreApp {
     public static void main(String[] args) {

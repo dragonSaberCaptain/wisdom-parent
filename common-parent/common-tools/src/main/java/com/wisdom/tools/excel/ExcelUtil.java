@@ -1,14 +1,13 @@
 package com.wisdom.tools.excel;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -31,8 +30,8 @@ import java.util.stream.Collectors;
  * @apiNote excel 导入导出 最低jdk1.8
  * @date 2021/7/17 14:25 星期六
  */
+@Slf4j
 public class ExcelUtil {
-    private static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
     //每页数据总量
     private static final int SHEETSIZE = 5000;
     // 下拉限制开始行
@@ -139,7 +138,7 @@ public class ExcelUtil {
                 if (data.size() % SHEETSIZE > 0) {
                     pages += 1;
                 }
-                logger.info("导出的excel总的sheet页数:" + pages);
+                log.info("导出的excel总的sheet页数:" + pages);
 
                 // 添加数据
                 for (int i = 0; i < pages; i++) {
@@ -239,7 +238,7 @@ public class ExcelUtil {
             // 将创建好的数据写入输出流
             workbook.write(outputStream);
         } catch (Exception e) {
-            logger.error("ExcelUtil--listToExecl", e);
+            log.error("ExcelUtil--listToExecl", e);
             e.printStackTrace();
         } finally {
             try {
@@ -252,7 +251,7 @@ public class ExcelUtil {
                     outputStream.close();
                 }
             } catch (IOException e) {
-                logger.error("IO异常,关闭失败", e);
+                log.error("IO异常,关闭失败", e);
                 e.printStackTrace();
             }
         }
@@ -274,7 +273,7 @@ public class ExcelUtil {
             // 得到excel中sheet总数
             int sheetcount = workbook.getNumberOfSheets();
             if (sheetcount == 0) {
-                logger.error("Excel文件中没有任何数据");
+                log.error("Excel文件中没有任何数据");
                 throw new Exception("Excel文件中没有任何数据");
             }
 
@@ -314,7 +313,7 @@ public class ExcelUtil {
                 for (String cnName : fields.keySet()) {
                     if (!excelFieldNameList.contains(cnName)) {
                         //如果有列名不存在，则抛出异常，提示错误
-                        logger.error("Excel中缺少必要的字段，或字段名称有误:" + cnName);
+                        log.error("Excel中缺少必要的字段，或字段名称有误:" + cnName);
                         throw new Exception("Excel中缺少必要的字段，或字段名称有误:" + cnName);
                     }
                 }
@@ -362,7 +361,7 @@ public class ExcelUtil {
                 }
             }
         } catch (Exception e) {
-            logger.error("ExcelUtil--execlToList", e);
+            log.error("ExcelUtil--execlToList", e);
             e.printStackTrace();
         } finally {
             try {
@@ -373,7 +372,7 @@ public class ExcelUtil {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                logger.error("IO异常,关闭失败", e);
+                log.error("IO异常,关闭失败", e);
                 e.printStackTrace();
             }
         }
@@ -425,7 +424,7 @@ public class ExcelUtil {
                                             Object fieldValue, Object obj) {
         Field field = getFieldByName(fieldName, obj.getClass());
         if (field == null) {
-            logger.error(obj.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
+            log.error(obj.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
             return;
         }
         field.setAccessible(true);
@@ -456,21 +455,21 @@ public class ExcelUtil {
                 try {
                     field.set(obj, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(tmpValue));
                 } catch (ParseException e) {
-                    logger.info("Date类型的常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    log.info("Date类型的常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, new SimpleDateFormat("yyyyMMddHHmmss").parse(tmpValue));
                 }
             } else if (ZonedDateTime.class == fieldType) {
                 try {
                     field.set(obj, ZonedDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())));
                 } catch (DateTimeParseException e) {
-                    logger.info("ZonedDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    log.info("ZonedDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, ZonedDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.systemDefault())));
                 }
             } else if (LocalDateTime.class == fieldType) {
                 try {
                     field.set(obj, LocalDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 } catch (DateTimeParseException e) {
-                    logger.info("LocalDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    log.info("LocalDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, LocalDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 }
             } else if (String.class == fieldType) {
@@ -479,7 +478,7 @@ public class ExcelUtil {
                 field.set(obj, fieldValue);
             }
         } catch (Exception e) {
-            logger.error("ExcelUtil--setFieldValueByName", e);
+            log.error("ExcelUtil--setFieldValueByName", e);
             e.printStackTrace();
         }
     }
@@ -823,11 +822,11 @@ public class ExcelUtil {
                 }
             }
             if (workbook == null) {
-                logger.error("文件格式不正确,workbook创建失败");
+                log.error("文件格式不正确,workbook创建失败");
                 throw new Exception("文件格式不正确,workbook创建失败");
             }
         } catch (Exception e) {
-            logger.error("ExcelUtil--createWorkbook", e);
+            log.error("ExcelUtil--createWorkbook", e);
             e.printStackTrace();
         }
         return workbook;

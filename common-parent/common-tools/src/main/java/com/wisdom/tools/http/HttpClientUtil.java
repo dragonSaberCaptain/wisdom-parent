@@ -1,5 +1,6 @@
 package com.wisdom.tools.http;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -26,8 +27,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.pool.PoolStats;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -48,6 +47,7 @@ import java.util.Set;
  * @author: lastchaosCaptain
  * @date: 2017年8月28日 上午9:08:24
  */
+@Slf4j
 public class HttpClientUtil {
     private final static int CONNECT_TIMEOUT = 8000;// 连接超时毫秒
     private final static int SOCKET_TIMEOUT = 20000;// 传输超时毫秒
@@ -56,8 +56,6 @@ public class HttpClientUtil {
     private final static int CONNECT_ROUTE = 20;// 每个路由基础的连接数
     private final static String ENCODE_CHARSET = "utf-8";// 响应报文解码字符集
     private final static String RESP_CONTENT = "通信失败";
-    private static Logger logger = LoggerFactory
-            .getLogger(HttpClientUtil.class);
     private static PoolingHttpClientConnectionManager connManager = null;
     private static CloseableHttpClient httpClient = null;
 
@@ -87,37 +85,37 @@ public class HttpClientUtil {
         HttpRequestRetryHandler httpRequestRetryHandler = (exception, executionCount, context) -> {
             // 如果已经重试了5次，就放弃
             if (executionCount >= 5) {
-                logger.info("重试");
+                log.info("重试");
                 return false;
             }
             // 如果服务器丢掉了连接，那么就重试
             if (exception instanceof NoHttpResponseException) {
-                logger.info("服务器丢掉了连接，那么就重试");
+                log.info("服务器丢掉了连接，那么就重试");
                 return true;
             }
             // 不要重试SSL握手异常
             if (exception instanceof SSLHandshakeException) {
-                logger.info("不要重试SSL握手异常");
+                log.info("不要重试SSL握手异常");
                 return false;
             }
             // 超时
             if (exception instanceof InterruptedIOException) {
-                logger.info("超时");
+                log.info("超时");
                 return true;
             }
             // 目标服务器不可达
             if (exception instanceof UnknownHostException) {
-                logger.info("目标服务器不可达");
+                log.info("目标服务器不可达");
                 return false;
             }
             // 连接被拒绝
             if (exception instanceof ConnectTimeoutException) {
-                logger.info("连接被拒绝");
+                log.info("连接被拒绝");
                 return false;
             }
             // ssl握手异常
             if (exception instanceof SSLException) {
-                logger.info("ssl握手异常");
+                log.info("ssl握手异常");
                 return false;
             }
             HttpClientContext clientContext = HttpClientContext
@@ -125,7 +123,7 @@ public class HttpClientUtil {
             HttpRequest request = clientContext.getRequest();
             // 如果请求是幂等的，就再次尝试
             if (!(request instanceof HttpEntityEnclosingRequest)) {
-                logger.info("幂等请求,再次尝试");
+                log.info("幂等请求,再次尝试");
                 return true;
             }
             return false;
@@ -134,7 +132,7 @@ public class HttpClientUtil {
                 .setDefaultRequestConfig(requestConfig)
                 .setRetryHandler(httpRequestRetryHandler).build();
         if (connManager != null && connManager.getTotalStats() != null) {
-            logger.info("now client pool "
+            log.info("now client pool "
                     + connManager.getTotalStats().toString());
         }
     }
@@ -171,19 +169,19 @@ public class HttpClientUtil {
                 EntityUtils.consume(entity);
             }
         } catch (ConnectTimeoutException cte) {
-            logger.error("请求通信[" + reqURL + "]时连接超时,堆栈轨迹如下", cte);
+            log.error("请求通信[" + reqURL + "]时连接超时,堆栈轨迹如下", cte);
         } catch (SocketTimeoutException ste) {
-            logger.error("请求通信[" + reqURL + "]时读取超时,堆栈轨迹如下", ste);
+            log.error("请求通信[" + reqURL + "]时读取超时,堆栈轨迹如下", ste);
         } catch (ClientProtocolException cpe) {
             // 该异常通常是协议错误导致:比如构造HttpGet对象时传入协议不对(将'http'写成'htp')or响应内容不符合HTTP协议要求等
-            logger.error("请求通信[" + reqURL + "]时协议异常,堆栈轨迹如下", cpe);
+            log.error("请求通信[" + reqURL + "]时协议异常,堆栈轨迹如下", cpe);
         } catch (ParseException pe) {
-            logger.error("请求通信[" + reqURL + "]时解析异常,堆栈轨迹如下", pe);
+            log.error("请求通信[" + reqURL + "]时解析异常,堆栈轨迹如下", pe);
         } catch (IOException ioe) {
             // 该异常通常是网络原因引起的,如HTTP服务器未启动等
-            logger.error("请求通信[" + reqURL + "]时网络异常,堆栈轨迹如下", ioe);
+            log.error("请求通信[" + reqURL + "]时网络异常,堆栈轨迹如下", ioe);
         } catch (Exception e) {
-            logger.error("请求通信[" + reqURL + "]时偶遇异常,堆栈轨迹如下", e);
+            log.error("请求通信[" + reqURL + "]时偶遇异常,堆栈轨迹如下", e);
         } finally {
             try {
                 if (response != null) {
@@ -241,27 +239,27 @@ public class HttpClientUtil {
                 StringEntity entity = new StringEntity(param, ENCODE_CHARSET);
                 httpPost.setEntity(entity);
             }
-            logger.info("开始执行请求：" + reqURL);
+            log.info("开始执行请求：" + reqURL);
             response = httpClient.execute(httpPost, HttpClientContext.create());
             HttpEntity entity = response.getEntity();
             if (null != entity) {
                 result = EntityUtils.toString(entity,
                         ContentType.getOrDefault(entity).getCharset());
-                logger.info("执行请求完毕：" + result);
+                log.info("执行请求完毕：" + result);
                 EntityUtils.consume(entity);
             }
         } catch (ConnectTimeoutException cte) {
-            logger.error("请求通信[" + reqURL + "]时连接超时,堆栈轨迹如下", cte);
+            log.error("请求通信[" + reqURL + "]时连接超时,堆栈轨迹如下", cte);
         } catch (SocketTimeoutException ste) {
-            logger.error("请求通信[" + reqURL + "]时读取超时,堆栈轨迹如下", ste);
+            log.error("请求通信[" + reqURL + "]时读取超时,堆栈轨迹如下", ste);
         } catch (ClientProtocolException cpe) {
-            logger.error("请求通信[" + reqURL + "]时协议异常,堆栈轨迹如下", cpe);
+            log.error("请求通信[" + reqURL + "]时协议异常,堆栈轨迹如下", cpe);
         } catch (ParseException pe) {
-            logger.error("请求通信[" + reqURL + "]时解析异常,堆栈轨迹如下", pe);
+            log.error("请求通信[" + reqURL + "]时解析异常,堆栈轨迹如下", pe);
         } catch (IOException ioe) {
-            logger.error("请求通信[" + reqURL + "]时网络异常,堆栈轨迹如下", ioe);
+            log.error("请求通信[" + reqURL + "]时网络异常,堆栈轨迹如下", ioe);
         } catch (Exception e) {
-            logger.error("请求通信[" + reqURL + "]时偶遇异常,堆栈轨迹如下", e);
+            log.error("请求通信[" + reqURL + "]时偶遇异常,堆栈轨迹如下", e);
         } finally {
             try {
                 if (response != null) {
@@ -342,7 +340,7 @@ public class HttpClientUtil {
         try {
             httpClient.close();
         } catch (IOException e) {
-            logger.error("关闭httpClient异常" + e);
+            log.error("关闭httpClient异常" + e);
         } finally {
             if (connManager != null) {
                 connManager.shutdown();

@@ -1,22 +1,21 @@
 package com.wisdom.config.redis;//package com.wisdom.config.redis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.Resource;
-
 /**
  * Copyright © 2018 dragonSaberCaptain. All rights reserved.
  *
- * @author dragonSaberCaptain
+ * @author captain
  * @date 2018-08-02 14:52 星期四
  */
 @Configuration
 public class RedisConfig {
-    @Resource
+    @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Bean
