@@ -68,7 +68,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
 
         boolean roadblock = roadblock(requestInfoModel.getUrl());
-        if (!roadblock) { //不用检查,放行
+        if (roadblock) { //不用检查,放行
             return chain.filter(exchange);
         }
         //验证token  后期优化
@@ -80,10 +80,11 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         //签名数据
         HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
 
-        String signMapStr = JSONObject.toJSONString(checkInfoModel);
+        String signData = JSONObject.toJSONString(checkInfoModel);
+        log.info("》签名数据记录开始【{}】签名数据记录结束《", signData);
 
         //开始执行签名并且缓存
-        String sign = signAndCache(signMapStr, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 30, TimeUnit.DAYS);
+        String sign = signAndCache(signData, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 30, TimeUnit.DAYS);
 
         //往请求头中添加网关签名
         Map<String, String> headersMap = new TreeMap<>();
@@ -153,9 +154,12 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 String bodyString = new String(bytes, StandardCharsets.UTF_8);
                 sb.append(bodyString);
             });
-            TreeMap<String, Object> bodyMap = JSONObject.parseObject(sb.toString(), new TypeReference<>() {
-            });
-            httpModelDto.setBodyParamMap(bodyMap);
+            if (StringUtil.isNotBlank(sb)) {
+                TreeMap<String, Object> bodyMap = JSONObject.parseObject(sb.toString(), new TypeReference<>() {
+                });
+                httpModelDto.setBodyParamMap(bodyMap);
+            }
+
         }
 
         return httpModelDto;
@@ -173,18 +177,18 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             String url = String.valueOf(obj);
             //登录相关全部放行
             if (url.contains("/login.html") || url.contains("/index.html")) {
-                return false;
+                return true;
             }
             //swagger相关全部放行
             if (url.contains("/swagger") || url.contains("/api-docs")) {
-                return false;
+                return true;
             }
             //druid相关全部放行
             if (url.contains("/druid")) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**

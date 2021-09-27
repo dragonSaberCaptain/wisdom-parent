@@ -5,7 +5,6 @@ import com.wisdom.config.dto.ResultDto;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.config.exception.ResultException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.service.spi.ServiceException;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -27,7 +26,6 @@ import java.io.IOException;
 @Slf4j
 @ControllerAdvice
 public class ExceptionHandle {
-
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResultDto handle(Exception e) {

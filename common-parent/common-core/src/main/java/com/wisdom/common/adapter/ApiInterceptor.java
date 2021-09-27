@@ -61,6 +61,11 @@ public class ApiInterceptor implements HandlerInterceptor {
 //            return true;
         }
 
+        boolean roadblock = roadblock(requestInfoModel.getUrl());
+        if (roadblock) {
+            return true;
+        }
+
         //来自网关的服务器名称
         String gatewayName = request.getHeader("gateway_name");
         //来自网关的客户端url
@@ -77,6 +82,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         checkInfoModel.setUrl(gatewayUrl);
 
         String signData = JSONObject.toJSONString(checkInfoModel);
+        log.info("》签名数据记录开始【{}】签名数据记录结束《", signData);
 
         //验证签名是否通过
         boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + requestInfoModel.getSalt() + "_KeyPair");
@@ -101,6 +107,32 @@ public class ApiInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         System.out.println("------afterCompletion-----");
+    }
+
+    /**
+     * 定义允许通过的请求
+     *
+     * @param obj 地址
+     * @author captain
+     * @datetime 2021-09-27 13:59:42
+     */
+    public boolean roadblock(Object obj) {
+        if (obj instanceof String) {
+            String url = String.valueOf(obj);
+            //登录相关全部放行
+            if (url.contains("/login.html") || url.contains("/index.html")) {
+                return true;
+            }
+            //swagger相关全部放行
+            if (url.contains("/swagger") || url.contains("/api-docs")) {
+                return true;
+            }
+            //druid相关全部放行
+            if (url.contains("/druid")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -129,13 +161,13 @@ public class ApiInterceptor implements HandlerInterceptor {
         return asymmetricModel.isSignVerifyResult();
     }
 
-     /**
-      * 获取请求相关数据
-      *
-      * @param request 请求源
-      * @author captain
-      * @datetime 2021-09-27 14:08:03
-      */
+    /**
+     * 获取请求相关数据
+     *
+     * @param request 请求源
+     * @author captain
+     * @datetime 2021-09-27 14:08:03
+     */
     public HttpModelDto getRequestInfoModel(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         String methodValue = request.getMethod();
@@ -152,9 +184,12 @@ public class ApiInterceptor implements HandlerInterceptor {
 
         if ("POST".equalsIgnoreCase(methodValue)) {
             String bodyString = RepeatedlyReadRequestWrapper.getBodyToString(request);
-            TreeMap<String, Object> bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
-            });
-            httpModelDto.setBodyParamMap(bodyMap);
+            if (StringUtil.isNotBlank(bodyString)) {
+                TreeMap<String, Object> bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
+                });
+                httpModelDto.setBodyParamMap(bodyMap);
+            }
+
         }
 
         return httpModelDto;
