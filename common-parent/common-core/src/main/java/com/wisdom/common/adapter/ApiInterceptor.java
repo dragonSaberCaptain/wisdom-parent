@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.wisdom.common.tools.request.RequestUtil;
 import com.wisdom.common.tools.response.ResponseUtil;
+import com.wisdom.config.dto.HttpModelDto;
 import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.config.exception.ResultException;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,24 +47,14 @@ public class ApiInterceptor implements HandlerInterceptor {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private final String METHOD_VALUE = "methodValue";
-    private final String URL = "url";
-    private final String PORT = "port";
-    private final String URL_PARAM_MAP = "urlParamMap";
-    private final String BODY_PARAM_MAP = "bodyParamMap";
-    private final String SALT = "pq$69.salt";
-
-
     /**
      * controller 执行之前调用
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String ipAddress = RequestUtil.getIpAddress(request);
-        log.info("请求ip【{}】", ipAddress);
-        log.info("请求url【{}】", request.getRequestURL());
-        String userAgent = request.getHeader("User-Agent");
-        log.info("请求来源【{}】", userAgent);
+        //获取请求信息数据对象
+        HttpModelDto requestInfoModel = getRequestInfoModel(request);
+        log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
 
         //开发环境和本地环境关闭所有验证
         if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
@@ -78,82 +70,20 @@ public class ApiInterceptor implements HandlerInterceptor {
 
         //获取网关信息,只处理从网关过来的请求
         if (StringUtil.isBlank(gatewayName) || StringUtil.isBlank(gatewayUrl) || StringUtil.isBlank(gatewaySign)) {
-            log.error("数据来源异常,gatewayName={},gatewayUrl={},gatewaySign={}", gatewayName, gatewayUrl, gatewaySign);
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
 
-        String methodValue = request.getMethod();
+        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
+        checkInfoModel.setUrl(gatewayUrl);
 
-        Map<String, String[]> urlParamMap = request.getParameterMap();
-
-        //处理url参数数据,升序排序
-        Map<String, String[]> sortUrlParamMap = new TreeMap<>(urlParamMap);
-
-        TreeMap<String, Object> bodyMap = null;
-        if ("POST".equalsIgnoreCase(methodValue)) {
-            String bodyString = RepeatedlyReadRequestWrapper.getBodyToString(request);
-            bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
-            });
-        }
-
-        Map<String, Object> signDataMap = new TreeMap<>();
-        signDataMap.put(URL, gatewayUrl);
-        signDataMap.put(METHOD_VALUE, methodValue);
-        signDataMap.put(URL_PARAM_MAP, sortUrlParamMap);
-        signDataMap.put(BODY_PARAM_MAP, bodyMap);
-
-        String signData = JSONObject.toJSONString(signDataMap);
-        log.info("》》》》签名验证开始【{}】签名验证结束《《《《", signData);
+        String signData = JSONObject.toJSONString(checkInfoModel);
 
         //验证签名是否通过
-        boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + SALT + "_KeyPair");
+        boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + requestInfoModel.getSalt() + "_KeyPair");
         if (!check) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
 
-//        判断请求是否来自手机 返回true表示是手机
-//        boolean judgeismoblie = VerifyUtil.judgeIsMoblie(httpServletRequest);
-//        log.info("是否来自手机:" + judgeismoblie);
-//        if (Global.OPEN_DEV && !judgeismoblie) {
-//            return true;
-//        }
-        Map<String, Object> rec = new LinkedHashMap<>();
-
-
-//        String token = (String) requestMap.get(tokenKey);
-
-//        if (StringUtil.isBlank(token)) {
-//            rec.put(Global.CODE, UserEnum.TOKEN_NOT_EMPTY.getCode());
-//            rec.put(Global.MSG, UserEnum.TOKEN_NOT_EMPTY.getMsg());
-//            ResultUtil.writeJson(rec, httpServletResponse);
-//            return false;
-//        }
-        //从缓存中获取token
-//        String webToken;
-//        try {
-//            webToken = JedisUtil.Strings.get(Global.LOGIN_VALID_TOKEN + token);
-//        } catch (Exception e) {
-//            log.error("ApiInterceptor--preHandle", e);
-//            e.printStackTrace();
-//            rec.put(Global.CODE, UserEnum.TOKEN_NO_FIND.getCode());
-//            rec.put(Global.MSG, UserEnum.TOKEN_NO_FIND.getMsg());
-//            ResultUtil.writeJson(rec, httpServletResponse);
-//            return false;
-//        }
-        //验证前端传入的token与后台存储的token是否一致
-//        if (StringUtil.isNotBlank(webToken)) {
-//            //验证流程
-//            String webSignMsg = DigestUtils.md5Hex(Global.MD5_SALT + uuid).toUpperCase();
-//            boolean bool = webSignMsg.equalsIgnoreCase(signMsg);
-//            if (bool) {
-//                log.info("ApiInterceptor--preHandle—ok", "验证通过");
-//                return true;
-//            }
-//        }
-//
-//        rec.put(Global.CODE, UserEnum.TOKEN_ERROR.getCode());
-//        rec.put(Global.MSG, UserEnum.TOKEN_ERROR.getMsg());
-//        ResultUtil.writeJson(rec, httpServletResponse);
         return true;
     }
 
@@ -173,19 +103,16 @@ public class ApiInterceptor implements HandlerInterceptor {
         System.out.println("------afterCompletion-----");
     }
 
-//    private Map<String, Object> getParams(HttpServletRequest request) {
-//        Map<String, String[]> rec = request.getParameterMap();
-//        Map<String, Object> result = new TreeMap<>();
-//
-//        for (Map.Entry<String, String[]> entry : rec.entrySet()) {
-//            String name = entry.getKey();
-//            Object value = entry.getValue()[0];
-//            result.put(name, value);
-//        }
-//        return result;
-//    }
-
-    public boolean checkSignByCache(String jsonDataSrc, String signSrc, String key) {
+    /**
+     * 从缓存中获取key,用于验证签名是否正确
+     *
+     * @param jsonDataSrc 数据源
+     * @param sign        签名字符串
+     * @param key         缓存key
+     * @author captain
+     * @datetime 2021-09-27 14:06:22
+     */
+    public boolean checkSignByCache(String jsonDataSrc, String sign, String key) {
         //获取密匙对
         String keyPairStr = stringRedisTemplate.opsForValue().get(key);
         if (keyPairStr == null) {
@@ -196,9 +123,55 @@ public class ApiInterceptor implements HandlerInterceptor {
         AsymmetricModel asymmetricModel = new AsymmetricModel();
         asymmetricModel.setMyKeyPair(myKeyPair);
         asymmetricModel.setDataSource(jsonDataSrc);
-        asymmetricModel.setSign(signSrc);
+        asymmetricModel.setSign(sign);
         AsymmetricUtil.signVerify(asymmetricModel);
 
         return asymmetricModel.isSignVerifyResult();
+    }
+
+     /**
+      * 获取请求相关数据
+      *
+      * @param request 请求源
+      * @author captain
+      * @datetime 2021-09-27 14:08:03
+      */
+    public HttpModelDto getRequestInfoModel(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        String methodValue = request.getMethod();
+        Map<String, String[]> urlParamMap = request.getParameterMap();
+
+        String ipAddress = RequestUtil.getIpAddress(request);
+
+        HttpModelDto httpModelDto = new HttpModelDto();
+        httpModelDto.setIpAddress(ipAddress);
+        httpModelDto.setUrl(request.getRequestURL().toString());
+        httpModelDto.setUserAgent(userAgent);
+        httpModelDto.setMethodValue(methodValue);
+        httpModelDto.setUrlParamMap(new TreeMap<>(urlParamMap));
+
+        if ("POST".equalsIgnoreCase(methodValue)) {
+            String bodyString = RepeatedlyReadRequestWrapper.getBodyToString(request);
+            TreeMap<String, Object> bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
+            });
+            httpModelDto.setBodyParamMap(bodyMap);
+        }
+
+        return httpModelDto;
+    }
+
+    /**
+     * 获取用于验签的数据对象
+     *
+     * @param httpModelDto 数据源
+     * @author captain
+     * @datetime 2021-09-27 14:08:45
+     */
+    public HttpModelDto getCheckInfoModel(HttpModelDto httpModelDto) {
+        HttpModelDto httpCheckModelDto = new HttpModelDto();
+        httpCheckModelDto.setMethodValue(httpModelDto.getMethodValue());
+        httpCheckModelDto.setUrlParamMap(httpModelDto.getUrlParamMap());
+        httpCheckModelDto.setBodyParamMap(httpModelDto.getBodyParamMap());
+        return httpCheckModelDto;
     }
 }

@@ -3,6 +3,7 @@ package com.wisdom.gateway.adapter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.wisdom.config.dto.HttpModelDto;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.gateway.tools.request.RequestUtil;
 import com.wisdom.gateway.tools.response.ResponseUtil;
@@ -28,6 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -55,56 +57,39 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private final String HEADER_MAP = "headerMap";
-    private final String METHOD_VALUE = "methodValue";
-    private final String URL = "url";
-    private final String URL_PARAM_MAP = "urlParamMap";
-    private final String BODY_PARAM_MAP = "bodyParamMap";
-    private final String SALT = "pq$69.salt";
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
         //获取请求信息数据
-        Map<String, Object> requestInfoMap = getRequestInfo(request);
+        HttpModelDto requestInfoModel = getRequestInfoModel(request);
 
-        String infoStr = JSONObject.toJSONString(requestInfoMap);
-        log.info("》》》》请求信息开始【{}】请求信息结束《《《《", infoStr);
+        log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
 
-        Object url = requestInfoMap.get(URL);
-        Object methodValue = requestInfoMap.get(METHOD_VALUE);
-        Object urlParamMap = requestInfoMap.get(URL_PARAM_MAP);
-        Object bodyParamMap = requestInfoMap.get(BODY_PARAM_MAP);
-
-        boolean roadblock = roadblock(url);
+        boolean roadblock = roadblock(requestInfoModel.getUrl());
         if (!roadblock) { //不用检查,放行
             return chain.filter(exchange);
         }
-        //验证token
+        //验证token  后期优化
         String baseToken = request.getHeaders().getFirst(tokenKey);
         if (StringUtil.isBlank(baseToken)) {
             return ResponseUtil.resultMsgToMono(ResultEnum.TOKEN_IS_EMPTY, response);
         }
 
         //签名数据
-        Map<String, Object> signMap = new TreeMap<>();
-        signMap.put(URL, url);
-        signMap.put(METHOD_VALUE, methodValue);
-        signMap.put(URL_PARAM_MAP, urlParamMap);
-        signMap.put(BODY_PARAM_MAP, bodyParamMap);
-        String signMapStr = JSONObject.toJSONString(signMap);
-        log.info("》》》》签名信息开始【{}】签名信息结束《《《《", signMapStr);
+        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
+
+        String signMapStr = JSONObject.toJSONString(checkInfoModel);
 
         //开始执行签名并且缓存
-        String sign = signAndCache(signMapStr, appName + "_" + SALT + "_KeyPair", 30, TimeUnit.DAYS);
+        String sign = signAndCache(signMapStr, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 30, TimeUnit.DAYS);
 
         //往请求头中添加网关签名
         Map<String, String> headersMap = new TreeMap<>();
         headersMap.put("gateway_name", appName);
         headersMap.put(appName + "_sign", sign);
-        headersMap.put(appName + "_url", String.valueOf(url));
+        headersMap.put(appName + "_url", requestInfoModel.getUrl());
         request.mutate().headers(httpHeaders -> httpHeaders.setAll(headersMap)).build();
 
         return chain.filter(exchange);
@@ -115,20 +100,23 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return 0;
     }
 
-    public Map<String, Object> getRequestInfo(ServerHttpRequest request) {
-        Map<String, Object> infoMap = new TreeMap<>();
-
+    /**
+     * 获取请求对象相关数据
+     *
+     * @param request 请求源
+     * @author captain
+     * @datetime 2021-09-27 14:03:33
+     */
+    public HttpModelDto getRequestInfoModel(ServerHttpRequest request) {
         //请求header参数
         HttpHeaders headers = request.getHeaders();
         Map<String, Object> headerMap = new TreeMap<>();
         for (String key : headers.keySet()) {
             headerMap.put(key, headers.get(key));
         }
-        infoMap.put(HEADER_MAP, headerMap);
 
         //请求方式
         String methodValue = request.getMethodValue();
-        infoMap.put(METHOD_VALUE, methodValue);
 
         //请求url
         URI uri = request.getURI();
@@ -140,7 +128,6 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         if (urlStr.contains("127.0.0.1")) {
             urlStr = urlStr.replace("127.0.0.1", ipAddress);
         }
-        infoMap.put(URL, urlStr);
 
         //请求的URL上的参数
         MultiValueMap<String, String> queryParamsMap = request.getQueryParams();
@@ -148,12 +135,16 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         for (String key : queryParamsMap.keySet()) {
             urlParamMap.put(key, queryParamsMap.get(key));
         }
-        infoMap.put(URL_PARAM_MAP, urlParamMap);
+
+        HttpModelDto httpModelDto = new HttpModelDto();
+        httpModelDto.setHeaderMap(headerMap);
+        httpModelDto.setMethodValue(methodValue);
+        httpModelDto.setUrl(urlStr);
+        httpModelDto.setUrlParamMap(urlParamMap);
 
         //请求的body参数
-        StringBuilder sb = new StringBuilder();
-        TreeMap<String, Object> bodyMap = null;
         if ("POST".equalsIgnoreCase(methodValue)) {
+            StringBuilder sb = new StringBuilder();
             Flux<DataBuffer> body = request.getBody();
             body.subscribe(buffer -> {
                 byte[] bytes = new byte[buffer.readableByteCount()];
@@ -162,14 +153,21 @@ public class GatewayFilter implements GlobalFilter, Ordered {
                 String bodyString = new String(bytes, StandardCharsets.UTF_8);
                 sb.append(bodyString);
             });
-            bodyMap = JSONObject.parseObject(sb.toString(), new TypeReference<>() {
+            TreeMap<String, Object> bodyMap = JSONObject.parseObject(sb.toString(), new TypeReference<>() {
             });
+            httpModelDto.setBodyParamMap(bodyMap);
         }
-        infoMap.put(BODY_PARAM_MAP, bodyMap);
 
-        return infoMap;
+        return httpModelDto;
     }
 
+    /**
+     * 定义允许通过的请求
+     *
+     * @param obj 地址
+     * @author captain
+     * @datetime 2021-09-27 13:59:42
+     */
     public boolean roadblock(Object obj) {
         if (obj instanceof String) {
             String url = String.valueOf(obj);
@@ -189,6 +187,16 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return true;
     }
 
+    /**
+     * 签名并且缓存
+     *
+     * @param jsonDataSrc 缓存的数据源
+     * @param key         缓存额key
+     * @param num         数字
+     * @param timeUnit    单位
+     * @author captain
+     * @datetime 2021-09-27 14:00:45
+     */
     public String signAndCache(String jsonDataSrc, String key, int num, TimeUnit timeUnit) {
         AsymmetricModel asymmetricModel = new AsymmetricModel();
         //获取密匙对
@@ -212,5 +220,21 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         AsymmetricUtil.sign(asymmetricModel);
 
         return asymmetricModel.getSign();
+    }
+
+    /**
+     * 创建用于签名对象
+     *
+     * @param httpModelDto 数据源
+     * @author admin
+     * @datetime 2021-09-27 14:02:44
+     */
+    public HttpModelDto getCheckInfoModel(HttpModelDto httpModelDto) {
+        HttpModelDto httpCheckModelDto = new HttpModelDto();
+        httpCheckModelDto.setUrl(httpModelDto.getUrl());
+        httpCheckModelDto.setMethodValue(httpModelDto.getMethodValue());
+        httpCheckModelDto.setUrlParamMap(httpModelDto.getUrlParamMap());
+        httpCheckModelDto.setBodyParamMap(httpModelDto.getBodyParamMap());
+        return httpCheckModelDto;
     }
 }
