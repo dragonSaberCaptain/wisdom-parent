@@ -1,12 +1,12 @@
 package com.wisdom.auth.service.impl;
 
-import com.wisdom.auth.dao.SysRoleDao;
 import com.wisdom.auth.entity.SysRole;
+import com.wisdom.auth.dao.SysRoleDao;
 import com.wisdom.auth.service.SysRoleService;
 import com.wisdom.common.service.impl.BaseServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-15 13:45:02 星期三
+ * @datetime 2021-09-28 13:08:29 星期二
  */
 @Slf4j
 @Service

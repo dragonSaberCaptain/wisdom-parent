@@ -1,14 +1,13 @@
 package com.wisdom.auth.controller;
 
-import com.wisdom.auth.entity.SysRolePermission;
-import com.wisdom.auth.service.SysRolePermissionService;
-import com.wisdom.common.controller.BaseController;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import com.wisdom.auth.service.SysRolePermissionService;
+import io.swagger.annotations.Api;
+import org.springframework.stereotype.Controller;
+import com.wisdom.common.controller.BaseController;
+import com.wisdom.auth.entity.SysRolePermission;
+import lombok.extern.slf4j.Slf4j;
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
  *
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-15 13:45:02 星期三
+ * @datetime 2021-09-28 13:08:29 星期二
  */
 @Slf4j
 @Controller

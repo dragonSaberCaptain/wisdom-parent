@@ -1,4 +1,4 @@
-package com.wisdom.gateway.routes;
+package com.wisdom.gateway.config.routes;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.api.NacosFactory;

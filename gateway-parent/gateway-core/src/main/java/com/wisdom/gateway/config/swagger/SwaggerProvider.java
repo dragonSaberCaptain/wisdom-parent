@@ -1,4 +1,4 @@
-package com.wisdom.gateway.swagger;
+package com.wisdom.gateway.config.swagger;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

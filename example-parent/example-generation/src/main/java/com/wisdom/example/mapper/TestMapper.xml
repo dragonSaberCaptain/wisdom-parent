@@ -32,16 +32,16 @@
     <sql id="searchBy">
         <trim prefix="where" prefixOverrides="and|or">
             <!-- 生成公共字段 -->
-            <if test="id != null">ID=#{id}</if>
-            <if test="createDateTime != null">CREATE_DATE_TIME=#{createDateTime}</if>
-            <if test="createId != null">CREATE_ID=#{createId}</if>
-            <if test="delFlag != null">DEL_FLAG=#{delFlag}</if>
-            <if test="remark != null">REMARK=#{remark}</if>
-            <if test="upDateTime != null">UP_DATE_TIME=#{upDateTime}</if>
-            <if test="updateId != null">UPDATE_ID=#{updateId}</if>
-            <if test="version != null">VERSION=#{version}</if>
+            <if test="id != null">and ID=#{id}</if>
+            <if test="createDateTime != null">and CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">and CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">and DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">and REMARK=#{remark}</if>
+            <if test="upDateTime != null">and UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
+            <if test="version != null">and VERSION=#{version}</if>
             <!-- 生成普通字段 -->
-            <if test="testColumn != null">TEST_COLUMN=#{testColumn}</if>
+            <if test="testColumn != null">and TEST_COLUMN=#{testColumn}</if>
         </trim>
     </sql>
 

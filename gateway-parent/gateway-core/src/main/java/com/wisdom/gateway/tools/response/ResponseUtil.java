@@ -30,8 +30,8 @@ public class ResponseUtil {
      * SerializerFeature.WriteNullStringAsEmpty—字符类型字段如果为null,输出为"",而非null
      * SerializerFeature.WriteNullBooleanAsFalse–Boolean字段如果为null,输出为false,而非nul
      */
-    public static Mono<Void> resultMsgToMono(EnumDao enumDao, ServerHttpResponse response) {
-        ResultDto<Object> resultDto = new ResultDto<>(enumDao);
+    public static Mono<Void> resultMsgToMono(String code, String msg, String subMsg, ServerHttpResponse response) {
+        ResultDto resultDto = new ResultDto(code, msg, subMsg);
         String resultJson = JSON.toJSONString(resultDto, SerializerFeature.WriteMapNullValue);
         DataBuffer buffer = response.bufferFactory().wrap(resultJson.getBytes(StandardCharsets.UTF_8));
         //指定编码，否则在浏览器中会中文乱码
@@ -39,12 +39,12 @@ public class ResponseUtil {
         return response.writeWith(Mono.just(buffer));
     }
 
-    public static Mono<Void> resultMsgToMono(String key, String value, ServerHttpResponse response) {
-        ResultDto resultDto = new ResultDto(key, value);
-        String resultJson = JSON.toJSONString(resultDto, SerializerFeature.WriteMapNullValue);
-        DataBuffer buffer = response.bufferFactory().wrap(resultJson.getBytes(StandardCharsets.UTF_8));
-        //指定编码，否则在浏览器中会中文乱码
-        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        return response.writeWith(Mono.just(buffer));
+    public static Mono<Void> resultMsgToMono(String code, String msg, ServerHttpResponse response) {
+        return resultMsgToMono(code, msg, null, response);
     }
+
+    public static Mono<Void> resultMsgToMono(EnumDao enumDao, ServerHttpResponse response) {
+        return resultMsgToMono(enumDao.getCode(), enumDao.getMsg(), enumDao.getSubMsg(), response);
+    }
+
 }

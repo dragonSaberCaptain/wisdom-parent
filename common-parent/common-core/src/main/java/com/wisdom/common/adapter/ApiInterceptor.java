@@ -12,6 +12,7 @@ import com.wisdom.config.exception.ResultException;
 import com.wisdom.tools.algorithm.asymmetric.AsymmetricModel;
 import com.wisdom.tools.algorithm.asymmetric.AsymmetricUtil;
 import com.wisdom.tools.algorithm.asymmetric.MyKeyPair;
+import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -52,14 +54,9 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //获取请求信息数据对象
+        //通用请求数据对象
         HttpModelDto requestInfoModel = getRequestInfoModel(request);
         log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
-
-        //开发环境和本地环境关闭所有验证
-        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
-//            return true;
-        }
 
         boolean roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) {
@@ -82,14 +79,12 @@ public class ApiInterceptor implements HandlerInterceptor {
         checkInfoModel.setUrl(gatewayUrl);
 
         String signData = JSONObject.toJSONString(checkInfoModel);
-        log.info("》签名数据记录开始【{}】签名数据记录结束《", signData);
 
         //验证签名是否通过
         boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + requestInfoModel.getSalt() + "_KeyPair");
         if (!check) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
-
         return true;
     }
 
@@ -117,6 +112,11 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @datetime 2021-09-27 13:59:42
      */
     public boolean roadblock(Object obj) {
+        //开发环境和本地环境关闭所有验证
+        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
+//            return true;
+        }
+
         if (obj instanceof String) {
             String url = String.valueOf(obj);
             //登录相关全部放行

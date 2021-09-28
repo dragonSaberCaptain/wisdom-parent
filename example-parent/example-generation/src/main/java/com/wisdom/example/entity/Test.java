@@ -1,5 +1,9 @@
 package com.wisdom.example.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.wisdom.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,7 +22,7 @@ import javax.persistence.Entity;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-23 09:43:03 星期四
+ * @datetime 2021-09-28 13:07:16 星期二
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

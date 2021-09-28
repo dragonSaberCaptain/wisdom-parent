@@ -53,6 +53,8 @@ public enum ResultEnum implements EnumDao {
 
     DATA_TAMPERED("9016", "数据安全错误,数据被篡改"),
 
+    BAN_REQUEST("9017", "已限流,禁止请求"),
+
     SERVER_INTERNAL_EXCEPTION("9999", "服务器内部异常");
 
     //    @JsonValue

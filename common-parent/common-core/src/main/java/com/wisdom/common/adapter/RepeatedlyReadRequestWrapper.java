@@ -119,7 +119,7 @@ public class RepeatedlyReadRequestWrapper extends HttpServletRequestWrapper {
      */
     public static InputStream cloneInputStream(ServletInputStream inputStream) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[2048];
         int len;
         try {
             while ((len = inputStream.read(buffer)) > -1) {

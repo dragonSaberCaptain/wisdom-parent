@@ -3,6 +3,7 @@ package com.wisdom.common.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wisdom.common.entity.BaseEntity;
 import com.wisdom.common.service.BaseService;
 import com.wisdom.config.dto.ResultDto;
@@ -48,10 +49,23 @@ public class BaseController<M extends BaseService<T>, T> {
     @PostMapping("/findBySelective")
     @ApiOperation(value = "根据条件")
     public ResultDto<List<T>> findBySelective(@RequestBody Map<String, Object> paramsMap) {
-        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
-        List<T> entitys = baseService.selectBySelective(queryMap);
+        List<T> entitys = baseService.selectBySelective(paramsMap);
         return new ResultDto<>(HttpEnum.OK, entitys);
     }
+
+//    @ResponseBody
+//    @PostMapping("/findPageBySelective")
+//    @ApiOperation(value = "根据条件")
+//    public ResultDto<List<T>> findPageBySelective(
+//            @RequestParam(value = "curPage", defaultValue = "1", required = false) Serializable curPage,
+//            @RequestParam(value = "sizePage", defaultValue = "30", required = false) Serializable sizePage,
+//            @RequestBody Map<String, Object> paramsMap) {
+//        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
+//        Page<T> userPage = new Page<>(curPage, sizePage);
+////        List<T> entitys = baseService.selectBySelective(queryMap);
+//        baseService.page(userPage);
+//        return new ResultDto<>(HttpEnum.OK, entitys);
+//    }
 
     @ResponseBody
     @PostMapping("/findById")
@@ -82,8 +96,7 @@ public class BaseController<M extends BaseService<T>, T> {
     @PostMapping("/findListByMap")
     @ApiOperation(value = "查询(根据条件)")
     public ResultDto<List<T>> findListByMap(@RequestBody Map<String, Object> paramsMap) {
-        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
-        List<T> entitys = baseService.listByMap(queryMap);
+        List<T> entitys = baseService.listByMap(paramsMap);
         return new ResultDto<>(HttpEnum.OK, entitys);
     }
 
@@ -186,8 +199,7 @@ public class BaseController<M extends BaseService<T>, T> {
     @PostMapping("/removeByMap")
     @ApiOperation(value = "根据条件，删除记录", notes = "物理删除")
     public ResultDto<List<T>> removeByMap(@RequestBody Map<String, Object> paramsMap) {
-        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
-        boolean bool = baseService.removeByMap(queryMap);
+        boolean bool = baseService.removeByMap(paramsMap);
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }

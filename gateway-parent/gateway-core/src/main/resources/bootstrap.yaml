@@ -28,3 +28,19 @@ spring:
                     -   data-id: wisdom.yaml
                         group: WISDOM_GROUP
                         refresh: true
+        sentinel:
+            # 取消控制台懒加载
+            eager: true
+            transport:
+                # sentinel控制台地址
+                dashboard: localhost:8080
+            # nacos配置持久化
+            datasource:
+                ds1:
+                    nacos:
+                        # nacos地址
+                        server-addr: 127.0.0.1:8850
+                        dataId: sentinel
+                        groupId: WISDOM_GROUP
+                        data-type: json
+                        rule-type: flow

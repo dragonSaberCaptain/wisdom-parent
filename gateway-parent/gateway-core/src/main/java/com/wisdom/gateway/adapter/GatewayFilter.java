@@ -29,7 +29,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -54,6 +53,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     @Value("${common.params.token_key:token}")
     private String tokenKey;
 
+    @Value("${spring.profiles.active:dev}")
+    private String appActive;
+
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
@@ -62,9 +64,8 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
-        //获取请求信息数据
+        //通用请求数据对象
         HttpModelDto requestInfoModel = getRequestInfoModel(request);
-
         log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
 
         boolean roadblock = roadblock(requestInfoModel.getUrl());
@@ -81,10 +82,9 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
 
         String signData = JSONObject.toJSONString(checkInfoModel);
-        log.info("》签名数据记录开始【{}】签名数据记录结束《", signData);
 
         //开始执行签名并且缓存
-        String sign = signAndCache(signData, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 30, TimeUnit.DAYS);
+        String sign = signAndCache(signData, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 7, TimeUnit.DAYS);
 
         //往请求头中添加网关签名
         Map<String, String> headersMap = new TreeMap<>();
@@ -173,6 +173,11 @@ public class GatewayFilter implements GlobalFilter, Ordered {
      * @datetime 2021-09-27 13:59:42
      */
     public boolean roadblock(Object obj) {
+        //开发环境和本地环境关闭所有验证
+        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
+//            return true;
+        }
+
         if (obj instanceof String) {
             String url = String.valueOf(obj);
             //登录相关全部放行

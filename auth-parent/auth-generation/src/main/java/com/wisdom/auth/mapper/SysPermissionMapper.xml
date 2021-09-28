@@ -36,20 +36,20 @@
     <sql id="searchBy">
         <trim prefix="where" prefixOverrides="and|or">
             <!-- 生成公共字段 -->
-            <if test="id != null">ID=#{id}</if>
-            <if test="createDateTime != null">CREATE_DATE_TIME=#{createDateTime}</if>
-            <if test="createId != null">CREATE_ID=#{createId}</if>
-            <if test="delFlag != null">DEL_FLAG=#{delFlag}</if>
-            <if test="remark != null">REMARK=#{remark}</if>
-            <if test="upDateTime != null">UP_DATE_TIME=#{upDateTime}</if>
-            <if test="updateId != null">UPDATE_ID=#{updateId}</if>
-            <if test="version != null">VERSION=#{version}</if>
+            <if test="id != null">and ID=#{id}</if>
+            <if test="createDateTime != null">and CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">and CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">and DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">and REMARK=#{remark}</if>
+            <if test="upDateTime != null">and UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
+            <if test="version != null">and VERSION=#{version}</if>
             <!-- 生成普通字段 -->
-            <if test="description != null">DESCRIPTION=#{description}</if>
-            <if test="nameCn != null">NAME_CN=#{nameCn}</if>
-            <if test="nameEn != null">NAME_EN=#{nameEn}</if>
-            <if test="parentId != null">PARENT_ID=#{parentId}</if>
-            <if test="url != null">URL=#{url}</if>
+            <if test="description != null">and DESCRIPTION=#{description}</if>
+            <if test="nameCn != null">and NAME_CN=#{nameCn}</if>
+            <if test="nameEn != null">and NAME_EN=#{nameEn}</if>
+            <if test="parentId != null">and PARENT_ID=#{parentId}</if>
+            <if test="url != null">and URL=#{url}</if>
         </trim>
     </sql>
 

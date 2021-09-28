@@ -1,13 +1,12 @@
 package com.wisdom.example.service.impl;
 
-import com.wisdom.common.service.impl.BaseServiceImpl;
-import com.wisdom.example.dao.UserDao;
 import com.wisdom.example.entity.User;
+import com.wisdom.example.dao.UserDao;
 import com.wisdom.example.service.UserService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wisdom.common.service.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-23 09:43:03 星期四
+ * @datetime 2021-09-28 13:07:16 星期二
  */
 @Slf4j
 @Service

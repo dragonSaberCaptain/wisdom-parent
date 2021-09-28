@@ -1,14 +1,13 @@
 package com.wisdom.example.controller;
 
-import com.wisdom.common.controller.BaseController;
-import com.wisdom.example.entity.User;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.wisdom.example.service.UserService;
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
+import com.wisdom.common.controller.BaseController;
+import com.wisdom.example.entity.User;
+import lombok.extern.slf4j.Slf4j;
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
  *
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-23 09:43:03 星期四
+ * @datetime 2021-09-28 13:07:16 星期二
  */
 @Slf4j
 @Controller

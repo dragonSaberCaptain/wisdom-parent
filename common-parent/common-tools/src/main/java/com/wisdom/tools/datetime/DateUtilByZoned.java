@@ -1,6 +1,5 @@
 package com.wisdom.tools.datetime;
 
-import java.sql.Types;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -75,6 +74,15 @@ public class DateUtilByZoned {
     public static ZonedDateTime getParse(String dateTime) {
         return getParse(dateTime, "yyyy-MM-dd HH:mm:ss");
     }
+
+    public static ZonedDateTime getParseUn(String dateTime) {
+        return getParse(dateTime, "yyyyMMddHHmmss");
+    }
+
+    public static ZonedDateTime getParseUnMilli(String dateTime) {
+        return getParse(dateTime, "yyyyMMddHHmmssSSS");
+    }
+
 
     /**
      * 字符串 转 ZonedDateTime
@@ -152,6 +160,14 @@ public class DateUtilByZoned {
 
     public static long getChronoUnitBetween(String start, String end, ChronoUnit chronoUnit) {
         return Math.abs(getParse(start).until(getParse(end), chronoUnit));
+    }
+
+    public static long getChronoUnitBetweenUn(String start, String end, ChronoUnit chronoUnit) {
+        return Math.abs(getParseUn(start).until(getParseUn(end), chronoUnit));
+    }
+
+    public static long getChronoUnitBetweenUnMilli(String start, String end, ChronoUnit chronoUnit) {
+        return Math.abs(getParseUnMilli(start).until(getParseUnMilli(end), chronoUnit));
     }
 
     /**

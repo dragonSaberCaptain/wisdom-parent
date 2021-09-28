@@ -8,9 +8,6 @@ import com.wisdom.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Table;
 
@@ -25,7 +22,7 @@ import javax.persistence.Entity;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-15 13:45:02 星期三
+ * @datetime 2021-09-28 13:08:29 星期二
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
