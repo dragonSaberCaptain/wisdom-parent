@@ -2,11 +2,15 @@ package com.wisdom.common.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wisdom.common.entity.BaseEntity;
 import com.wisdom.common.service.BaseService;
 import com.wisdom.config.dto.ResultDto;
+import com.wisdom.config.enums.DateTimeEnum;
 import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.tools.datetime.DateUtilByZoned;
@@ -47,34 +51,34 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/findBySelective")
-    @ApiOperation(value = "根据条件")
+    @ApiOperation(value = "根据条件,查询(推荐)")
     public ResultDto<List<T>> findBySelective(@RequestBody Map<String, Object> paramsMap) {
         List<T> entitys = baseService.selectBySelective(paramsMap);
         return new ResultDto<>(HttpEnum.OK, entitys);
     }
 
-//    @ResponseBody
-//    @PostMapping("/findPageBySelective")
-//    @ApiOperation(value = "根据条件")
-//    public ResultDto<List<T>> findPageBySelective(
-//            @RequestParam(value = "curPage", defaultValue = "1", required = false) Serializable curPage,
-//            @RequestParam(value = "sizePage", defaultValue = "30", required = false) Serializable sizePage,
-//            @RequestBody Map<String, Object> paramsMap) {
-//        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
-//        Page<T> userPage = new Page<>(curPage, sizePage);
-////        List<T> entitys = baseService.selectBySelective(queryMap);
-//        baseService.page(userPage);
-//        return new ResultDto<>(HttpEnum.OK, entitys);
-//    }
+    @ResponseBody
+    @PostMapping("/findPageBySelective")
+    @ApiOperation(value = "根据条件,分页查询(推荐)")
+    public ResultDto<IPage<T>> findPageBySelective(
+            @RequestParam(value = "curPage", defaultValue = "1", required = false) long curPage,
+            @RequestParam(value = "sizePage", defaultValue = "30", required = false) long sizePage,
+            @RequestParam(value = "orderBy", required = false) List<OrderItem> orderByList,
+            @RequestBody Map<String, Object> paramsMap) {
+        List<T> entitys = baseService.selectBySelective(paramsMap);
+        Page<T> userPage = new Page<>(curPage, sizePage);
+        userPage.setOrders(orderByList);
+        userPage.setRecords(entitys);
+        return new ResultDto<>(HttpEnum.OK, userPage);
+    }
 
     @ResponseBody
     @PostMapping("/findById")
-    @ApiOperation(value = "根据 ID 查询")
+    @ApiOperation(value = "根据ID,查询")
     public ResultDto<T> findById(@RequestParam(value = "id") Serializable id) {
         T baseEntity = baseService.getById(id);
         return new ResultDto<>(HttpEnum.OK, baseEntity);
     }
-
 
     @ResponseBody
     @PostMapping("/findOne")
@@ -86,7 +90,7 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/findListByIds")
-    @ApiOperation(value = "查询(根据ID 批量查询)")
+    @ApiOperation(value = "根据批量ID,查询")
     public ResultDto<List<T>> findListByIds(@RequestBody Collection<? extends Serializable> ids) {
         List<T> entitys = baseService.listByIds(ids);
         return new ResultDto<>(HttpEnum.OK, entitys);
@@ -94,17 +98,32 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/findListByMap")
-    @ApiOperation(value = "查询(根据条件)")
+    @ApiOperation(value = "根据 columnMap 条件,查询")
     public ResultDto<List<T>> findListByMap(@RequestBody Map<String, Object> paramsMap) {
-        List<T> entitys = baseService.listByMap(paramsMap);
+        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
+        List<T> entitys = baseService.listByMap(queryMap);
         return new ResultDto<>(HttpEnum.OK, entitys);
     }
 
     @ResponseBody
+    @PostMapping("/findPageListByMap")
+    @ApiOperation(value = "根据条件,分页查询")
+    public ResultDto<IPage<T>> findPageListByMap(
+            @RequestParam(value = "curPage", defaultValue = "1", required = false) long curPage,
+            @RequestParam(value = "sizePage", defaultValue = "30", required = false) long sizePage,
+            @RequestBody Map<String, Object> paramsMap) {
+        T entityModel = JSONObject.parseObject(JSON.toJSONString(paramsMap), entityClass);
+        QueryWrapper<T> wrapper = MybatisplusUtil.createWrapper(entityModel);
+        Page<T> userPage = new Page<>(curPage, sizePage);
+        IPage<T> entityPage = baseService.page(userPage, wrapper);
+        return new ResultDto<>(HttpEnum.OK, entityPage);
+    }
+
+    @ResponseBody
     @PostMapping("/save")
-    @ApiOperation(value = "插入一条记录(选择字段,策略插入)")
+    @ApiOperation(value = "根据实体对象,插入")
     public ResultDto<T> save(@RequestBody T entity) {
-        String nowDateUnMilli = DateUtilByZoned.getNowDateUnMilli();
+        String nowDateUnMilli = DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
         if (entity instanceof BaseEntity) {
             BaseEntity baseEntity = (BaseEntity) entity;
             baseEntity.setCreateDateTime(nowDateUnMilli);
@@ -119,14 +138,9 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/saveBatch")
-    @ApiOperation(value = "插入(批量)")
+    @ApiOperation(value = "根据实体对象,批量插入")
     public ResultDto<Collection<T>> saveBatch(@RequestBody Collection<T> collection) {
-        if (collection instanceof List) {
-            List<T> entityList = (List) collection;
-
-            collection = createAndUpDataSet(entityList);
-        }
-
+        collection = createAndUpDataSet(collection);
         boolean bool = baseService.saveBatch(collection);
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
@@ -136,12 +150,12 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/saveBatchAndSize")
-    @ApiOperation(value = "插入(批量)")
-    public ResultDto<Collection<T>> saveBatchAndSize(@RequestBody Map<String, Object> paramsMap) {
-        int batchSize = Integer.parseInt(String.valueOf(paramsMap.get("batchSize")));
-        Object data = paramsMap.get("data");
+    @ApiOperation(value = "批量插入,可定义批次大小")
+    public ResultDto<Collection<T>> saveBatchAndSize(
+            @RequestParam(value = "batchSize", defaultValue = "1000", required = false) int batchSize,
+            @RequestBody Map<String, Object> paramsMap) {
 
-        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(data), entityClass);
+        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(paramsMap), entityClass);
 
         boolean bool = baseService.saveBatch(createAndUpDataSet(entityList), batchSize);
         if (bool) {
@@ -152,14 +166,9 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/saveOrUpdateBatch")
-    @ApiOperation(value = "批量修改或插入")
+    @ApiOperation(value = "根据id有无,批量修改或插入")
     public ResultDto<Collection<T>> saveOrUpdateBatch(@RequestBody Collection<T> collection) {
-        if (collection instanceof List) {
-            List<T> entityList = (List) collection;
-
-            collection = createAndUpDataSet(entityList);
-        }
-
+        collection = createAndUpDataSet(collection);
         boolean bool = baseService.saveOrUpdateBatch(collection);
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
@@ -167,15 +176,14 @@ public class BaseController<M extends BaseService<T>, T> {
         return new ResultDto<>(ResultEnum.FAIL);
     }
 
-
     @ResponseBody
     @PostMapping("/saveOrUpdateBatchAndSize")
-    @ApiOperation(value = "批量修改或插入")
-    public ResultDto<Collection<T>> saveOrUpdateBatchAndSize(@RequestBody Map<String, Object> paramsMap) {
-        int batchSize = Integer.parseInt(String.valueOf(paramsMap.get("batchSize")));
-        Object data = paramsMap.get("data");
+    @ApiOperation(value = "批量修改或插入,可定义批次大小")
+    public ResultDto<Collection<T>> saveOrUpdateBatchAndSize(
+            @RequestParam(value = "batchSize", defaultValue = "1000", required = false) int batchSize,
+            @RequestBody Map<String, Object> paramsMap) {
 
-        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(data), entityClass);
+        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(paramsMap), entityClass);
 
         boolean bool = baseService.saveOrUpdateBatch(createAndUpDataSet(entityList), batchSize);
         if (bool) {
@@ -186,7 +194,7 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/removeById")
-    @ApiOperation(value = "根据 ID 删除", notes = "物理删除")
+    @ApiOperation(value = "根据ID,删除", notes = "物理删除")
     public ResultDto<Collection<T>> remoeById(@RequestParam(value = "id") Serializable id) {
         boolean bool = baseService.removeById(id);
         if (bool) {
@@ -197,9 +205,10 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/removeByMap")
-    @ApiOperation(value = "根据条件，删除记录", notes = "物理删除")
+    @ApiOperation(value = "根据 columnMap 条件，删除记录", notes = "物理删除")
     public ResultDto<List<T>> removeByMap(@RequestBody Map<String, Object> paramsMap) {
-        boolean bool = baseService.removeByMap(paramsMap);
+        Map<String, Object> queryMap = MapUtil.lowerCamelToLowerUnderscore(paramsMap);
+        boolean bool = baseService.removeByMap(queryMap);
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }
@@ -219,7 +228,7 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/removeByIds")
-    @ApiOperation(value = "删除(根据ID 批量删除)", notes = "物理删除")
+    @ApiOperation(value = "根据ID,批量删除", notes = "物理删除")
     public ResultDto<List<T>> removeByIds(@RequestBody Collection<? extends Serializable> ids) {
         boolean bool = baseService.removeByIds(ids);
         if (bool) {
@@ -230,9 +239,9 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/updateById")
-    @ApiOperation(value = "根据 ID 选择更新")
+    @ApiOperation(value = "根据ID,更新")
     public ResultDto<T> updateById(@RequestBody T entity) {
-        String nowDateUnMilli = DateUtilByZoned.getNowDateUnMilli();
+        String nowDateUnMilli = DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
 
         if (entity instanceof BaseEntity) {
             BaseEntity baseEntity = (BaseEntity) entity;
@@ -250,25 +259,14 @@ public class BaseController<M extends BaseService<T>, T> {
     @PostMapping("/update")
     @ApiOperation(value = "根据条件,更新记录 ")
     public ResultDto<T> update(@RequestBody T entity) {
-        String nowDateUnMilli = DateUtilByZoned.getNowDateUnMilli();
-
-        if (entity instanceof BaseEntity) {
-            BaseEntity baseEntity = (BaseEntity) entity;
-            baseEntity.setUpDateTime(nowDateUnMilli);
-            boolean bool = baseService.update(MybatisplusUtil.createWrapper(entity));
-            if (bool) {
-                return new ResultDto<>(HttpEnum.OK);
-            }
-        }
-
-        return new ResultDto<>(ResultEnum.FAIL);
+        return updateByWrapper(entity);
     }
 
     @ResponseBody
     @PostMapping("/updateByWrapper")
     @ApiOperation(value = "根据条件，更新记录")
     public ResultDto<T> updateByWrapper(@RequestBody T entity) {
-        String nowDateUnMilli = DateUtilByZoned.getNowDateUnMilli();
+        String nowDateUnMilli = DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
 
         if (entity instanceof BaseEntity) {
             BaseEntity baseEntity = (BaseEntity) entity;
@@ -284,13 +282,9 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/updateBatchById")
-    @ApiOperation(value = "根据ID 批量更新")
+    @ApiOperation(value = "根据ID,批量更新")
     public ResultDto<Collection<T>> updateBatchById(@RequestBody Collection<T> collection) {
-        if (collection instanceof List) {
-            List<T> entityList = (List) collection;
-            collection = createAndUpDataSet(entityList);
-        }
-
+        collection = createAndUpDataSet(collection);
         boolean bool = baseService.updateBatchById(collection);
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
@@ -300,12 +294,11 @@ public class BaseController<M extends BaseService<T>, T> {
 
     @ResponseBody
     @PostMapping("/updateBatchByIdAndSize")
-    @ApiOperation(value = "根据ID 批量更新")
-    public ResultDto<Collection<T>> updateBatchByIdAndSize(@RequestBody Map<String, Object> paramsMap) {
-        int batchSize = Integer.parseInt(String.valueOf(paramsMap.get("batchSize")));
-        Object data = paramsMap.get("data");
-
-        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(data), entityClass);
+    @ApiOperation(value = "根据ID,批量更新,可定义批次大小")
+    public ResultDto<Collection<T>> updateBatchByIdAndSize(
+            @RequestParam(value = "batchSize", defaultValue = "1000", required = false) int batchSize,
+            @RequestBody Map<String, Object> paramsMap) {
+        List<T> entityList = JSONObject.parseArray(JSON.toJSONString(paramsMap), entityClass);
 
         boolean bool = baseService.updateBatchById(createAndUpDataSet(entityList), batchSize);
         if (bool) {
@@ -314,22 +307,34 @@ public class BaseController<M extends BaseService<T>, T> {
         return new ResultDto<>(ResultEnum.FAIL);
     }
 
-    private List<T> createAndUpDataSet(List<T> entityList) {
-        for (int i = 0; i < entityList.size(); i++) {
-            String nowDateUnMilli = DateUtilByZoned.getNowDateUnMilli();
-            T entity = entityList.get(i);
-            if (entity instanceof BaseEntity) {
-                BaseEntity baseEntity = (BaseEntity) entity;
-                if (StringUtil.isNotBlank(String.valueOf(baseEntity.getId()))) {
-                    baseEntity.setUpDateTime(nowDateUnMilli);
-                } else {
-                    baseEntity.setCreateDateTime(nowDateUnMilli);
-                    baseEntity.setUpDateTime(nowDateUnMilli);
+    /**
+     * 目前只处理了List集合，其他集合后续可以添加
+     * 目的:如果id存在,则设置更新时间，反之，则设置创建时间和更新时间
+     *
+     * @param collection 集合
+     * @author captain
+     * @datetime 2021-09-28 14:02:39
+     */
+    private List<T> createAndUpDataSet(Collection<T> collection) {
+        if (collection instanceof List) {//处理List集合
+            List<T> entityList = (List<T>) collection;
+            String nowDateUnMilli = DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
+            for (int i = 0; i < entityList.size(); i++) {
+                T entity = entityList.get(i);
+                if (entity instanceof BaseEntity) { //处理继承BaseEntity的对象
+                    BaseEntity baseEntity = (BaseEntity) entity;
+                    if (StringUtil.isNotBlank(String.valueOf(baseEntity.getId()))) {
+                        baseEntity.setUpDateTime(nowDateUnMilli);
+                    } else {
+                        baseEntity.setCreateDateTime(nowDateUnMilli);
+                        baseEntity.setUpDateTime(nowDateUnMilli);
+                    }
+                    entityList.set(i, (T) baseEntity);
                 }
-                entityList.set(i, (T) baseEntity);
             }
+            return entityList;
         }
-        return entityList;
+        return null;
     }
 
     public M getBaseService() {

@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  *
+ * 字符编码枚举类
  * @author captain
  * @version 1.0
- * @description 字符编码枚举类
  * @date 2021/7/5 10:00 星期一
  */
 public enum CharEncodingEnum implements EnumDao {

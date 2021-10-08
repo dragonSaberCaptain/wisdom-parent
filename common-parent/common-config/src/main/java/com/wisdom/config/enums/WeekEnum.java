@@ -6,9 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  *
- * @author admin
+ * 星期相关枚举类
+ *
+ * @author captain
  * @version 1.0
- * @description 星期相关枚举类
  * @date 2021/7/2 10:23 星期五
  */
 public enum WeekEnum implements EnumDao {
@@ -25,7 +26,9 @@ public enum WeekEnum implements EnumDao {
 
     SATURDAY("saturday", "星期六"),
 
-    SUNDAY("sunday", "星期日");
+    SUNDAY("sunday", "星期日"),
+
+    UNKNOWN("unknown", "未知");
 
     //    @JsonValue
     @EnumValue //mybatis_plus需要,若不需要可以删除
@@ -54,7 +57,7 @@ public enum WeekEnum implements EnumDao {
     public static WeekEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
             for (WeekEnum resultEnum : values()) {
-                if (code.equals(resultEnum.getCode())) {
+                if (code.equalsIgnoreCase(resultEnum.getCode())) {
                     return resultEnum;
                 }
             }
@@ -69,7 +72,7 @@ public enum WeekEnum implements EnumDao {
     public static WeekEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
             for (WeekEnum resultEnum : values()) {
-                if (msg.equals(resultEnum.getMsg())) {
+                if (msg.equalsIgnoreCase(resultEnum.getMsg())) {
                     return resultEnum;
                 }
             }

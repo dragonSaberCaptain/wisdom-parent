@@ -13,6 +13,7 @@ import org.hibernate.annotations.Table;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
 /**
  * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
  *

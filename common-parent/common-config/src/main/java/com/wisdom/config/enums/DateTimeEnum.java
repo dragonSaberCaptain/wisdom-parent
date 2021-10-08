@@ -6,28 +6,25 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  *
+ * 日期时间枚举类
+ *
  * @author captain
  * @version 1.0
- * @description 日期时间枚举类
  * @date 2021/6/30 14:42 星期三
  */
 public enum DateTimeEnum implements EnumDao {
     // ****************************【常用的日期时间格式】****************************
     DATETIME_PATTERN("yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日 HH时mm分ss秒"),
-    DATETIME_MILLI_PATTERN("yyyy-MM-dd HH:mm:ss:SSS", "yyyy年MM月dd日 HH时mm分ss秒SSS毫秒"),
+    DATETIME_PATTERN_UN("yyyyMMddHHmmss", "yyyy年MM月dd日HH时mm分ss秒"),
+
+    DATETIME_PATTERN_MILLI("yyyy-MM-dd HH:mm:ss:SSS", "yyyy年MM月dd日 HH时mm分ss秒SSS毫秒"),
+    DATETIME_PATTERN_MILLI_UN("yyyyMMddHHmmssSSS", "yyyy年MM月dd日HH时mm分ss秒SSS毫秒"),
 
     DATE_PATTERN("yyyy-MM-dd", "yyyy年MM月dd日"),
+    DATE_PATTERN_UN("yyyyMMdd", "yyyy年MM月dd日"),
 
     TIME_PATTERN("HH:mm:ss", "HH时mm分ss秒"),
-
-    TIME_MILLI_PATTERN("HH:mm:ss:SSS", "HH时mm分ss秒SSS毫秒"),
-
-    UN_DATETIME_PATTERN("yyyyMMddHHmmss", "yyyy年MM月dd日HH时mm分ss秒"),
-
-    UN_DATETIME_MILLI_PATTERN("yyyyMMddHHmmssSSS", "yyyy年MM月dd日HH时mm分ss秒SSS毫秒"),
-
-    UN_DATE_PATTERN("yyyyMMdd", "yyyy年MM月dd日");
-
+    TIME_PATTERNE_MILLI("HH:mm:ss:SSS", "HH时mm分ss秒SSS毫秒");
     //    @JsonValue
     @EnumValue //mybatis_plus需要,若不需要可以删除
     private String code;

@@ -1,5 +1,6 @@
 package com.wisdom.tools.algorithm.asymmetric;
 
+import com.wisdom.config.enums.DateTimeEnum;
 import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.exception.ResultException;
 import com.wisdom.tools.datetime.DateUtilByZoned;
@@ -83,7 +84,7 @@ public class AsymmetricUtil {
 
             secureRandom = SecureRandom.getInstance(asymmetricModel.getRngAlgorithm());
 
-            String seed = asymmetricModel.getDefaultSeed() + "@" + DateUtilByZoned.getNowDateUnMilli();
+            String seed = asymmetricModel.getDefaultSeed() + "@" + DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
             secureRandom.setSeed(seed.getBytes());
 
             //实例化密钥生成器

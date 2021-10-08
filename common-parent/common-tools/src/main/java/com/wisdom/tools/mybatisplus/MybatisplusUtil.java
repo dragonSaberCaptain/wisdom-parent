@@ -2,10 +2,10 @@ package com.wisdom.tools.mybatisplus;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.CaseFormat;
-import com.wisdom.tools.string.StringUtil;
+import com.wisdom.tools.object.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -20,30 +20,30 @@ import java.lang.reflect.Field;
 public class MybatisplusUtil {
     public static <T> QueryWrapper<T> createWrapper(T entity) {
         QueryWrapper<T> wrapper = new QueryWrapper<>();
-
-        Field[] declaredFields = entity.getClass().getDeclaredFields();
-        try {
-            for (Field field : declaredFields) {
-                field.setAccessible(true);
-                //驼峰转大写下划线, userName -> USER_NAME
-                String dbKey = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, field.getName());
-                String value = String.valueOf(field.get(entity));
-                if (StringUtil.isNotBlank(value)) {
-                    if ("CREATE_DATE_TIME_START".equals(dbKey)) {
-                        wrapper.ge("CREATE_TIME", value);
-                    } else if ("CREATE_DATE_TIME_END".equals(dbKey)) {
-                        wrapper.le("CREATE_TIME", value);
-                    } else if ("UP_DATE_TIME_START".equals(dbKey)) {
-                        wrapper.ge("UPDATE_TIME", value);
-                    } else if ("UP_DATE_TIME_END".equals(dbKey)) {
-                        wrapper.le("UPDATE_TIME", value);
-                    } else {
-                        wrapper.eq(dbKey, value);
-                    }
-                }
+        Map<String, Object> fieldMap = ObjectUtil.getDeclaredField(entity);
+        for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if ("serialVersionUID".equalsIgnoreCase(key) || "SERIAL_VERSION_U_I_D".equalsIgnoreCase(key)) {
+                continue;
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            if (value == null) {
+                continue;
+            }
+            //驼峰转大写下划线, userName -> USER_NAME
+            String dbKey = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, key);
+
+            if ("CREATE_DATE_TIME_START".equalsIgnoreCase(dbKey)) {
+                wrapper.ge("CREATE_TIME", value);
+            } else if ("CREATE_DATE_TIME_END".equalsIgnoreCase(dbKey)) {
+                wrapper.le("CREATE_TIME", value);
+            } else if ("UP_DATE_TIME_START".equalsIgnoreCase(dbKey)) {
+                wrapper.ge("UPDATE_TIME", value);
+            } else if ("UP_DATE_TIME_END".equalsIgnoreCase(dbKey)) {
+                wrapper.le("UPDATE_TIME", value);
+            } else {
+                wrapper.eq(dbKey, value);
+            }
         }
         return wrapper;
     }

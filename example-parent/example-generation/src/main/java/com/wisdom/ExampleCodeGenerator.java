@@ -152,10 +152,10 @@ public class ExampleCodeGenerator {
             @Override
             public void initMap() {
                 Map<String, Object> map = new HashMap<>();
-                ZonedDateTime now = DateUtilByZoned.getNow();
-                String patternNow = DateUtilByZoned.getPattern(now);
-                String dayOfWeekCn = DateUtilByZoned.getDayOfWeekCn(now);
-                int year = DateUtilByZoned.getYear(now);
+                ZonedDateTime zonedDateTime = DateUtilByZoned.now();
+                String patternNow = DateUtilByZoned.getDateTime();
+                String dayOfWeekCn = DateUtilByZoned.getDayOfWeekCn(zonedDateTime);
+                int year = zonedDateTime.getYear();
                 map.put("version", "1.0");
                 map.put("createDate", patternNow + " " + dayOfWeekCn);
                 map.put("year", year);
