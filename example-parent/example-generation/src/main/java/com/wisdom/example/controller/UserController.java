@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.wisdom.example.service.UserService;
 import io.swagger.annotations.Api;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import com.wisdom.common.controller.BaseController;
 import com.wisdom.example.entity.User;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-09-28 13:07:16 星期二
+ * @datetime 2021-10-27 17:05:18 星期三
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/example/user")
 @Api(value = "UserController API", tags = "user:用户表相关接口")
 public class UserController extends BaseController<UserService, User> {

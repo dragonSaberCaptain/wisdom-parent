@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -72,7 +73,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         if (roadblock) { //不用检查,放行
             return chain.filter(exchange);
         }
-        //验证token  后期优化
+        //验证token 后期优化
         String baseToken = request.getHeaders().getFirst(tokenKey);
         if (StringUtil.isBlank(baseToken)) {
             return ResponseUtil.resultMsgToMono(ResultEnum.TOKEN_IS_EMPTY, response);
@@ -175,7 +176,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     public boolean roadblock(Object obj) {
         //开发环境和本地环境关闭所有验证
         if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
-//            return true;
+            return true;
         }
 
         if (obj instanceof String) {

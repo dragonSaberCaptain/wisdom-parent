@@ -7,4 +7,4 @@ logging:
             alibaba:
                 nacos: info
     file:
-        path: ../logs/${spring.application.name}4
+        path: ../logs/${spring.application.name}

@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,7 +48,7 @@ public class HttpUrlConnectionUtil {
      * @author captain
      * @datetime 2021-08-23 10:52:58
      */
-    public static String sendHttpSyn(String url, String method, String jsonStrParams) {
+    public static String sendHttpSyn(String url, String method, String jsonStrParams, Map<String, Object> addHeaderMap) {
         HttpURLConnection urlConnection = null;
 
         if (url.startsWith("https://")) {
@@ -66,7 +67,7 @@ public class HttpUrlConnectionUtil {
             // 设置读取超时
             urlConnection.setReadTimeout(60000);
 
-            setRequestProperty(urlConnection);
+            setRequestProperty(urlConnection, addHeaderMap);
 
             // 只有当POST请求时才会执行此代码段
             if (jsonStrParams != null && "POST".equalsIgnoreCase(urlConnection.getRequestMethod())) {
@@ -124,9 +125,9 @@ public class HttpUrlConnectionUtil {
      * @author captain
      * @datetime 2021-08-23 10:52:58
      */
-    public static String sendHttpAsyn(String url, String method, String jsonStrParams) {
+    public static String sendHttpAsyn(String url, String method, String jsonStrParams, Map<String, Object> addHeaderMap) {
         Future future = scheduledExecutorService.submit(() ->
-                sendHttpSyn(url, method, jsonStrParams)
+                sendHttpSyn(url, method, jsonStrParams, addHeaderMap)
         );
         String str = null;
         try {
@@ -137,22 +138,37 @@ public class HttpUrlConnectionUtil {
         return str;
     }
 
+    public static String sendGetSyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
+        return sendHttpSyn(url, "GET", jsonStrParams, addHeaderMap);
+    }
+
+    public static String sendGetASyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
+        return sendHttpAsyn(url, "GET", jsonStrParams, addHeaderMap);
+    }
+
+    public static String sendPostSyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
+        return sendHttpSyn(url, "POST", jsonStrParams, addHeaderMap);
+    }
+
+    public static String sendPostASyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
+        return sendHttpAsyn(url, "POST", jsonStrParams, addHeaderMap);
+    }
+
     public static String sendGetSyn(String url, String jsonStrParams) {
-        return sendHttpSyn(url, "GET", jsonStrParams);
+        return sendHttpSyn(url, "GET", jsonStrParams, null);
     }
 
     public static String sendGetASyn(String url, String jsonStrParams) {
-        return sendHttpAsyn(url, "GET", jsonStrParams);
+        return sendHttpAsyn(url, "GET", jsonStrParams, null);
     }
 
     public static String sendPostSyn(String url, String jsonStrParams) {
-        return sendHttpSyn(url, "POST", jsonStrParams);
+        return sendHttpSyn(url, "POST", jsonStrParams, null);
     }
 
     public static String sendPostASyn(String url, String jsonStrParams) {
-        return sendHttpAsyn(url, "POST", jsonStrParams);
+        return sendHttpAsyn(url, "POST", jsonStrParams, null);
     }
-
     /**
      * 设置请求头参数
      *
@@ -160,7 +176,7 @@ public class HttpUrlConnectionUtil {
      * @author captain
      * @datetime 2021-08-23 10:48:27
      */
-    private static void setRequestProperty(HttpURLConnection httpUrlConnection) {
+    private static void setRequestProperty(HttpURLConnection httpUrlConnection, Map<String, Object> addHeaderMap) {
         //设置接受的内容类型
         httpUrlConnection.setRequestProperty("Accept", "*/*");
         //Accept-Language 设置接受的语言 q是权重系数
@@ -175,6 +191,12 @@ public class HttpUrlConnectionUtil {
          * multipart/form-data ： 需要在表单中进行文件上传时，就需要使用该格式
          * */
         httpUrlConnection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+
+        if (addHeaderMap != null) {
+            for (Map.Entry<String, Object> entry : addHeaderMap.entrySet()) {
+                httpUrlConnection.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+        }
     }
 
     // SSL的socket工厂创建

@@ -177,6 +177,7 @@ fastlane/readme.md
 
 # Log file
 *.log
+**/logs/
 
 # BlueJ files
 *.ctxt

@@ -29,18 +29,19 @@ spring:
                         group: WISDOM_GROUP
                         refresh: true
         sentinel:
-            # 取消控制台懒加载
+            # 服务启动直接建立心跳连接
             eager: true
             transport:
                 # sentinel控制台地址
-                dashboard: localhost:8080
+                dashboard: 127.0.0.1:9090
             # nacos配置持久化
             datasource:
                 ds1:
                     nacos:
                         # nacos地址
-                        server-addr: 127.0.0.1:8850
-                        dataId: sentinel
-                        groupId: WISDOM_GROUP
+                        server-addr: ${spring.cloud.nacos.config.server-addr}
+                        namespace: ${spring.cloud.nacos.config.namespace}
+                        groupId: ${spring.cloud.nacos.config.group}
+                        dataId: ${spring.application.name}-sentinel-rules
                         data-type: json
                         rule-type: flow

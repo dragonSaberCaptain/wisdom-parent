@@ -33,17 +33,17 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Configuration
 public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
-     @Value("${routes_info.data_id:routes.json}")
-    private String dataId;
-
     @Value("${spring.application.name:gateway}")
     private String appName;
+
+     @Value("${routes_info.data_id:routes.json}")
+    private String dataId;
 
     @Value("${spring.cloud.nacos.config.file-extension:}")
     private String fileExtension;
 
     @Value("${spring.cloud.nacos.config.group:DEFAULT_GROUP}")
-    private String group = "DEFAULT_GROUP";
+    private String group;
 
     @Value("${spring.cloud.nacos.config.server-addr:Public}")
     private String serverAddr;
@@ -60,15 +60,15 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
 
     @PostConstruct
     public void dynamicRouteByNacosListener() {
-
         try {
             Properties prop = new Properties();
             prop.put(PropertyKeyConst.NAMESPACE, serverNamespace);
             prop.put(PropertyKeyConst.SERVER_ADDR, serverAddr);
+            
             ConfigService config = NacosFactory.createConfigService(prop);
-            String content = config.getConfig(dataId, group, 5000);
+            String content = config.getConfig(appName + "-" + dataId, group, 5000);
             publisher(content);
-            config.addListener(dataId, group, new Listener() {
+            config.addListener(appName + "-" + dataId, group, new Listener() {
                 @Override
                 public void receiveConfigInfo(String config) {
                     publisher(config);
@@ -114,11 +114,12 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     private void publisher(String config) {
         clearRoute();
         try {
-            log.info("--------------------------------------------【动态刷新路由信息】-----------------------------------");
             List<RouteDefinition> gateway = JSONObject.parseArray(config, RouteDefinition.class);
             for (RouteDefinition route : gateway) {
                 addRoute(route);
             }
+            log.info("--------------------------------------------【已动态刷新路由信息】-----------------------------------");
+            log.info("resetRoutes:" + JSONObject.toJSONString(gateway));
             applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this.routeDefinitionWriter));
         } catch (Exception e) {
             e.printStackTrace();

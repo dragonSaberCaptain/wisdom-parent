@@ -39,8 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        super.configure(http);
 //        http.formLogin().and().httpBasic();
-        http.formLogin().loginPage("/auth/page").failureHandler((request, response, exception) -> System.out.println("failed"))
-                .successHandler((request, response, authentication) -> System.out.println("success"));
+//        http.formLogin().loginPage("/auth/page").failureHandler((request, response, exception) -> System.out.println("failed"))
+//                .successHandler((request, response, authentication) -> System.out.println("success"));
     }
 
     /**

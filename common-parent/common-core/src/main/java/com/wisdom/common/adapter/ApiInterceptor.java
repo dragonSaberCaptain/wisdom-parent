@@ -114,7 +114,7 @@ public class ApiInterceptor implements HandlerInterceptor {
     public boolean roadblock(Object obj) {
         //开发环境和本地环境关闭所有验证
         if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
-//            return true;
+            return true;
         }
 
         if (obj instanceof String) {

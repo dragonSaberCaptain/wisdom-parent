@@ -1,6 +1,7 @@
 package com.wisdom.config.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.wisdom.config.annotation.ResultFiled;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -59,8 +60,11 @@ public enum ResultEnum implements EnumDao {
 
     //    @JsonValue
     @EnumValue //mybatis_plus需要,若不需要可以删除
+    @ResultFiled
     private String code;
+    @ResultFiled
     private String msg;
+    @ResultFiled
     private String subMsg;
 
     ResultEnum() {

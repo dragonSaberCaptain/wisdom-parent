@@ -1,6 +1,7 @@
 package com.wisdom.tools.object;
 
-import com.wisdom.config.enums.EnumDao;
+import com.wisdom.config.annotation.ResultFiled;
+import com.wisdom.tools.string.StringUtil;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -15,15 +16,6 @@ import java.util.Map;
  * @date 2021/7/6 16:05 星期二
  */
 public class ObjectUtil {
-    /**
-     * 使用该方法枚举类要实现 EnumDao s接口
-     */
-    public static EnumDao isEnum(Object object) {
-        if (object instanceof Enum && object.getClass().isEnum()) {
-            return (EnumDao) object;
-        }
-        return null;
-    }
 
     public static Map<String, Object> getDeclaredField(Object object) {
         Map<String, Object> fieldsMap = new LinkedHashMap<>();
@@ -46,5 +38,31 @@ public class ObjectUtil {
             clazz = clazz.getSuperclass();
         }
         return fieldsMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> getResultMap(Object obj) {
+        Map<String, Object> resultMap = new LinkedHashMap<>();
+        if (obj instanceof Enum) {
+            Enum curEnum = (Enum) obj;
+            Class clazz = curEnum.getDeclaringClass();
+
+            Field[] declaredFields = clazz.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                ResultFiled annotation = declaredField.getAnnotation(ResultFiled.class);
+                if (null != annotation) {
+                    String fieldName = declaredField.getName();
+                    String methodName = "get" + StringUtil.upperFirstCase(fieldName);
+                    Object fieldValue = null;
+                    try {
+                        fieldValue = clazz.getMethod(methodName).invoke(curEnum);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    resultMap.put(fieldName, fieldValue);
+                }
+            }
+        }
+        return resultMap;
     }
 }

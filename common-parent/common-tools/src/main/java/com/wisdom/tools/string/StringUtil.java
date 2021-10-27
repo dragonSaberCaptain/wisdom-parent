@@ -211,4 +211,23 @@ public class StringUtil extends StringUtils {
         return !isBlank(cs);
     }
 
+    //首字母大写
+    public static String upperFirstCase(String str) {
+        char[] chars = str.toCharArray();
+        if (Character.isUpperCase(chars[0])) {
+            return str;
+        }
+        chars[0] -= 32;
+        return String.valueOf(chars);
+    }
+
+    //首字母小写
+    public static String lowerFirstCase(String str) {
+        char[] chars = str.toCharArray();
+        if (Character.isLowerCase(chars[0])) {
+            return str;
+        }
+        chars[0] += 32;
+        return String.valueOf(chars);
+    }
 }

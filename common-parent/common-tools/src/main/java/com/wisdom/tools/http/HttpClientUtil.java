@@ -198,7 +198,11 @@ public class HttpClientUtil {
     }
 
     public static String sendPostRequest(String reqURL, String param) {
-        return sendPostRequest(reqURL, param, "UTF-8");
+        return sendPostRequest(reqURL, param, null, "utf-8");
+    }
+
+    public static String sendPostRequest(String reqURL, String param, Map<String, Object> addHeaderMap) {
+        return sendPostRequest(reqURL, param, addHeaderMap, "utf-8");
     }
 
     /**
@@ -216,27 +220,28 @@ public class HttpClientUtil {
      * charset值
      * @see 6)若响应消息头中未指定Content-Type属性,则会使用HttpClient内部默认的ISO-8859-1
      */
-    public static String sendPostRequest(String reqURL, String param,
+    public static String sendPostRequest(String reqURL, String param, Map<String, Object> addHeaderMap,
                                          String type) {
-        if (null != param) {
-            reqURL += "?" + param;
-        }
         String result = RESP_CONTENT;
         // 设置请求和传输超时时间
         HttpPost httpPost = new HttpPost(reqURL);
         // 这就有可能会导致服务端接收不到POST过去的参数,比如运行在Tomcat6.0.36中的Servlet,所以我们手工指定CONTENT_TYPE头消息
         if (type != null && type.length() > 0) {
-            httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json; charset="
-                    + ENCODE_CHARSET);
+            httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json; charset=" + ENCODE_CHARSET);
         } else {
-            httpPost.setHeader(HTTP.CONTENT_TYPE,
-                    "application/x-www-form-urlencoded; charset="
-                            + ENCODE_CHARSET);
+            httpPost.setHeader(HTTP.CONTENT_TYPE, "application/x-www-form-urlencoded; charset=" + ENCODE_CHARSET);
         }
+        if (addHeaderMap != null) {
+            for (Map.Entry<String, Object> entry : addHeaderMap.entrySet()) {
+                httpPost.addHeader(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+        }
+
         CloseableHttpResponse response = null;
         try {
             if (param != null) {
                 StringEntity entity = new StringEntity(param, ENCODE_CHARSET);
+                entity.setContentType("application/json");
                 httpPost.setEntity(entity);
             }
             log.info("开始执行请求：" + reqURL);
