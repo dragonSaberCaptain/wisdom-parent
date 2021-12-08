@@ -1,9 +1,7 @@
 package com.wisdom.example.controller;
 
-import com.wisdom.common.controller.BaseController;
 import com.wisdom.config.dto.ResultDto;
 import com.wisdom.config.enums.HttpEnum;
-import com.wisdom.example.entity.Test;
 import com.wisdom.example.service.TestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

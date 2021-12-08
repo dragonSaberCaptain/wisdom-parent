@@ -17,22 +17,31 @@ public enum ResultEnum implements EnumDao {
 
     FAIL("1002", "失败", "fail"),
 
+    PARAMS_ERROR("1003", "参数错误，拒绝访问"),
+
+    UPDATE_FAIL("1004", "更新失败"),
+
+    ADD_FAIL("1005", "新增失败"),
+
+    DELETE_FAIL("1006", "删除失败"),
+
+    DATA_TAMPERED("1007", "数据安全错误,数据被篡改"),
+
+    TOKEN_IS_EMPTY("1008", "token不能为空"),
+
+    BAN_REQUEST("1009", "已限流,禁止请求"),
+
+    DATA_NOT_UNIQUE_ERROR("1010", "数据不是唯一的", "data not unique error"),
+
+    DATA_NOT_FOUND("1011", "数据不存在", "data does not exist"),
+
     // ****************************【文件错误】****************************
     FILE_NOT_EMPTY("1004", "文件不能为空", "the file cannot be empty"),
 
     FILE_TOO_BIG("1005", "文件太大了", "the file is too big"),
+
     // ****************************【一级错误】****************************
-    NOT_UNIQUE_ERROR("9001", "数据不唯一", "data not unique error"),
-
-    REDIS_NO_OPEN("9002", "服务器缓存错误", "server cache error"),
-
-    UPDATE_FAIL("9003", "更新失败"),
-
-    ADD_FAIL("9004", "新增失败"),
-
-    DELETE_FAIL("9005", "删除失败"),
-
-    PARAMS_ERROR("9006", "参数错误，请确认格式是否正确"),
+    REDIS_NO_OPEN("9002", "缓存异常", "server cache error"),
 
     IO_ABNORMAL("9007", "IO异常"),
 
@@ -48,13 +57,7 @@ public enum ResultEnum implements EnumDao {
 
     INDEX_OUT_OF_BOUNDS("9013", "下标越界异常"),
 
-    FILE_PATH_ERROR("9014", "文件路径错误"),
-
-    TOKEN_IS_EMPTY("9015", "token不能为空"),
-
-    DATA_TAMPERED("9016", "数据安全错误,数据被篡改"),
-
-    BAN_REQUEST("9017", "已限流,禁止请求"),
+    FILE_PATH_ERROR("9014", "文件路径异常"),
 
     SERVER_INTERNAL_EXCEPTION("9999", "服务器内部异常");
 

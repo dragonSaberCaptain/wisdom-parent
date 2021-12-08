@@ -19,13 +19,9 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication(scanBasePackages="com.wisdom.*")
 @EnableDiscoveryClient
 public class GatewayCoreApp {
-
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(GatewayCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
-        String startInfo = "--------------------------------------------【gateway-core service server started!】-----------------------------------";
-        log.info(startInfo);
-        System.out.println(startInfo);
-
+        log.info("》》》》【 {} service server started !!! 】《《《《", GatewayCoreApp.class.getSimpleName());
     }
 }

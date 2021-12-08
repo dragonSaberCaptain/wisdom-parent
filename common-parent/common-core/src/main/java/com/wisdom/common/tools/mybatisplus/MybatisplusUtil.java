@@ -148,9 +148,13 @@ public class MybatisplusUtil {
         // 6、策略配置
         StrategyConfig strategy = new StrategyConfig();
         // 要去除的表前缀
-        strategy.setTablePrefix(autoCodeDto.getTablePrefix());
+        if (StringUtil.isNotBlank(autoCodeDto.getTablePrefix())) {
+            strategy.setTablePrefix(autoCodeDto.getTablePrefix().split(","));
+        }
         //要去除的字段前缀
-        strategy.setFieldPrefix(autoCodeDto.getFieldPrefix());
+        if (StringUtil.isNotBlank(autoCodeDto.getFieldPrefix())) {
+            strategy.setFieldPrefix(autoCodeDto.getFieldPrefix().split(","));
+        }
 
         if (StringUtil.isNotBlank(autoCodeDto.getInclude())) {
             // 逆向工程使用的表   如果要生成多个,这里可以传入String[]
@@ -159,6 +163,7 @@ public class MybatisplusUtil {
             // 逆向工程要排除的表   如果要生成多个,这里可以传入String[]
             strategy.setExclude(autoCodeDto.getExclude().split(","));
         }
+//        strategy.setSuperEntityColumns("myTest");
 
         //数据库表映射到实体的命名策略
         strategy.setNaming(NamingStrategy.underline_to_camel);

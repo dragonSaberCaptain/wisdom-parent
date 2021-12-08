@@ -23,8 +23,6 @@ public class ExampleCoreApp {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(ExampleCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
-        String startInfo = "--------------------------------------------【example-core service server started!】-----------------------------------";
-        log.info(startInfo);
-        System.out.println(startInfo);
+        log.info("》》》》【 {} service server started !!! 】《《《《", ExampleCoreApp.class.getSimpleName());
     }
 }

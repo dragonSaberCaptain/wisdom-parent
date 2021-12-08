@@ -95,7 +95,7 @@ public class ExceptionHandle {
         if (e instanceof MyBatisSystemException) {
             MyBatisSystemException e1 = (MyBatisSystemException) e;
             log.error("【数据异常】", e1);
-            return new ResultDto(ResultEnum.NOT_UNIQUE_ERROR);
+            return new ResultDto(ResultEnum.DATA_NOT_UNIQUE_ERROR);
         }
 
         log.error("【服务器内部异常】", e);

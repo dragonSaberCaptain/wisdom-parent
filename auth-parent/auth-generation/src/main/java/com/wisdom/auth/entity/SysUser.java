@@ -1,9 +1,5 @@
 package com.wisdom.auth.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.wisdom.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,5 +37,7 @@ public class SysUser extends BaseEntity {
     @Column(columnDefinition = "varchar(255) COMMENT '密码'")
     private String password;
 
-
+    @ApiModelProperty(value = "登录状态")
+    @Column(columnDefinition = "varchar(2) default 0 COMMENT '登录状态：0否 1是  默认：0'")
+    private String loginFlag;
 }

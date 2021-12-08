@@ -47,8 +47,6 @@
         <!--JSON处理-->
         <fastjson_version>1.2.47</fastjson_version>
 
-        <!--redis缓存-->
-        <jedis_version>3.7.0</jedis_version>
         <!--日志-->
         <commons_logging_version>1.2</commons_logging_version>
         <slf4j_version>1.7.30</slf4j_version>
@@ -116,6 +114,7 @@
             <artifactId>nacos-spring-context</artifactId>
             <version>0.3.5</version>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -195,13 +194,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid_version}</version>
-            </dependency>
-
-            <!-- ====================redis ======================== -->
-            <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>${jedis_version}</version>
             </dependency>
 
             <!-- ====================swagger ======================== -->

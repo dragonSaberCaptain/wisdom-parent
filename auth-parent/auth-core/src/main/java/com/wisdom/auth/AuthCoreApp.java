@@ -23,9 +23,6 @@ public class AuthCoreApp {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(AuthCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
-        String startInfo = "--------------------------------------------【auth-core service server started!】-----------------------------------";
-        log.info(startInfo);
-        System.out.println(startInfo);
-
+        log.info("》》》》【 {} service server started !!! 】《《《《", AuthCoreApp.class.getSimpleName());
     }
 }

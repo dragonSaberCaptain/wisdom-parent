@@ -1,62 +1,72 @@
 package com.wisdom.auth.config.auth;
 
-import com.wisdom.auth.service.SysUserServiceExt;
-import lombok.extern.slf4j.Slf4j;
+import com.wisdom.auth.service.impl.SysUserServiceExtImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- * <p>
- * TODO (用一句话描述该类的作用)
- *
- * @author captain
- * @version 1.0
- * @datetime 2021/9/13 14:53 星期一
+ * @Description: 身份认证拦截
  */
-@Slf4j
+@Order(1)
 @Configuration
-@EnableWebSecurity
+//注解权限拦截
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${spring.application.name:auth}")
-    private String appName;
 
-    @Autowired
-    private SysUserServiceExt sysUserServiceExt;
+	@Autowired
+	private SysUserServiceExtImpl sysPermissionExtImpl;
 
-    /**
-     * 配置登录信息
-     */
+	//认证服务器需配合Security使用
+	@Bean
+    @Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	//websecurity用户密码和认证服务器客户端密码都需要加密算法
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+    }
+
+
+	@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		//验证用户权限
+		auth.userDetailsService(sysPermissionExtImpl);
+		//也可以在内存中创建用户并为密码加密
+		// auth.inMemoryAuthentication()
+		//         .withUser("user").password(passwordEncoder().encode("123")).roles("USER")
+		//         .and()
+		//         .withUser("admin").password(passwordEncoder().encode("123")).roles("ADMIN");
+    }
+
+	//uri权限拦截,生产可以设置为启动动态读取数据库,具体百度
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        super.configure(http);
-//        http.formLogin().and().httpBasic();
-//        http.formLogin().loginPage("/auth/page").failureHandler((request, response, exception) -> System.out.println("failed"))
-//                .successHandler((request, response, authentication) -> System.out.println("success"));
+	    http
+			    //此处不要禁止formLogin,code模式测试需要开启表单登陆,并且/oauth/token不要放开或放入下面ignoring,因为获取token首先需要登陆状态
+			    .formLogin()
+			    .and()
+			    .csrf().disable()
+
+			    .authorizeRequests().antMatchers("/test").permitAll()
+			    .and()
+			    .authorizeRequests().anyRequest().authenticated();
     }
 
-    /**
-     * 配置用户登录验证服务
-     */
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(sysUserServiceExt);
-    }
-
-    /**
-     * 配置放开路径
-     */
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/" + appName + "/login", "/" + appName + "/authorize", "/" + appName + "/check_token", "/" + appName + "/refresh_token", "/" + appName + "/druid/**");
-    }
-
+	//设置不拦截资源服务器的认证请求
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/oauth/check_token");
+	}
 }

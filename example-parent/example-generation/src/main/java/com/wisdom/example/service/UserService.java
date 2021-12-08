@@ -12,7 +12,7 @@ import com.wisdom.common.service.BaseService;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-10-27 17:05:18 星期三
+ * @datetime 2021-12-02 13:22:05 星期四
  */
 public interface UserService extends BaseService<User> {
 
