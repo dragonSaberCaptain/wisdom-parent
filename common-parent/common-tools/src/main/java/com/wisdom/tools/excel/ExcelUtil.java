@@ -409,6 +409,7 @@ public class ExcelUtil {
         NumberFormat numberFormat = NumberFormat.getInstance();
         // 不显示千位分割符，否则显示结果会变成类似1,234,567,890
         numberFormat.setGroupingUsed(false);
+        numberFormat.setMaximumFractionDigits(16); //设置小数部分最大位数
         return numberFormat.format(cell.getNumericCellValue());
     }
 
@@ -810,9 +811,11 @@ public class ExcelUtil {
         try {
             if (fileType.contains("xlsx")) {
                 if (in != null) {
-                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in), SHEETSIZE);
+                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in));
+//                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in), SHEETSIZE);
                 } else {
-                    workbook = new SXSSFWorkbook(SHEETSIZE);
+                    workbook = new SXSSFWorkbook();
+//                    workbook = new SXSSFWorkbook(SHEETSIZE);
                 }
             } else if (fileType.contains("xls")) {
                 if (in != null) {
