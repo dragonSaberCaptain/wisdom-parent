@@ -5,15 +5,15 @@ import com.wisdom.common.service.BaseService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
- * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
+ * Copyright ©2022 dragonSaberCaptain inc. All rights reserved.
  *
  * <p>
- * 业务层
+ * 系统用户表 业务层
  * </p>
  *
  * @author captain
  * @version 1.0
- * @createDate 2021-09-13 15:34:22 星期一
+ * @datetime 2022-01-13 13:00:31 星期四
  */
 public interface SysUserServiceExt extends BaseService<SysUser>, UserDetailsService {
 

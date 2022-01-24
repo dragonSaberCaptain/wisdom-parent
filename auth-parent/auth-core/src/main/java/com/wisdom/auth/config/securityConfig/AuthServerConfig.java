@@ -1,4 +1,4 @@
-package com.wisdom.auth.config.auth;
+package com.wisdom.auth.config.securityConfig;
 
 import com.wisdom.auth.service.SysUserServiceExt;
 import org.springframework.beans.factory.annotation.Autowired;

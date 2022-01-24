@@ -1,6 +1,6 @@
-package com.wisdom.auth.config.auth;
+package com.wisdom.auth.config.securityConfig;
 
-import com.wisdom.auth.service.impl.SysUserServiceExtImpl;
+import com.wisdom.auth.service.impl.SysUserServiceImplExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * @Description: 身份认证拦截
@@ -23,7 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private SysUserServiceExtImpl sysPermissionExtImpl;
+	private SysUserServiceImplExt sysUserServiceImplExt;
 
 	//认证服务器需配合Security使用
 	@Bean
@@ -32,17 +31,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 
-	//websecurity用户密码和认证服务器客户端密码都需要加密算法
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-    }
-
-
 	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		//验证用户权限
-		auth.userDetailsService(sysPermissionExtImpl);
+		auth.userDetailsService(sysUserServiceImplExt);
 		//也可以在内存中创建用户并为密码加密
 		// auth.inMemoryAuthentication()
 		//         .withUser("user").password(passwordEncoder().encode("123")).roles("USER")

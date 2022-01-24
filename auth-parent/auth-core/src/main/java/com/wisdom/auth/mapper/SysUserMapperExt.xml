@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.wisdom.example.dao.UserDao">
+<mapper namespace="com.wisdom.auth.dao.SysUserDaoExt">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.example.entity.User">
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUser">
         <result column="ID" property="id"/>
         <result column="CREATE_DATE_TIME" property="createDateTime"/>
         <result column="CREATE_ID" property="createId"/>
@@ -14,6 +14,7 @@
         <result column="VERSION" property="version"/>
         <result column="ACCOUNT" property="account"/>
         <result column="PASSWORD" property="password"/>
+        <result column="LOGIN_FLAG" property="loginFlag"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -26,7 +27,7 @@
         UP_DATE_TIME,
         UPDATE_ID,
         VERSION,
-        ACCOUNT, PASSWORD
+        ACCOUNT, PASSWORD, LOGIN_FLAG
     </sql>
 
     <!-- 基本的sql查询条件公共引用 -->
@@ -44,13 +45,14 @@
             <!-- 生成普通字段 -->
             <if test="account != null">and ACCOUNT=#{account}</if>
             <if test="password != null">and PASSWORD=#{password}</if>
+            <if test="loginFlag != null">and LOGIN_FLAG=#{loginFlag}</if>
         </trim>
     </sql>
 
     <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List"/>
-        from user
+        from sys_user
         <include refid="searchBy"/>
     </select>
 </mapper>

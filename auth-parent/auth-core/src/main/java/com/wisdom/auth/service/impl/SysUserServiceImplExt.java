@@ -1,45 +1,46 @@
 package com.wisdom.auth.service.impl;
 
-import com.wisdom.auth.dao.SysPermissionExt;
+import com.wisdom.auth.dao.SysPermissionDaoExt;
 import com.wisdom.auth.dao.SysUserDao;
 import com.wisdom.auth.entity.SysPermission;
 import com.wisdom.auth.entity.SysUser;
+import com.wisdom.auth.dao.SysUserDaoExt;
 import com.wisdom.auth.service.SysUserServiceExt;
 import com.wisdom.common.service.impl.BaseServiceImpl;
 import com.wisdom.common.tools.mybatisplus.MybatisplusUtil;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.config.exception.ResultException;
 import com.wisdom.tools.string.StringUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
+ * Copyright ©2022 dragonSaberCaptain inc. All rights reserved.
  *
  * <p>
- * 逻辑层
+ * 系统用户表 逻辑层
  * </p>
  *
  * @author captain
  * @version 1.0
- * @createDate 2021-09-13 15:34:22 星期一
+ * @datetime 2022-01-13 13:00:31 星期四
  */
 @Slf4j
 @Service
-public class SysUserServiceExtImpl extends BaseServiceImpl<SysUserDao, SysUser> implements SysUserServiceExt {
+public class SysUserServiceImplExt extends BaseServiceImpl<SysUserDaoExt, SysUser> implements SysUserServiceExt {
     @Autowired
-    private SysUserDao sysUserDao;
+    private SysUserDaoExt sysUserDaoExt;
 
     @Autowired
-    private SysPermissionExt sysPermissionExt;
+    private SysPermissionDaoExt sysPermissionDaoExt;
 
     /**
      * 查询数据库用户信息
@@ -53,7 +54,7 @@ public class SysUserServiceExtImpl extends BaseServiceImpl<SysUserDao, SysUser> 
         }
         SysUser sysUser = new SysUser();
         sysUser.setAccount(username);
-        sysUser = sysUserDao.selectOne(MybatisplusUtil.createWrapper(sysUser));
+        sysUser = sysUserDaoExt.selectOne(MybatisplusUtil.createWrapper(sysUser));
         //验证账户为username的用户是否存在
         if (null == sysUser) {
             log.info("登录失败,未找到用户:" + username);
@@ -62,7 +63,7 @@ public class SysUserServiceExtImpl extends BaseServiceImpl<SysUserDao, SysUser> 
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         //获取用户权限
-        List<SysPermission> permissions = sysPermissionExt.selectByUserId(sysUser.getId());
+        List<SysPermission> permissions = sysPermissionDaoExt.selectByUserId(sysUser.getId());
         //设置用户权限
         permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getNameEn())));
 

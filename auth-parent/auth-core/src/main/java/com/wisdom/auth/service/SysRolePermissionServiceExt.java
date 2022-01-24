@@ -9,6 +9,6 @@ import com.wisdom.common.service.BaseService;
  * @author captain
  * @version 1.0
  */
-public interface SysRolePermissionService extends BaseService<SysRolePermission> {
+public interface SysRolePermissionServiceExt extends BaseService<SysRolePermission> {
 
 }

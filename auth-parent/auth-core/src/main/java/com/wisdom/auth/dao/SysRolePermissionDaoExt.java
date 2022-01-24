@@ -11,6 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @version 1.0
  */
 @Mapper
-public interface SysRolePermissionDao extends BaseDao<SysRolePermission> {
+public interface SysRolePermissionDaoExt extends BaseDao<SysRolePermission> {
 
 }

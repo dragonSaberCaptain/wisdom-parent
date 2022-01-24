@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.wisdom.auth.dao.SysUserDao">
+<mapper namespace="com.wisdom.auth.dao.SysUserRoleDaoExt">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUser">
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUserRole">
         <result column="ID" property="id"/>
         <result column="CREATE_DATE_TIME" property="createDateTime"/>
         <result column="CREATE_ID" property="createId"/>
@@ -12,9 +12,8 @@
         <result column="UP_DATE_TIME" property="upDateTime"/>
         <result column="UPDATE_ID" property="updateId"/>
         <result column="VERSION" property="version"/>
-        <result column="ACCOUNT" property="account"/>
-        <result column="PASSWORD" property="password"/>
-        <result column="LOGIN_FLAG" property="loginFlag"/>
+        <result column="ROLE_ID" property="roleId"/>
+        <result column="USER_ID" property="userId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -27,7 +26,7 @@
         UP_DATE_TIME,
         UPDATE_ID,
         VERSION,
-        ACCOUNT, PASSWORD, LOGIN_FLAG
+        ROLE_ID, USER_ID
     </sql>
 
     <!-- 基本的sql查询条件公共引用 -->
@@ -43,16 +42,15 @@
             <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
             <if test="version != null">and VERSION=#{version}</if>
             <!-- 生成普通字段 -->
-            <if test="account != null">and ACCOUNT=#{account}</if>
-            <if test="password != null">and PASSWORD=#{password}</if>
-            <if test="loginFlag != null">and LOGIN_FLAG=#{loginFlag}</if>
+            <if test="roleId != null">and ROLE_ID=#{roleId}</if>
+            <if test="userId != null">and USER_ID=#{userId}</if>
         </trim>
     </sql>
 
     <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
         select
         <include refid="Base_Column_List"/>
-        from sys_user
+        from sys_user_role
         <include refid="searchBy"/>
     </select>
 </mapper>

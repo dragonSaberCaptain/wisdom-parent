@@ -1,4 +1,4 @@
-package com.wisdom.auth;
+package com.wisdom;
 
 import com.wisdom.tools.system.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;

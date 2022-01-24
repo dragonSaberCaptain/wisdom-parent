@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.auth.dao.SysPermissionDaoExt">
+    <!-- 通用查询映射结果 继承 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysPermission"
+               extends="com.wisdom.auth.dao.SysPermissionDao.BaseResultMap"/>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_DATE_TIME,
+        CREATE_ID,
+        DEL_FLAG,
+        REMARK,
+        UP_DATE_TIME,
+        UPDATE_ID,
+        VERSION,
+        DESCRIPTION, NAME_CN, NAME_EN, PARENT_ID, URL
+    </sql>
+
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="searchBy">
+        <trim prefix="where" prefixOverrides="and|or">
+            <!-- 生成公共字段 -->
+            <if test="id != null">and ID=#{id}</if>
+            <if test="createDateTime != null">and CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">and CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">and DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">and REMARK=#{remark}</if>
+            <if test="upDateTime != null">and UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
+            <if test="version != null">and VERSION=#{version}</if>
+            <!-- 生成普通字段 -->
+            <if test="description != null">and DESCRIPTION=#{description}</if>
+            <if test="nameCn != null">and NAME_CN=#{nameCn}</if>
+            <if test="nameEn != null">and NAME_EN=#{nameEn}</if>
+            <if test="parentId != null">and PARENT_ID=#{parentId}</if>
+            <if test="url != null">and URL=#{url}</if>
+        </trim>
+    </sql>
+
+    <select id="selectByUserId" resultMap="com.wisdom.auth.dao.SysPermissionDao.BaseResultMap">
+        SELECT
+            p.id,
+            p.parent_id,
+            p.NAME,
+            p.ename,
+            p.url,
+            p.description,
+            p.create_time,
+            p.update_time
+        FROM
+            sys_permission AS p
+            LEFT JOIN sys_role_permission AS rp ON rp.permission_id = p.id
+            LEFT JOIN sys_role AS r ON r.id = rp.role_id
+            LEFT JOIN sys_user_role AS ur ON ur.role_id = r.id
+            LEFT JOIN sys_user AS u ON u.id = ur.user_id
+        WHERE
+            u.id = #{ userId }
+    </select>
+</mapper>
