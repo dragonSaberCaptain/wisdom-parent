@@ -31,7 +31,7 @@ public class ExampleCodeGenerator {
         autoCodeDto.setUsername("填实际的数据库账号");
         autoCodeDto.setPassword("填实际的数据库密码");
 
-        autoCodeDto.setInclude("user,test");
+        autoCodeDto.setInclude("");
         autoCodeDto.setExclude("");
         autoCodeDto.setTablePrefix("");
         autoCodeDto.setFieldPrefix("");
