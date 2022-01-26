@@ -66,7 +66,7 @@ public class AutoCodeDto {
     private String xmlPosDir;
 
     /**
-     * 关闭生成的扩展代码
+     * 生成扩展代码
      * */
     private boolean openExt;
 
