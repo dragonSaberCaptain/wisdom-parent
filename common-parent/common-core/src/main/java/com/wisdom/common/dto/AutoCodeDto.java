@@ -46,7 +46,7 @@ public class AutoCodeDto {
     private String fieldPrefix;
 
     /**
-     * 需要包含的表名，允许正则表达式（与exclude二选一配置）
+     * 需要包含的表名，允许正则表达式（与exclude二选一配置）默认:全部
      */
     private String include;
 

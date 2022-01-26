@@ -4,7 +4,8 @@
 
 
     <!-- 通用查询映射结果 继承 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysPermissionExt" extends="com.wisdom.auth.dao.SysPermissionDaoExt.BaseResultMap"/>
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysPermissionExt"
+               extends="com.wisdom.auth.dao.SysPermissionDao.BaseResultMap"/>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -39,4 +40,24 @@
             <if test="url != null">and URL=#{url}</if>
         </trim>
     </sql>
+
+    <select id="selectByUserId" resultMap="com.wisdom.auth.dao.SysPermissionDao.BaseResultMap">
+        SELECT
+            p.id,
+            p.parent_id,
+            p.NAME,
+            p.ename,
+            p.url,
+            p.description,
+            p.create_time,
+            p.update_time
+        FROM
+            sys_permission AS p
+            LEFT JOIN sys_role_permission AS rp ON rp.permission_id = p.id
+            LEFT JOIN sys_role AS r ON r.id = rp.role_id
+            LEFT JOIN sys_user_role AS ur ON ur.role_id = r.id
+            LEFT JOIN sys_user AS u ON u.id = ur.user_id
+        WHERE
+            u.id = #{ userId }
+    </select>
 </mapper>

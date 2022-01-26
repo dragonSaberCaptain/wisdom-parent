@@ -1,6 +1,7 @@
-package ${package.Controller};
 #set($entityPathEnd=$table.entityPath.length() - 3)
 #set($controllerNameEnd=$table.controllerName.length() - 3)
+package ${package.Controller};
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import ${package.Service}.${table.serviceName};

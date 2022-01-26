@@ -1,7 +1,6 @@
+#set($end=$entity.length() - 3)
 package ${package.Entity};
 
-#set($end=$entity.length() - 3)
-##import ${package.Entity}.${entity.substring(0, ${end})};
 #if(${swagger2})
 import io.swagger.annotations.ApiModel;
 #end

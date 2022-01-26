@@ -4,6 +4,8 @@ import com.wisdom.auth.entity.SysPermissionExt;
 import com.wisdom.common.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 系统权限表 持久层
  *
@@ -12,5 +14,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface SysPermissionDaoExt extends BaseDao<SysPermissionExt> {
-
+    List<SysPermissionExt> selectByUserId(Object object);
 }

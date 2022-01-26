@@ -4,7 +4,7 @@
 
 
     <!-- 通用查询映射结果 继承 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUserRoleExt" extends="com.wisdom.auth.dao.SysUserRoleDaoExt.BaseResultMap"/>
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUserRoleExt" extends="com.wisdom.auth.dao.SysUserRoleDao.BaseResultMap"/>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
