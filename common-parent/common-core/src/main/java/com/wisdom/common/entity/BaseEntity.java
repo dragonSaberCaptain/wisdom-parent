@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -28,6 +28,7 @@ import java.io.Serializable;
  * @datetime 2018/05/10 10:31 星期三
  */
 @Data
+@Accessors(chain = true)
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -91,100 +92,4 @@ public class BaseEntity implements Serializable {
     @TableField(exist = false)
     @ApiModelProperty(value = "更新日期时间查询结束时间(查询时间范围)")
     protected String upDateTimeEnd;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCreateDateTime() {
-        return createDateTime;
-    }
-
-    public void setCreateDateTime(String createDateTime) {
-        this.createDateTime = createDateTime;
-    }
-
-    public String getCreateId() {
-        return createId;
-    }
-
-    public void setCreateId(String createId) {
-        this.createId = createId;
-    }
-
-    public String getUpDateTime() {
-        return upDateTime;
-    }
-
-    public void setUpDateTime(String upDateTime) {
-        this.upDateTime = upDateTime;
-    }
-
-    public String getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(String updateId) {
-        this.updateId = updateId;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public Integer getDelFlag() {
-        return delFlag;
-    }
-
-    public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
-
-    public String getCreateDateTimeStart() {
-        return createDateTimeStart;
-    }
-
-    public void setCreateDateTimeStart(String createDateTimeStart) {
-        this.createDateTimeStart = createDateTimeStart;
-    }
-
-    public String getCreateDateTimeEnd() {
-        return createDateTimeEnd;
-    }
-
-    public void setCreateDateTimeEnd(String createDateTimeEnd) {
-        this.createDateTimeEnd = createDateTimeEnd;
-    }
-
-    public String getUpDateTimeStart() {
-        return upDateTimeStart;
-    }
-
-    public void setUpDateTimeStart(String upDateTimeStart) {
-        this.upDateTimeStart = upDateTimeStart;
-    }
-
-    public String getUpDateTimeEnd() {
-        return upDateTimeEnd;
-    }
-
-    public void setUpDateTimeEnd(String upDateTimeEnd) {
-        this.upDateTimeEnd = upDateTimeEnd;
-    }
 }

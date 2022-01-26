@@ -4,6 +4,7 @@ import com.wisdom.config.enums.EnumDao;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @date 2018-05-04 13:34 星期五
  */
 @Data
+@Accessors(chain = true)
 @ApiModel(value = "ResultDto 响应对象", description = "统一响应对象")
 public class ResultDto<T> implements Serializable {
     @ApiModelProperty(value = "状态码")

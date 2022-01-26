@@ -1,7 +1,7 @@
 package com.wisdom.tools.algorithm.symmetric;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
@@ -15,8 +15,8 @@ import java.nio.charset.StandardCharsets;
  * @version 1.0
  * @datetime 2021/9/16 13:45 星期四
  */
-@Slf4j
 @Data
+@Accessors(chain = true)
 public class SymmetricModel {
     public final String ALGORITHM_AES = "AES";
 

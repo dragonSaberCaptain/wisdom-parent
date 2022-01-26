@@ -1,6 +1,6 @@
 package com.wisdom.auth.dao;
 
-import com.wisdom.auth.entity.SysRolePermission;
+import com.wisdom.auth.entity.SysRolePermissionExt;
 import com.wisdom.common.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -11,6 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @version 1.0
  */
 @Mapper
-public interface SysRolePermissionDaoExt extends BaseDao<SysRolePermission> {
+public interface SysRolePermissionDaoExt extends BaseDao<SysRolePermissionExt> {
 
 }

@@ -6,24 +6,13 @@ import ${package.Service}.${table.serviceName};
 import ${superServiceImplClassPackage};
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-#if(${entityLombokModel})
-import lombok.extern.slf4j.Slf4j;
-#end
 
 /**
- * Copyright ©${cfg.year} dragonSaberCaptain inc. All rights reserved.
- *
- * <p>
  * $!{table.comment} 逻辑层
- * </p>
  *
  * @author ${author}
  * @version ${cfg.version}
- * @datetime ${cfg.createDate}
  */
-#if(${entityLombokModel})
-@Slf4j
-#end
 @Service
 #if(${kotlin})
 open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
@@ -31,8 +20,6 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperNam
 }
 #else
 public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
-    @Autowired
-    private ${table.mapperName} ${table.mapperName.substring(0, 1).toLowerCase()}${table.mapperName.substring(1)};
 
 }
 #end

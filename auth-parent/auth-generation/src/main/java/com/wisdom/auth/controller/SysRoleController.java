@@ -15,7 +15,7 @@ import com.wisdom.auth.entity.SysRole;
  */
 @RestController
 @RequestMapping("/auth/sysRole")
-@Api(value = "SysRoleController API", tags = "sys_role:系统角色表相关接口")
+@Api(value = "SysRoleController API", tags = "sys_role:系统角色表 相关接口")
 public class SysRoleController extends BaseController<SysRoleService, SysRole> {
 
 }

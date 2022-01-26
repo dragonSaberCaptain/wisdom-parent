@@ -15,18 +15,21 @@ import com.wisdom.common.dto.AutoCodeDto;
 import com.wisdom.common.entity.BaseEntity;
 import com.wisdom.common.service.BaseService;
 import com.wisdom.common.service.impl.BaseServiceImpl;
+import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.object.ObjectUtil;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * mybatisplus 相关工具类
+ * mybatisplus 相关工具类 自动生成代码 controller dao service serviceImpl等
  *
  * @author captain
  * @version 1.0
@@ -34,16 +37,8 @@ import java.util.Map;
  */
 @Slf4j
 public class MybatisplusUtil {
-    /**
-     * Mybatisplus 自动生成代码 controller dao service serviceImpl等
-     *
-     * @param
-     * @author captain
-     * @datetime 2021-10-27 10:25:32
-     */
-    public static void autoCreateCode(AutoCodeDto autoCodeDto) {
-        AutoGenerator mpg = new AutoGenerator();
 
+    public static void autoCreateCode(AutoCodeDto autoCodeDto) {
         //1、全局配置
         GlobalConfig gc = new GlobalConfig();
         //生成路径(一般都是生成在此项目的src/main/java下面)
@@ -75,7 +70,6 @@ public class MybatisplusUtil {
         gc.setServiceImplName("%sServiceImpl");
         gc.setMapperName("%sDao");
         gc.setXmlName("%sMapper");
-        mpg.setGlobalConfig(gc);
 
         //2、数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
@@ -83,7 +77,6 @@ public class MybatisplusUtil {
         dsc.setDriverName(autoCodeDto.getDriverName());
         dsc.setUsername(autoCodeDto.getUsername());
         dsc.setPassword(autoCodeDto.getPassword());
-        mpg.setDataSource(dsc);
 
         // 3、包配置
         PackageConfig pc = new PackageConfig();
@@ -94,34 +87,46 @@ public class MybatisplusUtil {
         }
 
         pc.setParent(autoCodeDto.getModuleParentPath());
-        pc.setController("controller");
+//        pc.setController("controller");
         pc.setService("service");
         pc.setServiceImpl("service.impl");
         pc.setMapper("dao");
         pc.setEntity("entity");
         pc.setXml("mapper");
-        mpg.setPackageInfo(pc);
 
         // 4、模板配置
         TemplateConfig tc = new TemplateConfig();
-        tc.setController("/templates/controller.java.vm");
-        tc.setEntity("/templates/entity.java.vm");
+
+//        tc.setController("/templates/controller.java.vm");
         tc.setMapper("/templates/dao.java.vm");
         tc.setService("/templates/service.java.vm");
         tc.setServiceImpl("/templates/serviceImpl.java.vm");
+        tc.setEntity("/templates/entity.java.vm");
+        tc.setXml("/templates/mapper.xml.vm");
 
         if (StringUtil.isNotBlank(autoCodeDto.getXmlPosDir())) {
             tc.setXml(null);
-        } else {
-            tc.setXml("/templates/mapper.xml.vm");
         }
-        mpg.setTemplate(tc);
 
         // 5、自定义配置
         InjectionConfig cfg = new InjectionConfig() {
             @Override
             public void initMap() {
-                this.setMap(autoCodeDto.getCustomMap());
+                ZonedDateTime zonedDateTime = DateUtilByZoned.now();
+                String patternNow = DateUtilByZoned.getDateTime();
+                String dayOfWeekCn = DateUtilByZoned.getDayOfWeekCn(zonedDateTime);
+
+                Map<String, Object> customMap = new HashMap<>();
+                customMap.put("version", "1.0");
+                customMap.put("useJpa", true);
+                customMap.put("createDate", patternNow + " " + dayOfWeekCn);
+                customMap.put("year", zonedDateTime.getYear());
+                customMap.put("superEntityClassPackage", BaseEntity.class.getName());
+
+                if(autoCodeDto.getCustomMap() !=null){
+                    customMap.putAll(autoCodeDto.getCustomMap());
+                }
+                this.setMap(customMap);
             }
         };
 
@@ -129,21 +134,21 @@ public class MybatisplusUtil {
         List<FileOutConfig> focList = new ArrayList<>();
 
         if (StringUtil.isNotBlank(autoCodeDto.getXmlPosDir())) {
-            FileOutConfig xmlFileOutConfig = new FileOutConfig("/templates/mapper.xml.vm") {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                return autoCodeDto.getXmlPosDir();
+            if (tc.getXml() != null) {
+                FileOutConfig xmlFileOutConfig = new FileOutConfig(tc.getXml()) {
+                    @Override
+                    public String outputFile(TableInfo tableInfo) {
+                        // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
+                        return autoCodeDto.getXmlPosDir();
+                    }
+                };
+                focList.add(xmlFileOutConfig);
             }
-            };
-            focList.add(xmlFileOutConfig);
         }
 
         if (focList.size() > 0) {
             cfg.setFileOutConfigList(focList);
         }
-
-        mpg.setCfg(cfg);
 
         // 6、策略配置
         StrategyConfig strategy = new StrategyConfig();
@@ -181,12 +186,57 @@ public class MybatisplusUtil {
         strategy.setRestControllerStyle(true);
         //使用lombok
         strategy.setEntityLombokModel(true);
+        //是否开启链式模型
+        strategy.setChainModel(true);
+
+        //乐观锁字段
+        strategy.setVersionFieldName("version");
+        strategy.setLogicDeleteFieldName("del_flag");
 
         //Boolean类型字段是否移除is前缀
         strategy.setEntityBooleanColumnRemoveIsPrefix(true);
 
+        AutoGenerator mpg = new AutoGenerator();
+        mpg.setGlobalConfig(gc);
+        mpg.setDataSource(dsc);
+        mpg.setPackageInfo(pc);
+        mpg.setTemplate(tc);
+        mpg.setCfg(cfg);
         mpg.setStrategy(strategy);
         mpg.execute();
+
+        if (autoCodeDto.isOpenExt()) {
+            mpg = new AutoGenerator();
+
+            strategy.setSuperControllerClass("");
+
+            gc.setControllerName("%sControllerExt");
+            gc.setServiceName("%sServiceExt");
+            gc.setServiceImplName("%sServiceImplExt");
+            gc.setMapperName("%sDaoExt");
+            gc.setXmlName("%sMapperExt");
+            gc.setEntityName("%sExt");
+
+            tc.setController("/templates/ext/controllerExt.java.vm");
+            tc.setMapper("/templates/ext/daoExt.java.vm");
+            tc.setService("/templates/ext/serviceExt.java.vm");
+            tc.setServiceImpl("/templates/ext/serviceImplExt.java.vm");
+            tc.setEntity("/templates/ext/entityExt.java.vm");
+            tc.setXml("templates/ext/mapperExt.xml.vm");
+
+            gc.setFileOverride(false);//不覆盖文件
+            if(StringUtil.isNotBlank(autoCodeDto.getOutputExtDir())){
+                gc.setOutputDir(autoCodeDto.getOutputExtDir());
+            }
+
+            mpg.setGlobalConfig(gc);
+            mpg.setDataSource(dsc);
+            mpg.setPackageInfo(pc);
+            mpg.setTemplate(tc);
+            mpg.setCfg(cfg);
+            mpg.setStrategy(strategy);
+            mpg.execute();
+        }
     }
 
     /**
@@ -202,12 +252,10 @@ public class MybatisplusUtil {
         for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if ("serialVersionUID".equalsIgnoreCase(key) || "SERIAL_VERSION_U_I_D".equalsIgnoreCase(key)) {
+            if (value == null || "serialVersionUID".equalsIgnoreCase(key) || "SERIAL_VERSION_U_I_D".equalsIgnoreCase(key)) {
                 continue;
             }
-            if (value == null) {
-                continue;
-            }
+
             //驼峰转大写下划线, userName -> USER_NAME
             String dbKey = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, key);
 

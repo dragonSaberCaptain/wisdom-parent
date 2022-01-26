@@ -1,6 +1,6 @@
 package com.wisdom.auth.service.impl;
 
-import com.wisdom.auth.entity.SysPermission;
+import com.wisdom.auth.entity.SysPermissionExt;
 import com.wisdom.auth.dao.SysPermissionDaoExt;
 import com.wisdom.auth.service.SysPermissionServiceExt;
 import com.wisdom.common.service.impl.BaseServiceImpl;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class SysPermissionServiceImplExt extends BaseServiceImpl<SysPermissionDaoExt, SysPermission> implements SysPermissionServiceExt {
+public class SysPermissionServiceImplExt extends BaseServiceImpl<SysPermissionDaoExt, SysPermissionExt> implements SysPermissionServiceExt {
     @Autowired
     private SysPermissionDaoExt sysPermissionDaoExt;
 

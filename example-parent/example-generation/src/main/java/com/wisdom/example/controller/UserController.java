@@ -9,7 +9,7 @@ import com.wisdom.common.controller.BaseController;
 import com.wisdom.example.entity.User;
 import lombok.extern.slf4j.Slf4j;
 /**
- * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
+ * Copyright ©2022 dragonSaberCaptain inc. All rights reserved.
  *
  * <p>
  * 用户表 控制层
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-12-02 13:22:05 星期四
+ * @datetime 2022-01-04 13:44:06 星期二
  */
 @Slf4j
 @RestController

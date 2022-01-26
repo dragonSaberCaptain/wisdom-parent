@@ -2,20 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wisdom.auth.dao.SysUserDaoExt">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUser">
-        <result column="ID" property="id"/>
-        <result column="CREATE_DATE_TIME" property="createDateTime"/>
-        <result column="CREATE_ID" property="createId"/>
-        <result column="DEL_FLAG" property="delFlag"/>
-        <result column="REMARK" property="remark"/>
-        <result column="UP_DATE_TIME" property="upDateTime"/>
-        <result column="UPDATE_ID" property="updateId"/>
-        <result column="VERSION" property="version"/>
-        <result column="ACCOUNT" property="account"/>
-        <result column="PASSWORD" property="password"/>
-        <result column="LOGIN_FLAG" property="loginFlag"/>
-    </resultMap>
+
+    <!-- 通用查询映射结果 继承 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysUserExt" extends="com.wisdom.auth.dao.SysUserDaoExt.BaseResultMap"/>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -48,11 +37,4 @@
             <if test="loginFlag != null">and LOGIN_FLAG=#{loginFlag}</if>
         </trim>
     </sql>
-
-    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user
-        <include refid="searchBy"/>
-    </select>
 </mapper>

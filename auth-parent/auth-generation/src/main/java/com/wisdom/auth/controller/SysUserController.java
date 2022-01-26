@@ -15,7 +15,7 @@ import com.wisdom.auth.entity.SysUser;
  */
 @RestController
 @RequestMapping("/auth/sysUser")
-@Api(value = "SysUserController API", tags = "sys_user:系统用户表相关接口")
+@Api(value = "SysUserController API", tags = "sys_user:系统用户表 相关接口")
 public class SysUserController extends BaseController<SysUserService, SysUser> {
 
 }

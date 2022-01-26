@@ -32,12 +32,10 @@ public class SysUser extends BaseEntity {
     @Column(columnDefinition = "varchar(64) COMMENT '账号'")
     private String account;
 
-    @Version
     @ApiModelProperty(value = "密码")
     @Column(columnDefinition = "varchar(255) COMMENT '密码'")
     private String password;
 
-    @TableLogic
     @ApiModelProperty(value = "登录状态：0否 1是  默认：0")
     @Column(columnDefinition = "varchar(2) COMMENT '登录状态：0否 1是  默认：0'")
     private String loginFlag;

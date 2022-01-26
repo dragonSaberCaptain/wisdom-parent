@@ -3,6 +3,7 @@ package com.wisdom.tools.system;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
@@ -23,6 +24,7 @@ import java.util.Properties;
  */
 @Data
 @Slf4j
+@Accessors(chain = true)
 public class ReaderResUtil {
 	private static Map<String, Object> parmsMap = new HashMap<>();
 

@@ -1,6 +1,7 @@
 package com.wisdom.config.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.TreeMap;
  * @datetime 2021/9/27 11:07 星期一
  */
 @Data
-@Slf4j
+@Accessors(chain = true)
 public class HttpModelDto {
     /**
      * 请求方法

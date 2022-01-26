@@ -1,7 +1,11 @@
 package com.wisdom.tools.file;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +21,17 @@ import java.util.List;
 public class FileUtil {
 
     public static void main(String[] args) {
-        List<File> fileList = getFilesByPath("D:\\BaiduNetdiskDownload\\IdeaProjects\\wisdom");
-        for (File file : fileList) {
-            System.out.println(file.getName());
-            System.out.println(file.getPath());
+//        List<File> fileList = getFilesByPath("D:\\BaiduNetdiskDownload\\IdeaProjects\\wisdom");
+//        for (File file : fileList) {
+//            System.out.println(file.getName());
+//            System.out.println(file.getPath());
+//        }
+        List<String> lineList = readLineByTxt("D:\\captain\\9004个常用汉字列表.txt");
+        for (String str : lineList) {
+            String[] split = str.split(" ");
+            for (String subStr : split) {
+                System.out.println(subStr);
+            }
         }
     }
 
@@ -40,5 +51,27 @@ public class FileUtil {
             }
         }
         return fileList;
+    }
+
+
+    /**
+     * 读取txt文件的内容
+     */
+    public static List<String> readLineByTxt(String fileSourcePath) {
+        List<String> lineList = new ArrayList<>();
+
+        File fileDir = new File(fileSourcePath);
+
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileDir), "gbk"));
+            String readStr;
+            while ((readStr = br.readLine()) != null) {
+                lineList.add(readStr);
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lineList;
     }
 }

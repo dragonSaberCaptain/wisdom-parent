@@ -1,6 +1,7 @@
 package com.wisdom.tools.algorithm.asymmetric;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.nio.charset.StandardCharsets;
 
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
  * @datetime 2021/9/16 13:45 星期四
  */
 @Data
+@Accessors(chain = true)
 public class AsymmetricModel {
     public final String ALGORITHM_EC = "EC";
     public final String ALGORITHM_RSA = "RSA";

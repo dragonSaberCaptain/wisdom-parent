@@ -2,21 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wisdom.auth.dao.SysRoleDaoExt">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysRole">
-        <result column="ID" property="id"/>
-        <result column="CREATE_DATE_TIME" property="createDateTime"/>
-        <result column="CREATE_ID" property="createId"/>
-        <result column="DEL_FLAG" property="delFlag"/>
-        <result column="REMARK" property="remark"/>
-        <result column="UP_DATE_TIME" property="upDateTime"/>
-        <result column="UPDATE_ID" property="updateId"/>
-        <result column="VERSION" property="version"/>
-        <result column="DESCRIPTION" property="description"/>
-        <result column="NAME_CN" property="nameCn"/>
-        <result column="NAME_EN" property="nameEn"/>
-        <result column="PARENT_ID" property="parentId"/>
-    </resultMap>
+
+    <!-- 通用查询映射结果 继承 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysRoleExt" extends="com.wisdom.auth.dao.SysRoleDaoExt.BaseResultMap"/>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -50,11 +38,4 @@
             <if test="parentId != null">and PARENT_ID=#{parentId}</if>
         </trim>
     </sql>
-
-    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_role
-        <include refid="searchBy"/>
-    </select>
 </mapper>

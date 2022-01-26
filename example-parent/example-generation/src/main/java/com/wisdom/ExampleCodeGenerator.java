@@ -54,8 +54,6 @@ public class ExampleCodeGenerator {
 
         autoCodeDto.setCustomMap(customMap);
 
-        autoCodeDto.setUseJpa(true);
-
         MybatisplusUtil.autoCreateCode(autoCodeDto);
     }
 }

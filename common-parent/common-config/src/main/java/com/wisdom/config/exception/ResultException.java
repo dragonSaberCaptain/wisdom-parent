@@ -3,6 +3,7 @@ package com.wisdom.config.exception;
 import com.wisdom.config.enums.EnumDao;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
  * @date 2021/7/6 17:09 星期二
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 public class ResultException extends RuntimeException {
     protected String code;

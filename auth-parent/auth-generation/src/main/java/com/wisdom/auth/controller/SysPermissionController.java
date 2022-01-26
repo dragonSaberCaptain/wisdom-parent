@@ -15,7 +15,7 @@ import com.wisdom.auth.entity.SysPermission;
  */
 @RestController
 @RequestMapping("/auth/sysPermission")
-@Api(value = "SysPermissionController API", tags = "sys_permission:系统权限表相关接口")
+@Api(value = "SysPermissionController API", tags = "sys_permission:系统权限表 相关接口")
 public class SysPermissionController extends BaseController<SysPermissionService, SysPermission> {
 
 }

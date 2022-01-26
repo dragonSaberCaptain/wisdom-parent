@@ -1,19 +1,17 @@
 package com.wisdom.example.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.wisdom.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 /**
- * Copyright ©2021 dragonSaberCaptain inc. All rights reserved.
+ * Copyright ©2022 dragonSaberCaptain inc. All rights reserved.
  *
  * <p>
  * 用户表 实体类
@@ -21,9 +19,10 @@ import javax.persistence.Entity;
  *
  * @author captain
  * @version 1.0
- * @datetime 2021-12-02 13:22:05 星期四
+ * @datetime 2022-01-04 13:44:06 星期二
  */
 @Data
+@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "USER")
 @Table(appliesTo = "USER", comment = "用户表")

@@ -1,8 +1,8 @@
 package ${package.Entity};
 
-#foreach($pkg in ${table.importPackages})
-import ${pkg};
-#end
+import com.baomidou.mybatisplus.annotation.*;
+import ${cfg.superEntityClassPackage};
+
 #if(${swagger2})
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,30 +21,25 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 #end
 /**
- * Copyright ©${cfg.year} dragonSaberCaptain inc. All rights reserved.
- *
- * <p>
  * $!{table.comment} 实体类
- * </p>
  *
  * @author ${author}
  * @version ${cfg.version}
- * @datetime ${cfg.createDate}
  */
 #if(${entityLombokModel})
 @Data
+#if(${chainModel})
+@Accessors(chain = true)
+#end
 #if(${superEntityClass})
 @EqualsAndHashCode(callSuper = true)
 #else
 @EqualsAndHashCode(callSuper = false)
 #end
+#end
 #if(${cfg.useJpa})
 @Entity(name = "${table.name.toUpperCase()}")
 @Table(appliesTo = "${table.name.toUpperCase()}", comment = "$!{table.comment}")
-#end
-#if(${chainModel})
-@Accessors(chain = true)
-#end
 #end
 #if(${swagger2})
 @ApiModel(value = "${entity}对象", description = "$!{table.comment}")
@@ -65,6 +60,14 @@ public class ${entity} implements Serializable {
 
 #if(${field.keyFlag})
 #set($keyPropertyName=${field.propertyName})
+#end
+## 乐观锁注解
+#if(${field.name.equalsIgnoreCase(${versionFieldName})})
+    @Version
+#end
+## 逻辑删除注解
+#if(${field.name.equalsIgnoreCase(${logicDeleteFieldName})})
+    @TableLogic
 #end
 #if("$!field.comment" != "")
 #if(${swagger2})
@@ -95,21 +98,12 @@ public class ${entity} implements Serializable {
 ###elseif(${field.convert})
 ##    @TableField("${field.annotationColumnName}")
 #end
-## 乐观锁注解
-#if(${versionFieldName}==${field.name})
-    @Version
-#end
-## 逻辑删除注解
-#if(${logicDeleteFieldName}==${field.name})
-    @TableLogic
-#end
 #if(${cfg.useJpa})
     @Column(columnDefinition = "${field.type} COMMENT '${field.comment}'")
 #end
     private ${field.propertyType} ${field.propertyName};
 #end
 ## ----------  END 字段循环遍历  ----------
-
 #if(!${entityLombokModel})
 #foreach($field in ${table.fields})
 #if(${field.propertyType.equals("boolean")})
@@ -136,7 +130,6 @@ public class ${entity} implements Serializable {
 ## --foreach end---
 #end
 ## --end of #if(!${entityLombokModel})--
-
 #if(${entityColumnConstant})
 #foreach($field in ${table.fields})
     public static final String ${field.name.toUpperCase()} = "${field.name}";
@@ -151,7 +144,6 @@ public class ${entity} implements Serializable {
         return null;
 #end
     }
-
 #end
 #if(!${entityLombokModel})
     @Override

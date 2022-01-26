@@ -1,0 +1,37 @@
+package ${package.Entity};
+
+#set($end=$entity.length() - 3)
+##import ${package.Entity}.${entity.substring(0, ${end})};
+#if(${swagger2})
+import io.swagger.annotations.ApiModel;
+#end
+#if(${entityLombokModel})
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+#if(${chainModel})
+import lombok.experimental.Accessors;
+#end
+#end
+/**
+ * $!{table.comment} 实体类 扩展
+ *
+ * @author ${author}
+ * @version ${cfg.version}
+ */
+#if(${entityLombokModel})
+@Data
+#if(${chainModel})
+@Accessors(chain = true)
+#end
+#if(${superEntityClass})
+@EqualsAndHashCode(callSuper = true)
+#else
+@EqualsAndHashCode(callSuper = false)
+#end
+#end
+#if(${swagger2})
+@ApiModel(value = "${entity}对象 扩展", description = "$!{table.comment}")
+#end
+public class ${entity} extends ${entity.substring(0, ${end})} {
+
+}

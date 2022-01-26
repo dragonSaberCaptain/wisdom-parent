@@ -1,0 +1,33 @@
+package ${package.ServiceImpl};
+
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+#if(${entityLombokModel})
+import lombok.extern.slf4j.Slf4j;
+#end
+
+/**
+ * $!{table.comment} 逻辑层
+ *
+ * @author ${author}
+ * @version ${cfg.version}
+ */
+#if(${entityLombokModel})
+@Slf4j
+#end
+@Service
+#if(${kotlin})
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+}
+#else
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+    @Autowired
+    private ${table.mapperName} ${table.mapperName.substring(0, 1).toLowerCase()}${table.mapperName.substring(1)};
+
+}
+#end

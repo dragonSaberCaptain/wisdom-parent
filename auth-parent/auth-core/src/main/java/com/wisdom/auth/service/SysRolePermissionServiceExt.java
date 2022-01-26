@@ -1,6 +1,6 @@
 package com.wisdom.auth.service;
 
-import com.wisdom.auth.entity.SysRolePermission;
+import com.wisdom.auth.entity.SysRolePermissionExt;
 import com.wisdom.common.service.BaseService;
 
 /**
@@ -9,6 +9,6 @@ import com.wisdom.common.service.BaseService;
  * @author captain
  * @version 1.0
  */
-public interface SysRolePermissionServiceExt extends BaseService<SysRolePermission> {
+public interface SysRolePermissionServiceExt extends BaseService<SysRolePermissionExt> {
 
 }

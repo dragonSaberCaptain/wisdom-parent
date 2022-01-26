@@ -23,8 +23,7 @@ public class StringUtil extends StringUtils {
 //        System.out.println("保留前N个和后N个的，其他用4个代替" + retainFour(testStr, 2, 2));
 //        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
 //        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
-//        System.out.println(isBlank(testNull));
-//        System.out.println(isNotBlank(testNull));
+//        System.out.println(firstToCase(testStr, true));
     }
 
     /**
@@ -213,21 +212,30 @@ public class StringUtil extends StringUtils {
 
     //首字母大写
     public static String upperFirstCase(String str) {
-        char[] chars = str.toCharArray();
-        if (Character.isUpperCase(chars[0])) {
-            return str;
-        }
-        chars[0] -= 32;
-        return String.valueOf(chars);
+        return firstToCase(str, true);
     }
 
     //首字母小写
-    public static String lowerFirstCase(String str) {
-        char[] chars = str.toCharArray();
-        if (Character.isLowerCase(chars[0])) {
+    public static String firstLowerCase(String str) {
+        return firstToCase(str, false);
+    }
+
+    /**
+     * 首字母大小写转换
+     *
+     * @param str         待转换字符串
+     * @param isUpperCase true:首字母转大写 false:首字母转小写
+     * @author captain
+     * @datetime 2021-12-27 09:54:07
+     */
+    public static String firstToCase(String str, boolean isUpperCase) {
+        if (str.length() == 0) {
             return str;
         }
-        chars[0] += 32;
-        return String.valueOf(chars);
+        if (isUpperCase) {
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
+        } else {
+            return str.substring(0, 1).toLowerCase() + str.substring(1);
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.wisdom.auth.service.impl;
 
-import com.wisdom.auth.entity.SysUserRole;
+import com.wisdom.auth.entity.SysUserRoleExt;
 import com.wisdom.auth.dao.SysUserRoleDaoExt;
 import com.wisdom.auth.service.SysUserRoleServiceExt;
 import com.wisdom.common.service.impl.BaseServiceImpl;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class SysUserRoleServiceImplExt extends BaseServiceImpl<SysUserRoleDaoExt, SysUserRole> implements SysUserRoleServiceExt {
+public class SysUserRoleServiceImplExt extends BaseServiceImpl<SysUserRoleDaoExt, SysUserRoleExt> implements SysUserRoleServiceExt {
     @Autowired
     private SysUserRoleDaoExt sysUserRoleDaoExt;
 

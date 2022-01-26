@@ -1,7 +1,7 @@
 package com.wisdom.common.dto;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.Accessors;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import java.util.Map;
  * @datetime 2021/10/27 10:34 星期三
  */
 @Data
-@Slf4j
+@Accessors(chain = true)
 public class AutoCodeDto {
     private String driverName;
     private String urlDb;
@@ -33,6 +33,7 @@ public class AutoCodeDto {
      * 生成文件的输出目录
      */
     private String outputDir;
+    private String outputExtDir;
 
     /**
      * 要去除的表前缀： 如定义sys 则sys_user 生成后为:user
@@ -65,10 +66,12 @@ public class AutoCodeDto {
     private String xmlPosDir;
 
     /**
-     * 是否生成jpa逆向建表语句
-     */
-    private boolean useJpa;
+     * 关闭生成的扩展代码
+     * */
+    private boolean openExt;
 
-    public AutoCodeDto() {
-    }
+    /**
+     *  是否覆盖文件
+    * */
+    private boolean fileOverride;
 }
