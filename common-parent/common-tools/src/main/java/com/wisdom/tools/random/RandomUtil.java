@@ -15,7 +15,7 @@ public class RandomUtil {
      *
      * @param
      * @return java.lang.String
-     * @author created by admin on 2021-07-01 17:12:55
+     * @author captain  2021-07-01 17:12:55
      */
     public static String getUuidUn() {
         return String.valueOf(UUID.randomUUID()).replace("-", "");

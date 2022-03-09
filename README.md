@@ -16,8 +16,9 @@ Soredemo Sekai wa Utsukushii !!!
 
 #### 使用说明
 
-1.  swagger访问路径:http://localhost:post/swagger-ui/index.html
-2.  swagger的doc访问路径:http://localhost:post/doc.html (废弃)
-3.  druid访问路径:http://localhost:port/druid/index.html admin 123
-4.  sentinel访问路径:http://localhost:port sentinel sentinel
-5.  nacos访问路径:http://localhost:port/nacos/index.html nacos nacos
+1.  http://localhost:post/swagger-ui/index.html
+2.  http://localhost:post/doc.html (废弃)
+3.  http://localhost:port/druid/index.html admin 123
+4.  http://localhost:port sentinel sentinel
+5.  http://localhost:port/nacos/index.html nacos nacos
+6.  http://localhost:post/oauth/authorize?client_id=client&response_type=code admin 123

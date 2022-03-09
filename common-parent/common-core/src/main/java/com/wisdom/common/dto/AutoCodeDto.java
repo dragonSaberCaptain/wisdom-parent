@@ -1,9 +1,9 @@
 package com.wisdom.common.dto;
 
+import com.wisdom.common.entity.CustomAddExt;
+import com.wisdom.common.entity.DbInfoEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.Map;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -17,10 +17,16 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 public class AutoCodeDto {
-    private String driverName;
-    private String urlDb;
-    private String username;
-    private String password;
+    /**
+     * 数据库相关信息
+     */
+    private DbInfoEntity dbInfoEntity;
+
+    /**
+     * 自定义扩展属性,velocity模板使用
+     */
+    private CustomAddExt customAddExt;
+
     /**
      * 生成的模块的父路径：如 com.wisdom
      */
@@ -56,22 +62,12 @@ public class AutoCodeDto {
     private String exclude;
 
     /**
-     * 自定义参数配置
-     */
-    private Map<String, Object> customMap;
-
-    /**
      * 自定义xml文件输出目录
      */
     private String xmlPosDir;
 
     /**
-     * 生成扩展代码
-     * */
-    private boolean openExt;
-
-    /**
      *  是否覆盖文件
     * */
-    private boolean fileOverride;
+    private Boolean fileOverride;
 }

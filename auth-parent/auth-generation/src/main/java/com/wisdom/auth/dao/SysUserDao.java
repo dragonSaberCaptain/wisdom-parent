@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
  * 系统用户表 持久层
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @Mapper
 public interface SysUserDao extends BaseDao<SysUser> {

@@ -4,7 +4,8 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.SysPermission">
-        <result column="ID" property="id"/>
+        <id column="ID" property="id"/>
+        <!-- 生成公共普通字段 -->
         <result column="CREATE_DATE_TIME" property="createDateTime"/>
         <result column="CREATE_ID" property="createId"/>
         <result column="DEL_FLAG" property="delFlag"/>
@@ -12,6 +13,7 @@
         <result column="UP_DATE_TIME" property="upDateTime"/>
         <result column="UPDATE_ID" property="updateId"/>
         <result column="VERSION" property="version"/>
+        <!-- 生成普通字段 -->
         <result column="DESCRIPTION" property="description"/>
         <result column="NAME_CN" property="nameCn"/>
         <result column="NAME_EN" property="nameEn"/>
@@ -19,7 +21,6 @@
         <result column="URL" property="url"/>
     </resultMap>
 
-    <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         ID,
         CREATE_DATE_TIME,
@@ -31,7 +32,6 @@
         VERSION,
         DESCRIPTION, NAME_CN, NAME_EN, PARENT_ID, URL
     </sql>
-
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="searchBy">
         <trim prefix="where" prefixOverrides="and|or">

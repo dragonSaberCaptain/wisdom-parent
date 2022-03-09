@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 系统角色表 逻辑层
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @Service
 public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole> implements SysRoleService {

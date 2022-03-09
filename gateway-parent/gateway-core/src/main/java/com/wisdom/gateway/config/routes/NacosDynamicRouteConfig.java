@@ -64,7 +64,7 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
             Properties prop = new Properties();
             prop.put(PropertyKeyConst.NAMESPACE, serverNamespace);
             prop.put(PropertyKeyConst.SERVER_ADDR, serverAddr);
-            
+
             ConfigService config = NacosFactory.createConfigService(prop);
             String content = config.getConfig(appName + "-" + dataId, group, 5000);
             publisher(content);

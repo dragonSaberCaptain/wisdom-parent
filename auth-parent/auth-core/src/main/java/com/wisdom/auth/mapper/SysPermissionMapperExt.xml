@@ -45,12 +45,12 @@
         SELECT
             p.id,
             p.parent_id,
-            p.NAME,
-            p.ename,
+            p.NAME_CN,
+            p.NAME_EN,
             p.url,
             p.description,
-            p.create_time,
-            p.update_time
+            p.CREATE_DATE_TIME,
+            p.UP_DATE_TIME
         FROM
             sys_permission AS p
             LEFT JOIN sys_role_permission AS rp ON rp.permission_id = p.id

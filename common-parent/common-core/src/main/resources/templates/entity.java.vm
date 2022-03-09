@@ -2,7 +2,6 @@ package ${package.Entity};
 
 import com.baomidou.mybatisplus.annotation.*;
 import ${cfg.superEntityClassPackage};
-
 #if(${swagger2})
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -16,9 +15,23 @@ import lombok.experimental.Accessors;
 #end
 #if(${cfg.useJpa})
 import org.hibernate.annotations.Table;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+#end
+#foreach($fieldSub in ${table.fields})
+#if(${fieldSub.propertyType} == "Date")
+#set($showDate=true)
+#elseif(${fieldSub.propertyType} == "Blob")
+#set($showBlob=true)
+#end
+#end
+#if($showDate)
+import java.util.Date;
+#end
+#if($showBlob)
+import java.sql.Blob;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 #end
 /**
  * $!{table.comment} 实体类
@@ -80,16 +93,17 @@ public class ${entity} implements Serializable {
 #end
 #if(${field.keyFlag})
 ## 主键
-#if(${field.keyIdentityFlag})
-    @TableId(value = "${field.annotationColumnName}", type = IdType.AUTO)
-#elseif(!$null.isNull(${idType}) && "$!idType" != "")
-    @TableId(value = "${field.annotationColumnName}", type = IdType.${idType})
-#elseif(${field.convert})
-    @TableId("${field.annotationColumnName}")
-#end
-## 普通字段
-#elseif(${field.fill})
-## -----   存在字段填充设置   -----
+    @Id
+###if(${field.keyIdentityFlag})
+##    @TableId(type = IdType.AUTO)
+###elseif(!$null.isNull(${idType}) && "$!idType" != "")
+##    @TableId(type = IdType.${idType})
+###elseif(${field.convert})
+##    @TableId()
+###end
+#### 普通字段
+###elseif(${field.fill})
+####-----   存在字段填充设置   -----
 ###if(${field.convert})
 ##    @TableField(value = "${field.annotationColumnName}", fill = FieldFill.${field.fill})
 ###else
@@ -98,10 +112,17 @@ public class ${entity} implements Serializable {
 ###elseif(${field.convert})
 ##    @TableField("${field.annotationColumnName}")
 #end
+#if(${field.propertyType} == "Blob")
+    @JsonIgnore
+#end
 #if(${cfg.useJpa})
     @Column(columnDefinition = "${field.type} COMMENT '${field.comment}'")
 #end
+#if(${cfg.openExt})
+    protected ${field.propertyType} ${field.propertyName};
+#else
     private ${field.propertyType} ${field.propertyName};
+#end
 #end
 ## ----------  END 字段循环遍历  ----------
 #if(!${entityLombokModel})

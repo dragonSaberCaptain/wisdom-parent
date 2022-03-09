@@ -75,7 +75,7 @@ public class ExcelUtil {
      *
      * @param excelData    导出数据
      * @param outputStream 输出流
-     * @author created by captain on 2021-07-22 10:15:44
+     * @author captain  2021-07-22 10:15:44
      */
     public static void listToExecl(ExcelData excelData, OutputStream outputStream) {
         Workbook workbook = createWorkbook(excelData.getFileType());
@@ -264,7 +264,7 @@ public class ExcelUtil {
      * @param entityClazz 要转换的类
      * @param inputStream 输入流
      * @return java.util.List<T>
-     * @author created by captain on 2021-07-22 10:16:51
+     * @author captain  2021-07-22 10:16:51
      */
     public static <T> List<T> execlToList(ExcelData excelData, Class<T> entityClazz, InputStream inputStream) {
         Workbook workbook = createWorkbook(excelData.getFileType(), inputStream);
@@ -419,7 +419,7 @@ public class ExcelUtil {
      * @param fieldName  字段名
      * @param fieldValue 字段值
      * @param obj        对象
-     * @author created by captain on 2021-07-22 10:17:49
+     * @author captain  2021-07-22 10:17:49
      */
     private static void setFieldValueByName(String fieldName,
                                             Object fieldValue, Object obj) {
@@ -490,7 +490,7 @@ public class ExcelUtil {
      * @param fieldName 字段名
      * @param clazz     包含该字段的类
      * @return java.lang.reflect.Field 字段
-     * @author created by captain on 2021-07-22 10:18:33
+     * @author captain  2021-07-22 10:18:33
      */
     private static Field getFieldByName(String fieldName, Class<?> clazz) {
         // 拿到本类的所有字段
@@ -519,7 +519,7 @@ public class ExcelUtil {
      * @param column      下拉列表所在列 从'A'开始
      * @param fromRow     下拉限制开始行
      * @param endRow      下拉限制结束行
-     * @author created by captain on 2021-07-22 10:19:26
+     * @author captain  2021-07-22 10:19:26
      */
     public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object options, String column, int fromRow, int endRow) {
         String hiddenSheetName = "hideSheet" + workbook.getNumberOfSheets();
@@ -560,7 +560,7 @@ public class ExcelUtil {
      * @param valueColumn 级联下拉列表位置
      * @param fromRow     级联限制开始行
      * @param endRow      级联限制结束行
-     * @author created by captain on 2021-07-22 10:20:47
+     * @author captain  2021-07-22 10:20:47
      */
     public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn,
                                             int fromRow, int endRow) {
@@ -620,7 +620,7 @@ public class ExcelUtil {
      * @param valueColumn 匹配到的内容列（例如 网址）
      * @param fromRow     下拉限制开始行
      * @param endRow      下拉限制结束行
-     * @author created by captain on 2021-07-22 10:21:34
+     * @author captain  2021-07-22 10:21:34
      */
     public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String
             valueColumn, int fromRow, int endRow) {
@@ -683,7 +683,7 @@ public class ExcelUtil {
      * @param nameName 要添加的名字
      * @param formula  公式
      * @return org.apache.poi.ss.usermodel.Name
-     * @author created by captian on 2021-07-22 10:22:06
+     * @author captian
      */
     private static Name createName(Workbook workbook, String nameName, String formula) {
         nameName = formatNameName(nameName);
@@ -697,8 +697,9 @@ public class ExcelUtil {
      * 隐藏excel中的sheet页
      *
      * @param workbook 要隐藏的excel
-     * @param start    需要隐藏的 sheet开始索引
-     * @author created by captian on 2021-07-22 10:23:42
+     * @param start  需要隐藏的 sheet开始索引
+     * @author captain
+     * @datetime 2022-03-08 10:14:59
      */
     private static void hideTempDataSheet(Workbook workbook, int start) {
         for (int i = start; i < workbook.getNumberOfSheets(); i++) {
@@ -710,7 +711,7 @@ public class ExcelUtil {
      * 遍历并隐藏工作表名带hide的表
      *
      * @param workbook 要隐藏的excel
-     * @author created by captain on 2021-07-19 10:02:45
+     * @author captain  2021-07-19 10:02:45
      */
     private static void hideTempDataSheet(Workbook workbook) {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -726,7 +727,7 @@ public class ExcelUtil {
      *
      * @param name 名称
      * @return java.lang.String
-     * @author created by captain on 2021-07-22 10:24:41
+     * @author captain  2021-07-22 10:24:41
      */
     static String formatNameName(String name) {
         name = name.replaceAll(" ", "").replaceAll("-", "_").replaceAll(":", ".");
@@ -742,7 +743,7 @@ public class ExcelUtil {
      *
      * @param columnIndex 要转换的下标
      * @return java.lang.String
-     * @author created by captain on 2021-07-22 10:25:04
+     * @author captain  2021-07-22 10:25:04
      */
     public static String excelColIndexToStr(int columnIndex) {
         if (columnIndex < 0) {
@@ -764,7 +765,7 @@ public class ExcelUtil {
      *
      * @param colStr 要计算的字符串
      * @return int
-     * @author created by captain on 2021-07-22 10:25:56
+     * @author captain  2021-07-22 10:25:56
      */
     public static int getCharSumByStr(String colStr) {
         int sum = 0;
@@ -780,7 +781,7 @@ public class ExcelUtil {
      *
      * @param colStr 要转换的列字母
      * @return int
-     * @author created by captain on 2021-07-22 10:26:50
+     * @author captain  2021-07-22 10:26:50
      */
     public static int excelColStrToNum(String colStr) {
         int num = 0;
@@ -804,7 +805,7 @@ public class ExcelUtil {
      * @param fileType 文件类型
      * @param in       输入流
      * @return org.apache.poi.ss.usermodel.Workbook
-     * @author created by captain on 2021-07-22 10:29:17
+     * @author captain  2021-07-22 10:29:17
      */
     public static Workbook createWorkbook(String fileType, InputStream in) {
         Workbook workbook = null;
@@ -840,7 +841,7 @@ public class ExcelUtil {
 //     *
 //     * @param fullFileName 输出流名称
 //     * @return java.io.OutputStream
-//     * @author created by captain on 2021-07-22 10:30:32
+//     * @author captain  2021-07-22 10:30:32
 //     */
 //    public static OutputStream getOutputStream(String fullFileName, HttpServletResponse response) {
 //        //设置response的属性

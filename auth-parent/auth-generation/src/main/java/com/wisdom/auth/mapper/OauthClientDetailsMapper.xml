@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.auth.dao.OauthClientDetailsDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.OauthClientDetails">
+        <id column="ID" property="id"/>
+        <!-- 生成公共普通字段 -->
+        <result column="CREATE_DATE_TIME" property="createDateTime"/>
+        <result column="CREATE_ID" property="createId"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+        <result column="REMARK" property="remark"/>
+        <result column="UP_DATE_TIME" property="upDateTime"/>
+        <result column="UPDATE_ID" property="updateId"/>
+        <result column="VERSION" property="version"/>
+        <!-- 生成普通字段 -->
+        <result column="ACCESS_TOKEN_VALIDITY" property="accessTokenValidity"/>
+        <result column="ADDITIONAL_INFORMATION" property="additionalInformation"/>
+        <result column="AUTHORITIES" property="authorities"/>
+        <result column="AUTHORIZED_GRANT_TYPES" property="authorizedGrantTypes"/>
+        <result column="AUTOAPPROVE" property="autoapprove"/>
+        <result column="CLIENT_ID" property="clientId"/>
+        <result column="CLIENT_SECRET" property="clientSecret"/>
+        <result column="REFRESH_TOKEN_VALIDITY" property="refreshTokenValidity"/>
+        <result column="RESOURCE_IDS" property="resourceIds"/>
+        <result column="SCOPE" property="scope"/>
+        <result column="WEB_SERVER_REDIRECT_URI" property="webServerRedirectUri"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,
+        CREATE_DATE_TIME,
+        CREATE_ID,
+        DEL_FLAG,
+        REMARK,
+        UP_DATE_TIME,
+        UPDATE_ID,
+        VERSION,
+        ACCESS_TOKEN_VALIDITY, ADDITIONAL_INFORMATION, AUTHORITIES, AUTHORIZED_GRANT_TYPES, AUTOAPPROVE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN_VALIDITY, RESOURCE_IDS, SCOPE, WEB_SERVER_REDIRECT_URI
+    </sql>
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="searchBy">
+        <trim prefix="where" prefixOverrides="and|or">
+            <!-- 生成公共字段 -->
+            <if test="id != null">and ID=#{id}</if>
+            <if test="createDateTime != null">and CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">and CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">and DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">and REMARK=#{remark}</if>
+            <if test="upDateTime != null">and UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
+            <if test="version != null">and VERSION=#{version}</if>
+            <!-- 生成普通字段 -->
+            <if test="accessTokenValidity != null">and ACCESS_TOKEN_VALIDITY=#{accessTokenValidity}</if>
+            <if test="additionalInformation != null">and ADDITIONAL_INFORMATION=#{additionalInformation}</if>
+            <if test="authorities != null">and AUTHORITIES=#{authorities}</if>
+            <if test="authorizedGrantTypes != null">and AUTHORIZED_GRANT_TYPES=#{authorizedGrantTypes}</if>
+            <if test="autoapprove != null">and AUTOAPPROVE=#{autoapprove}</if>
+            <if test="clientId != null">and CLIENT_ID=#{clientId}</if>
+            <if test="clientSecret != null">and CLIENT_SECRET=#{clientSecret}</if>
+            <if test="refreshTokenValidity != null">and REFRESH_TOKEN_VALIDITY=#{refreshTokenValidity}</if>
+            <if test="resourceIds != null">and RESOURCE_IDS=#{resourceIds}</if>
+            <if test="scope != null">and SCOPE=#{scope}</if>
+            <if test="webServerRedirectUri != null">and WEB_SERVER_REDIRECT_URI=#{webServerRedirectUri}</if>
+        </trim>
+    </sql>
+
+    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from oauth_client_details
+        <include refid="searchBy"/>
+    </select>
+</mapper>

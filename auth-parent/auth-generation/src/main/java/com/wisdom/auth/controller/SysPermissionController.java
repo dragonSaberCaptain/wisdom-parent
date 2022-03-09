@@ -11,7 +11,7 @@ import com.wisdom.auth.entity.SysPermission;
  * 系统权限表 控制层
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @RestController
 @RequestMapping("/auth/sysPermission")

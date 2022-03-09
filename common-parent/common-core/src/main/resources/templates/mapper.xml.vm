@@ -10,31 +10,46 @@
 #if(${baseResultMap})
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+#foreach($field in ${table.commonFields})##生成公共字段
+#if(${field.keyFlag})##生成公共字段主键排在第一位
+        <id column="${field.name}" property="${field.propertyName}"/>
+#end
+#end
 #foreach($field in ${table.fields})
 #if(${field.keyFlag})##生成主键排在第一位
-        <id column="${field.name}" property="${field.propertyName}" />
+        <id column="${field.name}" property="${field.propertyName}"/>
 #end
 #end
+        <!-- 生成公共普通字段 -->
 #foreach($field in ${table.commonFields})##生成公共字段
+#if(!${field.keyFlag})##生成公共普通字段
+#if(${field.propertyType} == "Blob")
+        <result column="${field.name}" property="${field.propertyName}" typeHandler="org.apache.ibatis.type.BlobTypeHandler"/>
+#else
         <result column="${field.name}" property="${field.propertyName}"/>
 #end
+#end
+#end
+        <!-- 生成普通字段 -->
 #foreach($field in ${table.fields})
 #if(!${field.keyFlag})##生成普通字段
+#if(${field.propertyType} == "Blob")
+        <result column="${field.name}" property="${field.propertyName}" typeHandler="org.apache.ibatis.type.BlobTypeHandler"/>
+#else
         <result column="${field.name}" property="${field.propertyName}"/>
+#end
 #end
 #end
     </resultMap>
 
 #end
 #if(${baseColumnList})
-    <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
 #foreach($field in ${table.commonFields})
         ${field.columnName},
 #end
         ${table.fieldNames}
     </sql>
-
 #end
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="searchBy">

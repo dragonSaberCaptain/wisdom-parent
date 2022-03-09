@@ -11,7 +11,7 @@ import com.wisdom.auth.entity.SysRole;
  * 系统角色表 控制层
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @RestController
 @RequestMapping("/auth/sysRole")

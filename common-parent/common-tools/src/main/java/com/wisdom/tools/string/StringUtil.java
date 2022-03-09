@@ -10,24 +10,8 @@ import org.apache.commons.lang3.StringUtils;
  * @date 2018-07-31 15:11 星期二
  */
 public class StringUtil extends StringUtils {
-    public static void main(String[] args) {
-        String testStr = "dragonSaberCaptain";
-        String phoneStr = "12345678910";
-        String idCardStr = "123456789101112131";
-        String testNull = "null";
-
-//        System.out.println("替换从开始到结束内的" + replaceRangeIndex(testStr, 2, 7));
-//        System.out.println("替换前N个和后N个的" + replaceRangeNum(testStr, 4, 4));
-//        System.out.println("手机号替换的" + replaceRangeToPhone(phoneStr));
-//        System.out.println("身份证号替换的" + replaceRangeToIdCard(idCardStr));
-//        System.out.println("保留前N个和后N个的，其他用4个代替" + retainFour(testStr, 2, 2));
-//        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
-//        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
-//        System.out.println(firstToCase(testStr, true));
-    }
-
     /**
-     * 对字符加星号处理:把从开始位置到结束位置的字符串以星号代替
+     * 对字符加星号处理:把从开始位置到结束位置的字符串以给定符号代替
      * 例如：begin：2  end：7
      * 源字符串：hello world
      * 目标字符串：he*****orld
@@ -55,10 +39,16 @@ public class StringUtil extends StringUtils {
         return sourceStr;
     }
 
+    /**
+     * 对字符加星号处理:把从开始位置到结束位置的字符串以默认星号代替
+     */
     public static char[] replaceRangeIndex(char[] sourceStr, int beginIndex, int endIndex) {
         return replaceRangeIndex(sourceStr, beginIndex, endIndex, "*".charAt(0));
     }
 
+    /**
+     * 对字符加星号处理:把从开始位置到结束位置的字符串以默认星号代替
+     */
     public static String replaceRangeIndex(String sourceStr, int beginIndex, int endIndex) {
         return new String(replaceRangeIndex(sourceStr.toCharArray(), beginIndex, endIndex));
     }
@@ -66,9 +56,6 @@ public class StringUtil extends StringUtils {
 
     /**
      * 对字符加星号处理：保留前N位和后N位，其他的字符以星号代替
-     *
-     * @author dragonSaberCaptain
-     * @date 2018-07-31 15:22:29
      */
     public static String replaceRangeNum(String sourceStr, int frontNum,
                                          int endNum) {
@@ -77,9 +64,6 @@ public class StringUtil extends StringUtils {
 
     /**
      * 对字符加星号处理:手机号脱敏，例如：123****8910
-     *
-     * @author dragonSaberCaptain
-     * @date 2018-07-31 15:25:59
      */
     public static String replaceRangeToPhone(String sourceStr) {
         return replaceRangeNum(sourceStr, 3, 4);
@@ -87,16 +71,13 @@ public class StringUtil extends StringUtils {
 
     /**
      * 对字符加星号处理:身份证脱敏，例如：123456*******2131
-     *
-     * @author dragonSaberCaptain
-     * @date 2018-07-31 15:25:59
      */
     public static String replaceRangeToIdCard(String sourceStr) {
         return replaceRangeNum(sourceStr, 6, 4);
     }
 
     /**
-     * 对字符加星号处理：保留前N位和后N位，其他的字符以4个星号代替
+     * 对字符加星号处理：保留前N位和后N位，其他的字符以4个自定义符号代替
      *
      * @param sourceStr 字符串源
      * @warning 字符串长度变化 例如：hello world 到 hell****orld
@@ -110,6 +91,9 @@ public class StringUtil extends StringUtils {
         return sb.replace(frontNum, sb.length() - endNum, repeat).toString();
     }
 
+    /**
+     * 对字符加星号处理：保留前N位和后N位，其他的字符以4个星号(*)代替
+     */
     public static String retainFour(String sourceStr, int frontNum,
                                     int endNum) {
         return retainFour(sourceStr, frontNum, endNum, "*".charAt(0));
@@ -117,9 +101,6 @@ public class StringUtil extends StringUtils {
 
     /**
      * 对字符加星号处理：身份证脱敏，保留前4位和后4位，其他的字符以4个星号代替，例如：123456****2131
-     *
-     * @author dragonSaberCaptain
-     * @date 2018-07-31 15:24:55
      */
     public static String retainFourToIdCard(String sourceStr) {
         return retainFour(sourceStr, 6, 4);
@@ -127,9 +108,6 @@ public class StringUtil extends StringUtils {
 
     /**
      * 对字符加星号处理:手机号脱敏，例如：138****1234
-     *
-     * @author dragonSaberCaptain
-     * @date 2018-07-31 15:25:59
      */
     public static String retainFourToPhone(String sourceStr) {
         return retainFour(sourceStr, 3, 4);
@@ -145,7 +123,7 @@ public class StringUtil extends StringUtils {
      *
      * @param cs 字符串
      * @return boolean
-     * @author admin
+     * @author captain
      * @datetime 2021-09-23 10:14:37
      */
     public static boolean isEmpty(final CharSequence cs) {
@@ -162,7 +140,7 @@ public class StringUtil extends StringUtils {
      *
      * @param cs 字符串
      * @return boolean
-     * @author admin
+     * @author captain
      * @datetime 2021-09-23 10:14:37
      */
     public static boolean isNotEmpty(final CharSequence cs) {
@@ -210,12 +188,16 @@ public class StringUtil extends StringUtils {
         return !isBlank(cs);
     }
 
-    //首字母大写
+    /**
+     * 首字母大写
+     */
     public static String upperFirstCase(String str) {
         return firstToCase(str, true);
     }
 
-    //首字母小写
+    /**
+     * 首字母小写
+     */
     public static String firstLowerCase(String str) {
         return firstToCase(str, false);
     }
@@ -237,5 +219,76 @@ public class StringUtil extends StringUtils {
         } else {
             return str.substring(0, 1).toLowerCase() + str.substring(1);
         }
+    }
+
+    /**
+     * 字符串左补零
+     */
+    public static String addLeftZero(String strSource, int len) {
+        return addSymbol(strSource, len, true, '0');
+    }
+
+    /**
+     * 字符串右补零
+     */
+    public static String addRightZero(String strSource, int len) {
+        return addSymbol(strSource, len, false, '0');
+    }
+
+    /**
+     * 给字符串左补或者右补指定次数的字符串
+     *
+     * @param strSource 字符串源
+     * @param len       位数
+     * @param isLeft    左补
+     * @param symbol    字符串
+     * @author captain
+     * @datetime 2022-03-08 17:48:55
+     */
+    public static String addSymbol(String strSource, int len, boolean isLeft, char symbol) {
+        int tmpLen = strSource.length();
+        if (tmpLen == len) {
+            return strSource;
+        }
+
+        if (tmpLen > len) {
+            tmpLen = tmpLen ^ len;
+            len = tmpLen ^ len;
+            tmpLen = tmpLen ^ len;
+        }
+        StringBuilder strBuilder = new StringBuilder(strSource);
+        if (isLeft) {
+            for (int i = tmpLen; i < len; i++) {
+                strBuilder.insert(0, symbol);
+            }
+            return strBuilder.toString();
+        } else {
+            strBuilder.append(String.valueOf(symbol).repeat(len - tmpLen));
+            return strBuilder.toString();
+        }
+    }
+
+    public static void main(String[] args) {
+        String testStr = "dragonSaberCaptain";
+        String phoneStr = "12345678910";
+        String idCardStr = "123456789101112131";
+        String testNull = "null";
+
+        long startMili = System.currentTimeMillis();
+        String str1 = addLeftZero("11", 100000);
+        long endMili = System.currentTimeMillis();
+        System.out.println("str1.length():" + str1.length() + " 总耗时为：" + (endMili - startMili) + "毫秒");
+
+        System.out.println(addLeftZero(testNull, 3));
+        System.out.println(addRightZero(testNull, 3));
+        System.out.println(addSymbol(testNull, 3, false, ' '));
+//        System.out.println("替换从开始到结束内的" + replaceRangeIndex(testStr, 2, 7));
+//        System.out.println("替换前N个和后N个的" + replaceRangeNum(testStr, 4, 4));
+//        System.out.println("手机号替换的" + replaceRangeToPhone(phoneStr));
+//        System.out.println("身份证号替换的" + replaceRangeToIdCard(idCardStr));
+//        System.out.println("保留前N个和后N个的，其他用4个代替" + retainFour(testStr, 2, 2));
+//        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
+//        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
+//        System.out.println(firstToCase(testStr, true));
     }
 }

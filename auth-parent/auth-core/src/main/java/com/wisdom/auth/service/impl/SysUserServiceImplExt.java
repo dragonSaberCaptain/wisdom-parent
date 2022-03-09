@@ -1,6 +1,7 @@
 package com.wisdom.auth.service.impl;
 
 import com.wisdom.auth.dao.SysPermissionDaoExt;
+import com.wisdom.auth.dao.SysUserDao;
 import com.wisdom.auth.dao.SysUserDaoExt;
 import com.wisdom.auth.entity.SysPermission;
 import com.wisdom.auth.entity.SysPermissionExt;
@@ -33,7 +34,7 @@ import java.util.List;
 @Service
 public class SysUserServiceImplExt extends BaseServiceImpl<SysUserDaoExt, SysUserExt> implements SysUserServiceExt {
     @Autowired
-    private SysUserDaoExt sysUserDaoExt;
+    private SysUserDao sysUserDao;
 
     @Autowired
     private SysPermissionDaoExt sysPermissionDaoExt;
@@ -45,11 +46,11 @@ public class SysUserServiceImplExt extends BaseServiceImpl<SysUserDaoExt, SysUse
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUserExt sysUserExt = new SysUserExt();
-        sysUserExt.setAccount(username);
-        sysUserExt = sysUserDaoExt.selectOne(MybatisplusUtil.createWrapper(sysUserExt));
+        SysUser sysUser = new SysUser();
+        sysUser.setAccount(username);
+        sysUser = sysUserDao.selectOne(MybatisplusUtil.createWrapper(sysUser));
         //验证账户为username的用户是否存在
-        if (null == sysUserExt) {
+        if (null == sysUser) {
             log.info("登录失败,未找到用户:" + username);
             throw new ResultException(HttpEnum.NO_CONTENT);
         }
@@ -57,11 +58,11 @@ public class SysUserServiceImplExt extends BaseServiceImpl<SysUserDaoExt, SysUse
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         //获取用户权限
-        List<SysPermissionExt> sysPermissionExts = sysPermissionDaoExt.selectByUserId(sysUserExt.getId());
+        List<SysPermission> sysPermissionExts = sysPermissionDaoExt.selectByUserId(sysUser.getId());
         //设置用户权限
         sysPermissionExts.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getNameEn())));
 
         //返回认证用户
-        return new User(sysUserExt.getAccount(), sysUserExt.getPassword(), authorities);
+        return new User(sysUser.getAccount(), sysUser.getPassword(), authorities);
     }
 }

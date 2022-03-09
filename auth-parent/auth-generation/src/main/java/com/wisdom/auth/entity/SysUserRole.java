@@ -2,21 +2,20 @@ package com.wisdom.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.wisdom.common.entity.BaseEntity;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Table;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 /**
  * 系统用户角色表 实体类
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @Data
 @Accessors(chain = true)
@@ -30,9 +29,9 @@ public class SysUserRole extends BaseEntity {
 
     @ApiModelProperty(value = "角色id")
     @Column(columnDefinition = "varchar(32) COMMENT '角色id'")
-    private String roleId;
+    protected String roleId;
 
     @ApiModelProperty(value = "用户id")
     @Column(columnDefinition = "varchar(32) COMMENT '用户id'")
-    private String userId;
+    protected String userId;
 }

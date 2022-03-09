@@ -2,21 +2,20 @@ package com.wisdom.auth.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.wisdom.common.entity.BaseEntity;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Table;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 /**
  * 系统用户表 实体类
  *
  * @author captain
- * @version 1.0
+ * @version 1.0.0
  */
 @Data
 @Accessors(chain = true)
@@ -30,13 +29,13 @@ public class SysUser extends BaseEntity {
 
     @ApiModelProperty(value = "账号")
     @Column(columnDefinition = "varchar(64) COMMENT '账号'")
-    private String account;
+    protected String account;
 
     @ApiModelProperty(value = "密码")
     @Column(columnDefinition = "varchar(255) COMMENT '密码'")
-    private String password;
+    protected String password;
 
     @ApiModelProperty(value = "登录状态：0否 1是  默认：0")
     @Column(columnDefinition = "varchar(2) COMMENT '登录状态：0否 1是  默认：0'")
-    private String loginFlag;
+    protected String loginFlag;
 }

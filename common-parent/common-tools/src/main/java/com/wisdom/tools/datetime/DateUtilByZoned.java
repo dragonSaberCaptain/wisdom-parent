@@ -182,7 +182,7 @@ public class DateUtilByZoned {
      * @param zonedDateTime 日期时间
      * @param num           数量
      * @param chronoUnit    日期时间单位
-     * @author created by captain on 2021-07-01 15:32:56
+     * @author captain  2021-07-01 15:32:56
      */
     public static String getPlus(ZonedDateTime zonedDateTime, long num, ChronoUnit chronoUnit, DateTimeEnum pattern) {
         return getPattern(zonedDateTime.plus(num, chronoUnit), pattern);
@@ -194,7 +194,7 @@ public class DateUtilByZoned {
      * @param startDateTime 开始时间
      * @param endDateTime   结束时间
      * @param chronoUnit    日期时间单位
-     * @author created by captain on 2021-07-01 15:29:14
+     * @author captain  2021-07-01 15:29:14
      */
     public static long getChronoUnitBetween(ZonedDateTime startDateTime, ZonedDateTime endDateTime, ChronoUnit chronoUnit) {
         return Math.abs(startDateTime.until(endDateTime, chronoUnit));
@@ -206,7 +206,7 @@ public class DateUtilByZoned {
      * @param srcDateTime   源日期时间
      * @param startDateTime 开始日期时间
      * @param endDateTime   结束日期时间
-     * @author created by captain on 2021-07-01 16:35:58
+     * @author captain  2021-07-01 16:35:58
      */
     public static boolean isInRange(ZonedDateTime srcDateTime, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         if (startDateTime.isAfter(endDateTime)) {
@@ -312,7 +312,7 @@ public class DateUtilByZoned {
     /**
      * 方法主函数，用于测试
      *
-     * @author created by captain on 2021-06-28 17:18:59
+     * @author captain  2021-06-28 17:18:59
      */
     public static void main(String[] args) {
         ZonedDateTime nowDateTime = now();

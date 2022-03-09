@@ -1,5 +1,6 @@
 package com.wisdom.auth.dao;
 
+import com.wisdom.auth.entity.SysPermission;
 import com.wisdom.auth.entity.SysPermissionExt;
 import com.wisdom.common.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,5 +15,5 @@ import java.util.List;
  */
 @Mapper
 public interface SysPermissionDaoExt extends BaseDao<SysPermissionExt> {
-    List<SysPermissionExt> selectByUserId(Object object);
+    List<SysPermission> selectByUserId(Object object);
 }

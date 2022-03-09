@@ -1,5 +1,6 @@
 package com.wisdom.common.tools.mybatisplus;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
@@ -13,16 +14,14 @@ import com.wisdom.common.controller.BaseController;
 import com.wisdom.common.dao.BaseDao;
 import com.wisdom.common.dto.AutoCodeDto;
 import com.wisdom.common.entity.BaseEntity;
+import com.wisdom.common.entity.CustomAddExt;
 import com.wisdom.common.service.BaseService;
 import com.wisdom.common.service.impl.BaseServiceImpl;
-import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.object.ObjectUtil;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +72,10 @@ public class MybatisplusUtil {
 
         //2、数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl(autoCodeDto.getUrlDb());
-        dsc.setDriverName(autoCodeDto.getDriverName());
-        dsc.setUsername(autoCodeDto.getUsername());
-        dsc.setPassword(autoCodeDto.getPassword());
+        dsc.setUrl(autoCodeDto.getDbInfoEntity().getUrlDb());
+        dsc.setDriverName(autoCodeDto.getDbInfoEntity().getDriverName());
+        dsc.setUsername(autoCodeDto.getDbInfoEntity().getUsername());
+        dsc.setPassword(autoCodeDto.getDbInfoEntity().getPassword());
 
         // 3、包配置
         PackageConfig pc = new PackageConfig();
@@ -87,7 +86,7 @@ public class MybatisplusUtil {
         }
 
         pc.setParent(autoCodeDto.getModuleParentPath());
-//        pc.setController("controller");
+        pc.setController("controller");
         pc.setService("service");
         pc.setServiceImpl("service.impl");
         pc.setMapper("dao");
@@ -97,7 +96,7 @@ public class MybatisplusUtil {
         // 4、模板配置
         TemplateConfig tc = new TemplateConfig();
 
-//        tc.setController("/templates/controller.java.vm");
+        tc.setController("/templates/controller.java.vm");
         tc.setMapper("/templates/dao.java.vm");
         tc.setService("/templates/service.java.vm");
         tc.setServiceImpl("/templates/serviceImpl.java.vm");
@@ -112,21 +111,10 @@ public class MybatisplusUtil {
         InjectionConfig cfg = new InjectionConfig() {
             @Override
             public void initMap() {
-                ZonedDateTime zonedDateTime = DateUtilByZoned.now();
-                String patternNow = DateUtilByZoned.getDateTime();
-                String dayOfWeekCn = DateUtilByZoned.getDayOfWeekCn(zonedDateTime);
-
-                Map<String, Object> customMap = new HashMap<>();
-                customMap.put("version", "1.0");
-                customMap.put("useJpa", true);
-                customMap.put("createDate", patternNow + " " + dayOfWeekCn);
-                customMap.put("year", zonedDateTime.getYear());
-                customMap.put("superEntityClassPackage", BaseEntity.class.getName());
-
-                if(autoCodeDto.getCustomMap() !=null){
-                    customMap.putAll(autoCodeDto.getCustomMap());
+                if (null == autoCodeDto.getCustomAddExt()) {
+                    autoCodeDto.setCustomAddExt(new CustomAddExt());
                 }
-                this.setMap(customMap);
+                this.setMap(JSONObject.parseObject(JSONObject.toJSONString(autoCodeDto.getCustomAddExt())));
             }
         };
 
@@ -189,8 +177,9 @@ public class MybatisplusUtil {
         //是否开启链式模型
         strategy.setChainModel(true);
 
-        //乐观锁字段
+        //乐观锁字段名称
         strategy.setVersionFieldName("version");
+        //删除标记字段名称
         strategy.setLogicDeleteFieldName("del_flag");
 
         //Boolean类型字段是否移除is前缀
@@ -205,7 +194,8 @@ public class MybatisplusUtil {
         mpg.setStrategy(strategy);
         mpg.execute();
 
-        if (autoCodeDto.isOpenExt()) {
+        //在执行一次,生成扩展相关文件
+        if (autoCodeDto.getCustomAddExt().getOpenExt()) {
             mpg = new AutoGenerator();
 
             strategy.setSuperControllerClass("");
@@ -224,7 +214,8 @@ public class MybatisplusUtil {
             tc.setEntity("/templates/ext/entityExt.java.vm");
             tc.setXml("templates/ext/mapperExt.xml.vm");
 
-            gc.setFileOverride(false);//不覆盖文件
+            // 生成的扩展文件不覆盖原来已存在的文件
+            gc.setFileOverride(false);
             if(StringUtil.isNotBlank(autoCodeDto.getOutputExtDir())){
                 gc.setOutputDir(autoCodeDto.getOutputExtDir());
             }
