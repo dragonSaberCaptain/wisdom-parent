@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
@@ -24,7 +25,9 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 public class AuthCoreApp {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(AuthCoreApp.class, args);
+        Environment environment = context.getBean(Environment.class);
+        String port = environment.getProperty("local.server.port");
         SpringContextUtil.setApplicationContext(context);
-        log.info("》》》》【 {} service server started !!! 】《《《《", AuthCoreApp.class.getSimpleName());
+        log.info("》》》》【 {} : {} service started !!! 】《《《《", AuthCoreApp.class.getSimpleName(), port);
     }
 }

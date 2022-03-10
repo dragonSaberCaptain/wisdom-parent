@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * TODO (用一句话描述该类的作用)
+ * 获取ip地址
  *
  * @author captain
  * @version 1.0
@@ -29,12 +29,10 @@ public class RequestUtil {
             }
         }
 
-        if (ipAddress == null || ipAddress.length() == 0
-                || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("Proxy-Client-IP");
         }
-        if (ipAddress == null || ipAddress.length() == 0
-                || "unknown".equalsIgnoreCase(ipAddress)) {
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getHeader("WL-Proxy-Client-IP");
         }
         if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {

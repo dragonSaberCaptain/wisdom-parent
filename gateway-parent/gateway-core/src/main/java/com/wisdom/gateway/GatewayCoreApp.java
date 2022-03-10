@@ -2,10 +2,12 @@ package com.wisdom.gateway;
 
 import com.wisdom.tools.system.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -16,12 +18,14 @@ import org.springframework.context.ApplicationContext;
  * @datetime 2021/8/30 10:45 星期一
  */
 @Slf4j
-@SpringBootApplication(scanBasePackages="com.wisdom.*")
+@SpringBootApplication(scanBasePackages = "com.wisdom.*")
 @EnableDiscoveryClient
 public class GatewayCoreApp {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(GatewayCoreApp.class, args);
+        Environment environment = context.getBean(Environment.class);
+        String port = environment.getProperty("local.server.port");
         SpringContextUtil.setApplicationContext(context);
-        log.info("》》》》【 {} service server started !!! 】《《《《", GatewayCoreApp.class.getSimpleName());
+        log.info("》》》》【 {} : {} service started !!! 】《《《《", GatewayCoreApp.class.getSimpleName(), port);
     }
 }

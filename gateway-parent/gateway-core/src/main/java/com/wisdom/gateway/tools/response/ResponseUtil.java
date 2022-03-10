@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * TODO (用一句话描述该类的作用)
+ * 组织响应
  *
  * @author captain
  * @version 1.0

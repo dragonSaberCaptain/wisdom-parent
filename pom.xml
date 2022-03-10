@@ -67,7 +67,7 @@
         <!--图片-->
         <thumbnailator_version>0.4.8</thumbnailator_version>
         <!--测试-->
-        <junit_version>4.12</junit_version>
+        <junit_version>4.13.2</junit_version>
         <!--代码简化-->
         <lombok_version>1.18.20</lombok_version>
         <!--excel文件-->
@@ -75,7 +75,7 @@
         <!--html标签解析-->
         <jsoup_version>1.13.1</jsoup_version>
         <!--yaml文件解析-->
-        <snakeyaml_version>1.29</snakeyaml_version>
+        <snakeyaml_version>1.30</snakeyaml_version>
         <!--httpclient 网络请求-->
         <httpclient_version>4.5.13</httpclient_version>
         <!--security_oauth2 权限-->

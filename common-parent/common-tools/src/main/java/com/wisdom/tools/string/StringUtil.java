@@ -246,26 +246,21 @@ public class StringUtil extends StringUtils {
      * @datetime 2022-03-08 17:48:55
      */
     public static String addSymbol(String strSource, int len, boolean isLeft, char symbol) {
-        int tmpLen = strSource.length();
-        if (tmpLen == len) {
+        if (strSource.length() == len) {
             return strSource;
-        }
-
-        if (tmpLen > len) {
-            tmpLen = tmpLen ^ len;
-            len = tmpLen ^ len;
-            tmpLen = tmpLen ^ len;
         }
         StringBuilder strBuilder = new StringBuilder(strSource);
         if (isLeft) {
-            for (int i = tmpLen; i < len; i++) {
+            for (int i = strBuilder.length(); i < len; i++) {
                 strBuilder.insert(0, symbol);
             }
-            return strBuilder.toString();
         } else {
-            strBuilder.append(String.valueOf(symbol).repeat(len - tmpLen));
-            return strBuilder.toString();
+            for (int i = strBuilder.length(); i < len; i++) {
+                strBuilder.append(symbol);
+            }
         }
+        strSource = strBuilder.toString();
+        return strSource;
     }
 
     public static void main(String[] args) {
@@ -274,14 +269,13 @@ public class StringUtil extends StringUtils {
         String idCardStr = "123456789101112131";
         String testNull = "null";
 
-        long startMili = System.currentTimeMillis();
-        String str1 = addLeftZero("11", 100000);
-        long endMili = System.currentTimeMillis();
-        System.out.println("str1.length():" + str1.length() + " 总耗时为：" + (endMili - startMili) + "毫秒");
+//        long startMili = System.currentTimeMillis();
+//        String str1 = addLeftZero("11", 100000);
+//        long endMili = System.currentTimeMillis();
+//        System.out.println("str1.length():" + str1.length() + " 总耗时为：" + (endMili - startMili) + "毫秒");
 
-        System.out.println(addLeftZero(testNull, 3));
-        System.out.println(addRightZero(testNull, 3));
-        System.out.println(addSymbol(testNull, 3, false, ' '));
+        System.out.println(addLeftZero(testNull, 10));
+        System.out.println(addRightZero(testNull, 10));
 //        System.out.println("替换从开始到结束内的" + replaceRangeIndex(testStr, 2, 7));
 //        System.out.println("替换前N个和后N个的" + replaceRangeNum(testStr, 4, 4));
 //        System.out.println("手机号替换的" + replaceRangeToPhone(phoneStr));

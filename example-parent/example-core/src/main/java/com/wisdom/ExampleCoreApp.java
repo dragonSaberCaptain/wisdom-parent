@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -22,7 +23,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class ExampleCoreApp {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(ExampleCoreApp.class, args);
+        Environment environment = context.getBean(Environment.class);
+        String port = environment.getProperty("local.server.port");
         SpringContextUtil.setApplicationContext(context);
-        log.info("》》》》【 {} service server started !!! 】《《《《", ExampleCoreApp.class.getSimpleName());
+        log.info("》》》》【 {} : {} service started !!! 】《《《《", ExampleCoreApp.class.getSimpleName(), port);
     }
 }
