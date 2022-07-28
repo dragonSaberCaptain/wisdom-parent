@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +37,10 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     @Value("${spring.application.name:gateway}")
     private String appName;
 
-     @Value("${routes_info.data_id:routes.json}")
+    @Value("${routes_info.data_id:routes.json}")
     private String dataId;
 
-    @Value("${spring.cloud.nacos.config.file-extension:}")
+    @Value("${spring.cloud.nacos.config.file-extension:yaml}")
     private String fileExtension;
 
     @Value("${spring.cloud.nacos.config.group:DEFAULT_GROUP}")
@@ -48,7 +49,7 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     @Value("${spring.cloud.nacos.config.server-addr:Public}")
     private String serverAddr;
 
-    @Value("${spring.cloud.nacos.config.namespace:properties}")
+    @Value("${spring.cloud.nacos.config.namespace:Public}")
     private String serverNamespace;
 
     @Autowired
@@ -87,25 +88,23 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     /**
      * 增加路由
      */
-    public Boolean addRoute(RouteDefinition def) {
+    public void addRoute(RouteDefinition def) {
         try {
             routeDefinitionWriter.save(Mono.just(def)).subscribe();
             ROUTE_LIST.add(def.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     /**
      * 删除路由
      */
-    public Boolean clearRoute() {
+    public void clearRoute() {
         for (String id : ROUTE_LIST) {
             routeDefinitionWriter.delete(Mono.just(id)).subscribe();
         }
         ROUTE_LIST.clear();
-        return false;
     }
 
     /**
@@ -128,8 +127,8 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     }
 
     @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher app) {
-        applicationEventPublisher = app;
+    public void setApplicationEventPublisher(@Nonnull ApplicationEventPublisher app) {
+        this.applicationEventPublisher = app;
     }
 
 }

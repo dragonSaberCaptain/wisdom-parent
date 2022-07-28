@@ -1,0 +1,44 @@
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <property name="maxFileSize" value="100MB"/>
+    <property name="maxHistory" value="90"/>
+    <property name="dateFormat" value="yyyyMMdd"/>
+    <property name="conversionPattern" value="[%date{yyyy-MM-dd HH:mm:ss.SSS}][%.-1level][%.5thread][%logger{50}.%L][%X{BIZ_ID}]-%m%n%throwable{5}"/>
+    <property name="logDir" value="../../logs"/>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+
+    <contextName>${appName}</contextName>   <!-- 本项目的名字 -->
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${conversionPattern}</pattern>
+            <!-- 控制台也要使用UTF-8，不要使用GBK，否则会中文乱码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="root" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logDir}/${appName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logDir}/%d{${dateFormat}}%d{mmss}.%i.log.zip</fileNamePattern>
+<!--            <fileNamePattern>${LOG_DIR}/%d{${dateFormat}}/${APP_NAME}.log</fileNamePattern>-->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${conversionPattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 日志级别:OFF(关闭) trace, debug, info, warn, error -->
+    <root level="info">
+        <appender-ref ref="console"/>
+        <appender-ref ref="root"/>
+    </root>
+
+    <logger name="com.alibaba.nacos" level="warn"/>
+
+</configuration>

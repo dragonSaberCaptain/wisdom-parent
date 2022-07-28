@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -37,7 +36,7 @@
         <alibaba_nacos_version>2.2.6.RELEASE</alibaba_nacos_version>
 
         <!--mysql驱动-->
-        <mysql_version>8.0.23</mysql_version>
+        <mysql_version>8.0.28</mysql_version>
         <!--oracle驱动-->
         <ojdbc6_version>11.2.0</ojdbc6_version>
         <!--ORM框架及持久层框架-->
@@ -45,7 +44,7 @@
         <!--druid连接池-->
         <druid_version>1.1.10</druid_version>
         <!--JSON处理-->
-        <fastjson_version>1.2.47</fastjson_version>
+        <fastjson_version>2.0.10</fastjson_version>
 
         <!--日志-->
         <commons_logging_version>1.2</commons_logging_version>
@@ -282,11 +281,22 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
+                    <include>**/*.properties</include>
                     <include>**/*.xml</include>
                 </includes>
+                <filtering>true</filtering>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
+                <includes>
+                    <include>*</include>
+                    <include>*/*</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.yaml</include>
+                </includes>
+                <filtering>true</filtering>
             </resource>
         </resources>
     </build>

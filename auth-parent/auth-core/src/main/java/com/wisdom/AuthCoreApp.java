@@ -1,15 +1,17 @@
 package com.wisdom;
 
+import com.wisdom.config.dto.SystemInfoDto;
+import com.wisdom.config.enums.DateTimeEnum;
+import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.system.SpringContextUtil;
+import com.wisdom.tools.system.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jboss.logging.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -24,10 +26,10 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 @EnableDiscoveryClient
 public class AuthCoreApp {
     public static void main(String[] args) {
+        MDC.put("BIZ_ID", DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN));
         ApplicationContext context = SpringApplication.run(AuthCoreApp.class, args);
-        Environment environment = context.getBean(Environment.class);
-        String port = environment.getProperty("local.server.port");
         SpringContextUtil.setApplicationContext(context);
-        log.info("》》》》【 {} : {} service started !!! 】《《《《", AuthCoreApp.class.getSimpleName(), port);
+        SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(AuthCoreApp.class);
+        log.info("{} service start on port:{} successful !!!", systemInfoDto.getSimpleName(), systemInfoDto.getPort());
     }
 }
