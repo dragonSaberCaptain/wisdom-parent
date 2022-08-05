@@ -16,9 +16,9 @@ Soredemo Sekai wa Utsukushii !!!
 
 #### 使用说明
 
-1.  http://localhost:post/swagger-ui/index.html
-2.  http://localhost:post/doc.html (废弃)
-3.  http://localhost:port/druid/index.html admin 123
-4.  http://localhost:port sentinel sentinel
-5.  http://localhost:port/nacos/index.html nacos nacos
-6.  http://localhost:post/oauth/authorize?client_id=client&response_type=code admin 123
+1. http://localhost:post/swagger-ui/index.html
+2. http://localhost:port/druid/index.html admin 123
+3. http://localhost:port sentinel sentinel
+4. http://localhost:port/nacos/index.html nacos nacos
+5. http://localhost:post/oauth/authorize?client_id=client&response_type=code admin 123
+6. http://localhost:post/login admin 123

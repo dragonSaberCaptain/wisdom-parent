@@ -7,14 +7,14 @@ import com.wisdom.common.tools.request.RequestUtil;
 import com.wisdom.config.dto.HttpModelDto;
 import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.exception.ResultException;
+import com.wisdom.config.params.NacosCommonConfig;
 import com.wisdom.tools.certificate.asymmetric.AsymmetricModel;
 import com.wisdom.tools.certificate.asymmetric.AsymmetricUtil;
 import com.wisdom.tools.certificate.asymmetric.MyKeyPair;
+import com.wisdom.tools.database.RedisDao;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,23 +34,21 @@ import java.util.TreeMap;
  */
 @Slf4j
 public class ApiInterceptor implements HandlerInterceptor {
-    @Value("${spring.profiles.active:dev}")
-    private String appActive;
-
-    @Value("${common.params.token_key:token}")
-    private String tokenKey;
+    @Autowired
+    private NacosCommonConfig nacosCommonConfig;
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisDao redisDao;
 
     /**
      * controller 执行之前调用
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         //通用请求数据对象
         HttpModelDto requestInfoModel = getRequestInfoModel(request);
-        log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
+        String requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
+        log.info("》通用请求记录开始【{}】通用请求记录结束《", requestInfoModelJson);
 
         boolean roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) {
@@ -69,13 +67,15 @@ public class ApiInterceptor implements HandlerInterceptor {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
 
-        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
-        checkInfoModel.setUrl(gatewayUrl);
+//        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
+//        checkInfoModel.setUrl(gatewayUrl);
 
-        String signData = JSONObject.toJSONString(checkInfoModel);
+//        String signData = JSONObject.toJSONString(checkInfoModel);
+
+        String systemSalt = redisDao.get("systemSalt") + nacosCommonConfig.getSalt();
 
         //验证签名是否通过
-        boolean check = checkSignByCache(signData, gatewaySign, gatewayName + "_" + requestInfoModel.getSalt() + "_KeyPair");
+        boolean check = checkSignByCache(requestInfoModelJson + systemSalt, gatewaySign, gatewayName + "_" + systemSalt + "_KeyPair");
         if (!check) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
@@ -86,16 +86,16 @@ public class ApiInterceptor implements HandlerInterceptor {
      * controller 执行之后，且页面渲染之前调用
      */
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("------postHandle-----");
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
+        log.info("------postHandle-----");
     }
 
     /**
      * 页面渲染之后调用，一般用于资源清理操作
      */
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        System.out.println("------afterCompletion-----");
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        log.info("------afterCompletion-----");
     }
 
     /**
@@ -107,14 +107,14 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     public boolean roadblock(Object obj) {
         //开发环境和本地环境关闭所有验证
-        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
+        if ("dev".equalsIgnoreCase(nacosCommonConfig.getAppActive()) || "local".equalsIgnoreCase(nacosCommonConfig.getAppActive())) {
             return true;
         }
 
         if (obj instanceof String) {
             String url = String.valueOf(obj);
             //登录相关全部放行
-            if (url.contains("/login.html") || url.contains("/index.html")) {
+            if (url.contains("/login")) {
                 return true;
             }
             //swagger相关全部放行
@@ -140,7 +140,7 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     public boolean checkSignByCache(String jsonDataSrc, String sign, String key) {
         //获取密匙对
-        String keyPairStr = stringRedisTemplate.opsForValue().get(key);
+        String keyPairStr = redisDao.get(key);
         if (keyPairStr == null) {
             return false;
         }

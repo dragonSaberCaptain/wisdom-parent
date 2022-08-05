@@ -5,9 +5,9 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
+import com.wisdom.gateway.config.NacosConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
@@ -34,23 +34,8 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Configuration
 public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
-    @Value("${spring.application.name:gateway}")
-    private String appName;
-
-    @Value("${routes_info.data_id:routes.json}")
-    private String dataId;
-
-    @Value("${spring.cloud.nacos.config.file-extension:yaml}")
-    private String fileExtension;
-
-    @Value("${spring.cloud.nacos.config.group:DEFAULT_GROUP}")
-    private String group;
-
-    @Value("${spring.cloud.nacos.config.server-addr:Public}")
-    private String serverAddr;
-
-    @Value("${spring.cloud.nacos.config.namespace:Public}")
-    private String serverNamespace;
+    @Autowired
+    private NacosConfig nacosConfig;
 
     @Autowired
     private RouteDefinitionWriter routeDefinitionWriter;
@@ -63,13 +48,13 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     public void dynamicRouteByNacosListener() {
         try {
             Properties prop = new Properties();
-            prop.put(PropertyKeyConst.NAMESPACE, serverNamespace);
-            prop.put(PropertyKeyConst.SERVER_ADDR, serverAddr);
+            prop.put(PropertyKeyConst.NAMESPACE, nacosConfig.getServerNamespace());
+            prop.put(PropertyKeyConst.SERVER_ADDR, nacosConfig.getServerAddr());
 
             ConfigService config = NacosFactory.createConfigService(prop);
-            String content = config.getConfig(appName + "-" + dataId, group, 5000);
+            String content = config.getConfig(nacosConfig.getDataId(), nacosConfig.getGroup(), 5000);
             publisher(content);
-            config.addListener(appName + "-" + dataId, group, new Listener() {
+            config.addListener(nacosConfig.getDataId(), nacosConfig.getGroup(), new Listener() {
                 @Override
                 public void receiveConfigInfo(String config) {
                     publisher(config);
@@ -117,7 +102,7 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
             for (RouteDefinition route : gateway) {
                 addRoute(route);
             }
-            log.info("--------------------------------------------【已动态刷新路由信息】-----------------------------------");
+            log.info("已动态刷新路由信息 !!!");
             log.info("resetRoutes:" + JSONObject.toJSONString(gateway));
             applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this.routeDefinitionWriter));
         } catch (Exception e) {

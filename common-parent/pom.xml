@@ -8,8 +8,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>common-parent</artifactId>
-
     <packaging>pom</packaging>
+
     <!--项目的名字,maven产生的文档用-->
     <name>${project.artifactId}</name>
     <!--项目主页的URL,maven产生的文档用-->

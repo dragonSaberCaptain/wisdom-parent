@@ -7,6 +7,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.util.SafeEncoder;
+
 import java.util.*;
 
 /**
@@ -16,6 +17,7 @@ import java.util.*;
  * @date 2018-07-09 13:40 星期一
  */
 
+@Deprecated
 public class JedisUtil {
     /**
      * 单机版连接池

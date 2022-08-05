@@ -2,7 +2,7 @@ server:
     port: 9528
 spring:
     profiles:
-        active: dev
+        active: prod
     application:
         name: auth
     cloud:

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wisdom.config.dto.ResultDto;
 import com.wisdom.config.enums.EnumDao;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import reactor.core.publisher.Mono;
@@ -31,7 +32,7 @@ public class ResponseUtil {
      * SerializerFeature.WriteNullBooleanAsFalse–Boolean字段如果为null,输出为false,而非nul
      */
     public static Mono<Void> resultMsgToMono(String code, String msg, String subMsg, ServerHttpResponse response) {
-        ResultDto resultDto = new ResultDto(code, msg, subMsg);
+        ResultDto<T> resultDto = new ResultDto<>(code, msg, subMsg);
         String resultJson = JSON.toJSONString(resultDto, SerializerFeature.WriteMapNullValue);
         DataBuffer buffer = response.bufferFactory().wrap(resultJson.getBytes(StandardCharsets.UTF_8));
         //指定编码，否则在浏览器中会中文乱码

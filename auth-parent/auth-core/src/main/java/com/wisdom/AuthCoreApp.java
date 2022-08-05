@@ -30,6 +30,8 @@ public class AuthCoreApp {
         ApplicationContext context = SpringApplication.run(AuthCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
         SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(AuthCoreApp.class);
-        log.info("{} service start on port:{} successful !!!", systemInfoDto.getSimpleName(), systemInfoDto.getPort());
+        String startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
+        log.info(startUpInfo);
+        System.out.println(startUpInfo);
     }
 }

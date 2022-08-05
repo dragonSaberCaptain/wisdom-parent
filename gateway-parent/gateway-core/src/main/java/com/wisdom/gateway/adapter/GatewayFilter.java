@@ -4,22 +4,24 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.wisdom.config.dto.HttpModelDto;
+import com.wisdom.config.enums.DateTimeEnum;
 import com.wisdom.config.enums.ResultEnum;
+import com.wisdom.gateway.config.NacosConfig;
 import com.wisdom.gateway.tools.request.RequestUtil;
 import com.wisdom.gateway.tools.response.ResponseUtil;
 import com.wisdom.tools.certificate.asymmetric.AsymmetricModel;
 import com.wisdom.tools.certificate.asymmetric.AsymmetricUtil;
 import com.wisdom.tools.certificate.asymmetric.MyKeyPair;
+import com.wisdom.tools.database.RedisDao;
+import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -29,7 +31,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,17 +48,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class GatewayFilter implements GlobalFilter, Ordered {
-    @Value("${spring.application.name:gateway}")
-    private String appName;
-
-    @Value("${common.params.token_key:token}")
-    private String tokenKey;
-
-    @Value("${spring.profiles.active:dev}")
-    private String appActive;
+    @Autowired
+    private RedisDao redisDao;
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private NacosConfig nacosConfig;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -66,31 +61,39 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
         //通用请求数据对象
         HttpModelDto requestInfoModel = getRequestInfoModel(request);
-        log.info("》通用请求记录开始【{}】通用请求记录结束《", JSONObject.toJSONString(requestInfoModel));
+        String requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
+        log.info("》通用请求记录开始【{}】通用请求记录结束《", requestInfoModelJson);
 
         boolean roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) { //不用检查,放行
             return chain.filter(exchange);
         }
+
+        HttpHeaders headers = request.getHeaders();
+        if (headers.isEmpty()) {
+            return ResponseUtil.resultMsgToMono(ResultEnum.RESULT_ENUM_1012, response);
+        }
+
         //验证token 后期优化
-        String baseToken = request.getHeaders().getFirst(tokenKey);
-        if (StringUtil.isBlank(baseToken)) {
-            return ResponseUtil.resultMsgToMono(ResultEnum.TOKEN_IS_EMPTY, response);
+        String token = headers.getFirst(nacosConfig.getTokenKey());
+        if (StringUtil.isBlank(token)) {
+            return ResponseUtil.resultMsgToMono(ResultEnum.RESULT_ENUM_1008, response);
         }
 
         //签名数据
-        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
+//        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
+//        String signData = JSONObject.toJSONString(checkInfoModel);
 
-        String signData = JSONObject.toJSONString(checkInfoModel);
+        String systemSalt = redisDao.save("systemSalt", DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN), 7, TimeUnit.DAYS) + nacosConfig.getSalt();
 
         //开始执行签名并且缓存
-        String sign = signAndCache(signData, appName + "_" + requestInfoModel.getSalt() + "_KeyPair", 7, TimeUnit.DAYS);
+        String sign = signAndCache(requestInfoModelJson + systemSalt, nacosConfig.getAppName() + "_" + systemSalt + "_KeyPair", 7, TimeUnit.DAYS);
 
         //往请求头中添加网关签名
         Map<String, String> headersMap = new TreeMap<>();
-        headersMap.put("gateway_name", appName);
-        headersMap.put(appName + "_sign", sign);
-        headersMap.put(appName + "_url", requestInfoModel.getUrl());
+        headersMap.put("gateway_name", nacosConfig.getAppName());
+        headersMap.put(nacosConfig.getAppName() + "_sign", sign);
+        headersMap.put(nacosConfig.getAppName() + "_url", requestInfoModel.getUrl());
         request.mutate().headers(httpHeaders -> httpHeaders.setAll(headersMap)).build();
 
         return chain.filter(exchange);
@@ -120,8 +123,7 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         String methodValue = request.getMethodValue();
 
         //请求url
-        URI uri = request.getURI();
-        String urlStr = uri.toString();
+        String urlStr = request.getURI().toString();
         String ipAddress = RequestUtil.getIpAddress(request);
         if (urlStr.contains("localhost")) {
             urlStr = urlStr.replace("localhost", ipAddress);
@@ -174,14 +176,14 @@ public class GatewayFilter implements GlobalFilter, Ordered {
      */
     public boolean roadblock(Object obj) {
         //开发环境和本地环境关闭所有验证
-        if ("dev".equalsIgnoreCase(appActive) || "local".equalsIgnoreCase(appActive)) {
+        if ("dev".equalsIgnoreCase(nacosConfig.getAppActive()) || "local".equalsIgnoreCase(nacosConfig.getAppActive())) {
             return true;
         }
 
         if (obj instanceof String) {
             String url = String.valueOf(obj);
             //登录相关全部放行
-            if (url.contains("/login.html") || url.contains("/index.html")) {
+            if (url.contains("/login")) {
                 return true;
             }
             //swagger相关全部放行
@@ -209,14 +211,14 @@ public class GatewayFilter implements GlobalFilter, Ordered {
     public String signAndCache(String jsonDataSrc, String key, int num, TimeUnit timeUnit) {
         AsymmetricModel asymmetricModel = new AsymmetricModel();
         //获取密匙对
-        String keyPairStr = stringRedisTemplate.opsForValue().get(key);
+        String keyPairStr = redisDao.get(key);
         if (keyPairStr == null) {
             //初始化密钥对
             AsymmetricUtil.initKeyPair(asymmetricModel);
             //开启redis缓存密匙对
             String keyPairJson = JSONObject.toJSONString(asymmetricModel.getMyKeyPair());
             //设置密匙对时长30天,即每个月更换一次密匙对
-            stringRedisTemplate.opsForValue().set(key, keyPairJson, num, timeUnit);
+            redisDao.set(key, keyPairJson, num, timeUnit);
         } else {
             MyKeyPair myKeyPair = JSON.parseObject(keyPairStr, MyKeyPair.class);
             asymmetricModel.setMyKeyPair(myKeyPair);

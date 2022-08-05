@@ -133,7 +133,7 @@ public class BaseController<M extends BaseService<T>, T> {
                 return new ResultDto<>(HttpEnum.OK, entity);
             }
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -145,7 +145,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -161,7 +161,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, entityList);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -173,7 +173,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -189,7 +189,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, entityList);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -200,7 +200,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -212,7 +212,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -223,7 +223,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -234,7 +234,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -252,7 +252,7 @@ public class BaseController<M extends BaseService<T>, T> {
             }
         }
 
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -277,7 +277,7 @@ public class BaseController<M extends BaseService<T>, T> {
             }
         }
 
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -289,7 +289,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, collection);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     @ResponseBody
@@ -304,7 +304,7 @@ public class BaseController<M extends BaseService<T>, T> {
         if (bool) {
             return new ResultDto<>(HttpEnum.OK, entityList);
         }
-        return new ResultDto<>(ResultEnum.FAIL);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_1002);
     }
 
     /**

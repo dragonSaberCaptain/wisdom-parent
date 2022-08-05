@@ -28,6 +28,12 @@
             <artifactId>example-generation</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.wisdom</groupId>
+            <artifactId>example-tools</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

@@ -4,7 +4,6 @@ import com.wisdom.auth.dao.SysPermissionDaoExt;
 import com.wisdom.auth.dao.SysUserDao;
 import com.wisdom.auth.dao.SysUserDaoExt;
 import com.wisdom.auth.entity.SysPermission;
-import com.wisdom.auth.entity.SysPermissionExt;
 import com.wisdom.auth.entity.SysUser;
 import com.wisdom.auth.entity.SysUserExt;
 import com.wisdom.auth.service.SysUserServiceExt;

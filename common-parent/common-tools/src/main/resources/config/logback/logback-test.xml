@@ -5,7 +5,7 @@
     <property name="dateFormat" value="yyyyMMdd"/>
     <property name="conversionPattern" value="[%date{yyyy-MM-dd HH:mm:ss.SSS}][%.-1level][%.5thread][%logger{50}.%L][%X{BIZ_ID}]-%m%n%throwable{5}"/>
     <property name="logDir" value="../../logs"/>
-    <property name="appName" value="gateway-core"/>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
 
     <contextName>${appName}</contextName>   <!-- 本项目的名字 -->
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -42,7 +43,7 @@
         <!--ORM框架及持久层框架-->
         <mybatis_plus_version>3.4.0</mybatis_plus_version>
         <!--druid连接池-->
-        <druid_version>1.1.10</druid_version>
+        <druid_version>1.2.11</druid_version>
         <!--JSON处理-->
         <fastjson_version>2.0.10</fastjson_version>
 
@@ -107,13 +108,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- ====================nacos属性刷新 ======================== -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-spring-context</artifactId>
-            <version>0.3.5</version>
-        </dependency>
-
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-beans</artifactId>-->
+        <!--            <version>5.3.20</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>

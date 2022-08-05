@@ -5,6 +5,7 @@ import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.enums.ResultEnum;
 import com.wisdom.config.exception.ResultException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -12,7 +13,6 @@ import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -59,7 +59,7 @@ public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
                 .body(BodyInserters.fromValue(getErrorResponse(request)));
     }
 
-    private ResultDto getErrorResponse(ServerRequest request) {
+    private ResultDto<T> getErrorResponse(ServerRequest request) {
         Map<String, Object> errorPropertiesMap = getErrorAttributes(request,
                 ErrorAttributeOptions.of(ErrorAttributeOptions.Include.BINDING_ERRORS,
                         ErrorAttributeOptions.Include.EXCEPTION,
@@ -69,20 +69,16 @@ public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
 
         if (ResultException.class.getName().equals(exception)) {
             log.error("【错误网关】【{}】", errorPropertiesMap);
-            return new ResultDto(HttpEnum.BAD_GATEWAY);
+            return new ResultDto<>(HttpEnum.BAD_GATEWAY);
         }
 
-        if (RedisConnectionFailureException.class.getName().equals(exception)) {
-            log.error("【缓存异常】【{}】", errorPropertiesMap);
-            return new ResultDto(ResultEnum.REDIS_NO_OPEN);
-        }
         if (NotFoundException.class.getName().equals(exception)) {
             log.error("【服务器不可用】【{}】", errorPropertiesMap);
-            return new ResultDto(HttpEnum.SERVICE_UNAVAILABLE);
+            return new ResultDto<>(HttpEnum.SERVICE_UNAVAILABLE);
         }
 
         log.error("【服务器内部异常】【{}】", errorPropertiesMap);
-        return new ResultDto(ResultEnum.SERVER_INTERNAL_EXCEPTION);
+        return new ResultDto<>(ResultEnum.RESULT_ENUM_9999);
     }
 
     private HttpStatus getHttpStatus(ServerRequest request) {

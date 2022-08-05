@@ -13,18 +13,18 @@ import org.apache.commons.lang3.StringUtils;
  * @date 2018-05-04 13:35 星期五
  */
 public enum UserEnum implements EnumDao {
-	OK("200", "成功"),
+    USER_ENUM_200("200", "成功"),
 
-	SERVER_INTERNAL_EXCEPTION("9999", "服务器内部异常");
+    USER_ENUM_9999("9999", "服务器内部异常");
 
-	//    @JsonValue
-	@EnumValue //mybatis_plus需要,若不需要可以删除
-	@ResultFiled
-	private String code;
-	@ResultFiled
-	private String msg;
-	@ResultFiled
-	private String subMsg;
+    //    @JsonValue
+    @EnumValue //mybatis_plus需要,若不需要可以删除
+    @ResultFiled
+    private String code;
+    @ResultFiled
+    private String msg;
+    @ResultFiled
+    private String subMsg;
 
 	UserEnum() {
 	}

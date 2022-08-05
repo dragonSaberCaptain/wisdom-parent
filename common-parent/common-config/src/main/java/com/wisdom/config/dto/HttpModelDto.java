@@ -2,10 +2,8 @@ package com.wisdom.config.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -40,11 +38,6 @@ public class HttpModelDto {
      */
     private String userAgent;
     /**
-     * 盐
-     */
-    private String salt;
-
-    /**
      * 请求url带的参数
      */
     private Map<String, Object> urlParamMap;
@@ -56,8 +49,4 @@ public class HttpModelDto {
      * 请求头参数
      */
     private Map<String, Object> headerMap;
-
-    public HttpModelDto() {
-        this.salt = "pq$69.salt";
-    }
 }

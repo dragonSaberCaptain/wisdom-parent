@@ -1,2 +1,2 @@
-routes_info:
-    data_id: routes.json
+routesInfo:
+    dataId: ${spring.application.name}-routes.json

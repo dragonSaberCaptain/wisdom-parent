@@ -1,11 +1,13 @@
 package com.wisdom.auth.controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import com.wisdom.auth.service.SysUserServiceExt;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  * 系统用户表 控制层
  *

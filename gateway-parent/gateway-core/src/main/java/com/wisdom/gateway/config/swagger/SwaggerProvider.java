@@ -1,8 +1,8 @@
 package com.wisdom.gateway.config.swagger;
 
+import com.wisdom.gateway.config.NacosConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -29,23 +29,13 @@ import java.util.stream.Collectors;
 @Primary
 @Component
 public class SwaggerProvider implements SwaggerResourcesProvider {
-    /**
-     * swagger默认的url后缀
-     */
-    @Value("${common.params.swagger_api_docs:/v3/api-docs}")
-    private String swaggerApiDocs;
-
+    @Autowired
+    private NacosConfig nacosConfig;
     /**
      * 网关路由
      */
     @Autowired
     private RouteLocator routeLocator;
-
-    /**
-     * 网关应用名称
-     */
-    @Value("${spring.application.name:gateway}")
-    private String appName;
 
     @Override
     public List<SwaggerResource> get() {
@@ -53,7 +43,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
         List<String> routeHosts = new ArrayList<>();
         // 获取所有可用的host：serviceId
         routeLocator.getRoutes()
-                .filter(route -> route.getUri().getHost() != null && !appName.equals(route.getUri().getHost()))
+                .filter(route -> route.getUri().getHost() != null && !nacosConfig.getAppName().equals(route.getUri().getHost()))
                 .subscribe(route -> routeHosts.add(route.getUri().getHost()));
 
         //去重
@@ -61,7 +51,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
 
         routeHostsCollect.forEach(instance -> {
             // 拼接url
-            String url = "/" + instance.toLowerCase() + swaggerApiDocs;
+            String url = "/" + instance.toLowerCase() + nacosConfig.getSwaggerApiDocs();
             SwaggerResource swaggerResource = new SwaggerResource();
             swaggerResource.setName(instance);
             swaggerResource.setUrl(url);
@@ -69,8 +59,8 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
             //先尝试获取swagger文档信息,不知道怎么判断nocos服务是否存活,暂时用此方法,以后在优化
 //            String result = HttpUrlConnectionUtil.sendGetASyn("http://127.0.0.1" + url, null);
 //            if (StringUtil.isNotBlank(result)) {
-                //只生成请求成功的文档信息
-                resources.add(swaggerResource);
+            //只生成请求成功的文档信息
+            resources.add(swaggerResource);
 //            }
         });
         Collections.sort(resources);
