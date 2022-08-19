@@ -46,12 +46,12 @@ public enum UserEnum implements EnumDao {
 
 	public static UserEnum findByCode(String code) {
 		if (StringUtils.isNotBlank(code)) {
-			for (UserEnum userEnum : values()) {
-				if (code.equals(userEnum.getCode())) {
-					return userEnum;
-				}
-			}
-		}
+            for (var value : values()) {
+                if (code.equals(value.getCode())) {
+                    return value;
+                }
+            }
+        }
 		return null;
 	}
 
@@ -61,23 +61,23 @@ public enum UserEnum implements EnumDao {
 
 	public static UserEnum findByMsg(String msg) {
 		if (StringUtils.isNotBlank(msg)) {
-			for (UserEnum userEnum : values()) {
-				if (msg.equals(userEnum.getMsg())) {
-					return userEnum;
-				}
-			}
-		}
+            for (var value : values()) {
+                if (msg.equals(value.getMsg())) {
+                    return value;
+                }
+            }
+        }
 		return null;
 	}
 
 	public static UserEnum findBySubMsg(String subMsg) {
 		if (StringUtils.isNotBlank(subMsg)) {
-			for (UserEnum userEnum : values()) {
-				if (subMsg.equals(userEnum.getSubMsg())) {
-					return userEnum;
-				}
-			}
-		}
+            for (var value : values()) {
+                if (subMsg.equals(value.getSubMsg())) {
+                    return value;
+                }
+            }
+        }
 		return null;
 	}
 
@@ -88,7 +88,7 @@ public enum UserEnum implements EnumDao {
 
 	@Override
 	public int getCodeToInt() {
-		return Integer.valueOf(this.code);
+        return Integer.parseInt(this.code);
 	}
 
 	@Override

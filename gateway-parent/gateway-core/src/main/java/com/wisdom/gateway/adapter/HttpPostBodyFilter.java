@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
@@ -13,9 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- * <p>
- * TODO (用一句话描述该类的作用)
+ * 重新包装post请求中的body
  *
  * @author captain
  * @version 1.0
@@ -27,20 +26,19 @@ public class HttpPostBodyFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if (exchange.getRequest().getHeaders().getContentType() == null) {
+        if (null == exchange.getRequest().getHeaders().getContentType()) {
             return chain.filter(exchange);
         } else {
             return DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer ->
             {
                 DataBufferUtils.retain(dataBuffer);
-                Flux cachedFlux = Flux.defer(() -> Flux.just(dataBuffer.slice(0, dataBuffer.readableByteCount())));
+                Flux<DataBuffer> cachedFlux = Flux.defer(() -> Flux.just(dataBuffer.slice(0, dataBuffer.readableByteCount())));
                 ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
                     @Override
                     public Flux getBody() {
                         return cachedFlux;
                     }
                 };
-                //exchange.getAttributes().put(CACHE_REQUEST_BODY_OBJECT_KEY, cachedFlux);
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             });
         }
@@ -48,6 +46,6 @@ public class HttpPostBodyFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return HIGHEST_PRECEDENCE;
+        return LOWEST_PRECEDENCE;
     }
 }

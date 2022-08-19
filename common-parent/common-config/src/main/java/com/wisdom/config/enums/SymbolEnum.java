@@ -71,9 +71,9 @@ public enum SymbolEnum implements EnumDao {
 
     public static SymbolEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
-            for (SymbolEnum resultEnum : values()) {
-                if (code.equals(resultEnum.getCode())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (code.equals(value.getCode())) {
+                    return value;
                 }
             }
         }
@@ -86,9 +86,9 @@ public enum SymbolEnum implements EnumDao {
 
     public static SymbolEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
-            for (SymbolEnum resultEnum : values()) {
-                if (msg.equals(resultEnum.getMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (msg.equals(value.getMsg())) {
+                    return value;
                 }
             }
         }
@@ -97,9 +97,9 @@ public enum SymbolEnum implements EnumDao {
 
     public static SymbolEnum findBySubMsg(String subMsg) {
         if (StringUtils.isNotBlank(subMsg)) {
-            for (SymbolEnum resultEnum : values()) {
-                if (subMsg.equals(resultEnum.getSubMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (subMsg.equals(value.getSubMsg())) {
+                    return value;
                 }
             }
         }
@@ -113,7 +113,7 @@ public enum SymbolEnum implements EnumDao {
 
     @Override
     public int getCodeToInt() {
-        return Integer.valueOf(this.code);
+        return Integer.parseInt(this.code);
     }
 
     @Override

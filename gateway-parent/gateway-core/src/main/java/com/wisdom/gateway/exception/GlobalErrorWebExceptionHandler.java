@@ -83,7 +83,7 @@ public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
 
     private HttpStatus getHttpStatus(ServerRequest request) {
         Map<String, Object> errorPropertiesMap = getErrorAttributes(request, ErrorAttributeOptions.defaults());
-        int status = (int) errorPropertiesMap.get("status");
+        var status = (int) errorPropertiesMap.get("status");
         return HttpStatus.valueOf(status);
     }
 }

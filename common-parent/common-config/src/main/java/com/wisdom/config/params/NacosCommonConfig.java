@@ -34,6 +34,8 @@ public class NacosCommonConfig {
     private String tokenKey;
     @Value(value = "${common.params.swagger_api_docs:}")
     private String swaggerApiDocs;
+    @Value(value = "${common.params.saltKey:}")
+    private String saltKey;
     @Value(value = "${common.params.salt:}")
     private String salt;
 }

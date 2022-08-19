@@ -4,52 +4,47 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- *
- * 日期时间枚举类
+ * Copyright © 2022 dragonSaberCaptain. All rights reserved.
+ * <p>
+ * 系统常量枚举类
  *
  * @author captain
  * @version 1.0
- * @date 2021/6/30 14:42 星期三
+ * @datetime 2022/8/5 11:03 星期五
  */
-public enum DateTimeEnum implements EnumDao {
-    // ****************************【常用的日期时间格式】****************************
-    DATETIME_PATTERN("yyyy-MM-dd HH:mm:ss", "yyyy年MM月dd日 HH时mm分ss秒"),
-    DATETIME_PATTERN_UN("yyyyMMddHHmmss", "yyyy年MM月dd日HH时mm分ss秒"),
+public enum ConstantEnum implements EnumDao {
+    DEFAULT_PORT("80"),
+    DEFAULT_IP("127.0.0.1"),
+    USER_AGENT("User-Agent"),
+    LOCALHOST("localhost"),
+    GET("GET"),
+    POST("POST");
 
-    DATETIME_PATTERN_MILLI("yyyy-MM-dd HH:mm:ss:SSS", "yyyy年MM月dd日 HH时mm分ss秒SSS毫秒"),
-    DATETIME_PATTERN_MILLI_UN("yyyyMMddHHmmssSSS", "yyyy年MM月dd日HH时mm分ss秒SSS毫秒"),
-
-    DATE_PATTERN("yyyy-MM-dd", "yyyy年MM月dd日"),
-    DATE_PATTERN_UN("yyyyMMdd", "yyyy年MM月dd日"),
-
-    TIME_PATTERN("HH:mm:ss", "HH时mm分ss秒"),
-    TIME_PATTERNE_MILLI("HH:mm:ss:SSS", "HH时mm分ss秒SSS毫秒");
     //    @JsonValue
     @EnumValue //mybatis_plus需要,若不需要可以删除
     private String code;
     private String msg;
     private String subMsg;
 
-    DateTimeEnum() {
+    ConstantEnum() {
     }
 
-    DateTimeEnum(String code) {
+    ConstantEnum(String code) {
         this.code = code;
     }
 
-    DateTimeEnum(String code, String msg) {
+    ConstantEnum(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    DateTimeEnum(String code, String msg, String subMsg) {
+    ConstantEnum(String code, String msg, String subMsg) {
         this.code = code;
         this.msg = msg;
         this.subMsg = subMsg;
     }
 
-    public static DateTimeEnum findByCode(String code) {
+    public static ConstantEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
             for (var value : values()) {
                 if (code.equals(value.getCode())) {
@@ -60,11 +55,11 @@ public enum DateTimeEnum implements EnumDao {
         return null;
     }
 
-    public static DateTimeEnum findByCode(long code) {
+    public static ConstantEnum findByCode(long code) {
         return findByCode(String.valueOf(code));
     }
 
-    public static DateTimeEnum findByMsg(String msg) {
+    public static ConstantEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
             for (var value : values()) {
                 if (msg.equals(value.getMsg())) {
@@ -75,7 +70,7 @@ public enum DateTimeEnum implements EnumDao {
         return null;
     }
 
-    public static DateTimeEnum findBySubMsg(String subMsg) {
+    public static ConstantEnum findBySubMsg(String subMsg) {
         if (StringUtils.isNotBlank(subMsg)) {
             for (var value : values()) {
                 if (subMsg.equals(value.getSubMsg())) {

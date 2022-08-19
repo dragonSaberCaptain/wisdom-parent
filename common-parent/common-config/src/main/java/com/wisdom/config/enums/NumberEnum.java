@@ -63,9 +63,9 @@ public enum NumberEnum implements EnumDao {
 
     public static NumberEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
-            for (NumberEnum resultEnum : values()) {
-                if (code.equals(resultEnum.getCode())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (code.equals(value.getCode())) {
+                    return value;
                 }
             }
         }
@@ -78,9 +78,9 @@ public enum NumberEnum implements EnumDao {
 
     public static NumberEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
-            for (NumberEnum resultEnum : values()) {
-                if (msg.equals(resultEnum.getMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (msg.equals(value.getMsg())) {
+                    return value;
                 }
             }
         }
@@ -89,9 +89,9 @@ public enum NumberEnum implements EnumDao {
 
     public static NumberEnum findBySubMsg(String subMsg) {
         if (StringUtils.isNotBlank(subMsg)) {
-            for (NumberEnum resultEnum : values()) {
-                if (subMsg.equals(resultEnum.getSubMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (subMsg.equals(value.getSubMsg())) {
+                    return value;
                 }
             }
         }
@@ -105,7 +105,7 @@ public enum NumberEnum implements EnumDao {
 
     @Override
     public int getCodeToInt() {
-        return Integer.valueOf(this.code);
+        return Integer.parseInt(this.code);
     }
 
     @Override

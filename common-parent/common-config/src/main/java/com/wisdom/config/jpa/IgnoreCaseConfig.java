@@ -31,7 +31,7 @@ public class IgnoreCaseConfig extends PhysicalNamingStrategyStandardImpl {
         if (name == null) {
             return null;
         } else {
-            StringBuilder builder = new StringBuilder(name.getText().replace('.', '_'));
+            var builder = new StringBuilder(name.getText().replace('.', '_'));
 
             for (int i = 1; i < builder.length() - 1; ++i) {
                 if (this.isUnderscoreRequired(builder.charAt(i - 1), builder.charAt(i), builder.charAt(i + 1))) {

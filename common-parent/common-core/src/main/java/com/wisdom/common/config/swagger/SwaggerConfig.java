@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -31,7 +30,6 @@ import java.util.*;
 
 @EnableOpenApi
 @Configuration
-@Profile({"dev", "local"})
 public class SwaggerConfig {
     @Value("${spring.application.name:}")
     private String appName = "dragonSaberCaptain";

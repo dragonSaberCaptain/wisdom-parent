@@ -1,6 +1,5 @@
 package com.wisdom.gateway;
 
-import com.wisdom.config.dto.SystemInfoDto;
 import com.wisdom.config.enums.DateTimeEnum;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.system.SpringContextUtil;
@@ -12,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -28,10 +26,10 @@ import org.springframework.context.ApplicationContext;
 public class GatewayCoreApp {
     public static void main(String[] args) {
         MDC.put("BIZ_ID", DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN));
-        ApplicationContext context = SpringApplication.run(GatewayCoreApp.class, args);
+        var context = SpringApplication.run(GatewayCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
-        SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(GatewayCoreApp.class);
-        String startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
+        var systemInfoDto = SystemUtil.printSystemInfo(GatewayCoreApp.class);
+        var startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
         log.info(startUpInfo);
         System.out.println(startUpInfo);
     }

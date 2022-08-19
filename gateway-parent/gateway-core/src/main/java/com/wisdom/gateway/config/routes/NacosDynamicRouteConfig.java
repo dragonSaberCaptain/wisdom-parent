@@ -3,7 +3,6 @@ package com.wisdom.gateway.config.routes;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
-import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.wisdom.gateway.config.NacosConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -47,12 +46,12 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     @PostConstruct
     public void dynamicRouteByNacosListener() {
         try {
-            Properties prop = new Properties();
+            var prop = new Properties();
             prop.put(PropertyKeyConst.NAMESPACE, nacosConfig.getServerNamespace());
             prop.put(PropertyKeyConst.SERVER_ADDR, nacosConfig.getServerAddr());
 
-            ConfigService config = NacosFactory.createConfigService(prop);
-            String content = config.getConfig(nacosConfig.getDataId(), nacosConfig.getGroup(), 5000);
+            var config = NacosFactory.createConfigService(prop);
+            var content = config.getConfig(nacosConfig.getDataId(), nacosConfig.getGroup(), 5000);
             publisher(content);
             config.addListener(nacosConfig.getDataId(), nacosConfig.getGroup(), new Listener() {
                 @Override
@@ -86,7 +85,7 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
      * 删除路由
      */
     public void clearRoute() {
-        for (String id : ROUTE_LIST) {
+        for (var id : ROUTE_LIST) {
             routeDefinitionWriter.delete(Mono.just(id)).subscribe();
         }
         ROUTE_LIST.clear();
@@ -98,8 +97,8 @@ public class NacosDynamicRouteConfig implements ApplicationEventPublisherAware {
     private void publisher(String config) {
         clearRoute();
         try {
-            List<RouteDefinition> gateway = JSONObject.parseArray(config, RouteDefinition.class);
-            for (RouteDefinition route : gateway) {
+            var gateway = JSONObject.parseArray(config, RouteDefinition.class);
+            for (var route : gateway) {
                 addRoute(route);
             }
             log.info("已动态刷新路由信息 !!!");

@@ -1,7 +1,6 @@
 package com.wisdom.gateway.tools.request;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.util.Objects;
 @Slf4j
 public class RequestUtil {
     public static String getIpAddress(final HttpServletRequest request) {
-        String ipAddress = request.getHeader("x-forwarded-for");
+        var ipAddress = request.getHeader("x-forwarded-for");
         if (ipAddress != null && ipAddress.length() != 0 && !"unknown".equalsIgnoreCase(ipAddress)) {
             // 多次反向代理后会有多个ip值，第一个ip才是真实ip
             if (ipAddress.contains(",")) {
@@ -45,8 +44,8 @@ public class RequestUtil {
     }
 
     public static String getIpAddress(final ServerHttpRequest request) {
-        HttpHeaders headers = request.getHeaders();
-        String ipAddress = headers.getFirst("x-forwarded-for");
+        var headers = request.getHeaders();
+        var ipAddress = headers.getFirst("x-forwarded-for");
         if (ipAddress != null && ipAddress.length() != 0 && !"unknown".equalsIgnoreCase(ipAddress)) {
             // 多次反向代理后会有多个ip值，第一个ip才是真实ip
             if (ipAddress.contains(",")) {

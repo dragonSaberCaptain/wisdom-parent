@@ -30,7 +30,7 @@ public class ResultDto<T> implements Serializable {
 
     public ResultDto(Object object) {
         if (object instanceof EnumDao) {
-            EnumDao enumInterface = (EnumDao) object;
+            var enumInterface = (EnumDao) object;
             this.code = enumInterface.getCode();
             this.msg = enumInterface.getMsg();
             this.subMsg = enumInterface.getSubMsg();
@@ -39,7 +39,7 @@ public class ResultDto<T> implements Serializable {
 
     public ResultDto(Object object, T data) {
         if (object instanceof EnumDao) {
-            EnumDao enumInterface = (EnumDao) object;
+            var enumInterface = (EnumDao) object;
             this.code = enumInterface.getCode();
             this.msg = enumInterface.getMsg();
             this.subMsg = enumInterface.getSubMsg();
@@ -49,7 +49,7 @@ public class ResultDto<T> implements Serializable {
 
     public ResultDto(Object object, String subMsg, T data) {
         if (object instanceof EnumDao) {
-            EnumDao enumInterface = (EnumDao) object;
+            var enumInterface = (EnumDao) object;
             this.code = enumInterface.getCode();
             this.msg = enumInterface.getMsg();
             this.subMsg = subMsg;

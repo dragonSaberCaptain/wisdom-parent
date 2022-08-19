@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.wisdom.common.tools.request.RequestUtil;
 import com.wisdom.config.dto.HttpModelDto;
+import com.wisdom.config.enums.ConstantEnum;
 import com.wisdom.config.enums.HttpEnum;
 import com.wisdom.config.exception.ResultException;
 import com.wisdom.config.params.NacosCommonConfig;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,36 +48,32 @@ public class ApiInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         //通用请求数据对象
-        HttpModelDto requestInfoModel = getRequestInfoModel(request);
-        String requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
+        var requestInfoModel = getRequestInfoModel(request);
+        var requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
         log.info("》通用请求记录开始【{}】通用请求记录结束《", requestInfoModelJson);
 
-        boolean roadblock = roadblock(requestInfoModel.getUrl());
+        var roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) {
             return true;
         }
 
-        //来自网关的服务器名称
-        String gatewayName = request.getHeader("gateway_name");
-        //来自网关的客户端url
-        String gatewayUrl = request.getHeader(gatewayName + "_url");
         //来自网关的签名
-        String gatewaySign = request.getHeader(gatewayName + "_sign");
+        var gatewaySignData = request.getHeader("gateway_sign");
+        var gatewayBodyData = request.getHeader("gateway_sign_data");
 
         //获取网关信息,只处理从网关过来的请求
-        if (StringUtil.isBlank(gatewayName) || StringUtil.isBlank(gatewayUrl) || StringUtil.isBlank(gatewaySign)) {
+        if (StringUtil.isBlank(gatewaySignData) || StringUtil.isBlank(gatewayBodyData)) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
 
-//        HttpModelDto checkInfoModel = getCheckInfoModel(requestInfoModel);
-//        checkInfoModel.setUrl(gatewayUrl);
+        var token = request.getHeaders(nacosCommonConfig.getTokenKey()).nextElement();
 
-//        String signData = JSONObject.toJSONString(checkInfoModel);
+        var systemSalt = redisDao.get(nacosCommonConfig.getSaltKey()) + nacosCommonConfig.getSalt();
 
-        String systemSalt = redisDao.get("systemSalt") + nacosCommonConfig.getSalt();
+        systemSalt += token;
 
         //验证签名是否通过
-        boolean check = checkSignByCache(requestInfoModelJson + systemSalt, gatewaySign, gatewayName + "_" + systemSalt + "_KeyPair");
+        var check = checkGatewaySign(gatewayBodyData, gatewaySignData, "gateway", systemSalt);
         if (!check) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
@@ -112,19 +110,13 @@ public class ApiInterceptor implements HandlerInterceptor {
         }
 
         if (obj instanceof String) {
-            String url = String.valueOf(obj);
+            var url = String.valueOf(obj);
             //登录相关全部放行
-            if (url.contains("/login")) {
-                return true;
-            }
+            if (url.contains("/login")) return true;
             //swagger相关全部放行
-            if (url.contains("/swagger") || url.contains("/api-docs")) {
-                return true;
-            }
+            if (url.contains("/swagger") || url.contains("/api-docs")) return true;
             //druid相关全部放行
-            if (url.contains("/druid")) {
-                return true;
-            }
+            if (url.contains("/druid")) return true;
         }
         return false;
     }
@@ -134,13 +126,14 @@ public class ApiInterceptor implements HandlerInterceptor {
      *
      * @param jsonDataSrc 数据源
      * @param sign        签名字符串
-     * @param key         缓存key
+     * @param appName     网关appName
+     * @param systemSalt  系统盐值
      * @author captain
      * @datetime 2021-09-27 14:06:22
      */
-    public boolean checkSignByCache(String jsonDataSrc, String sign, String key) {
+    public boolean checkGatewaySign(String jsonDataSrc, String sign, String appName, String systemSalt) {
         //获取密匙对
-        String keyPairStr = redisDao.get(key);
+        String keyPairStr = redisDao.get(appName + "_" + systemSalt + "_KeyPair");
         if (keyPairStr == null) {
             return false;
         }
@@ -148,7 +141,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
         AsymmetricModel asymmetricModel = new AsymmetricModel();
         asymmetricModel.setMyKeyPair(myKeyPair);
-        asymmetricModel.setDataSource(jsonDataSrc);
+        asymmetricModel.setDataSource(jsonDataSrc + systemSalt);
         asymmetricModel.setSign(sign);
         AsymmetricUtil.signVerify(asymmetricModel);
 
@@ -163,44 +156,38 @@ public class ApiInterceptor implements HandlerInterceptor {
      * @datetime 2021-09-27 14:08:03
      */
     public HttpModelDto getRequestInfoModel(HttpServletRequest request) {
-        String userAgent = request.getHeader("User-Agent");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Map<String, Object> headerMap = new TreeMap<>();
+
+        while (headerNames.hasMoreElements()) {
+            String key = headerNames.nextElement();
+            String value = request.getHeader(key);
+            headerMap.put(key, value);
+        }
+
         String methodValue = request.getMethod();
         Map<String, String[]> urlParamMap = request.getParameterMap();
 
         String ipAddress = RequestUtil.getIpAddress(request);
 
-        HttpModelDto httpModelDto = new HttpModelDto();
-        httpModelDto.setIpAddress(ipAddress);
-        httpModelDto.setUrl(request.getRequestURL().toString());
-        httpModelDto.setUserAgent(userAgent);
-        httpModelDto.setMethodValue(methodValue);
-        httpModelDto.setUrlParamMap(new TreeMap<>(urlParamMap));
-
+        Map<String, Object> bodyMap = new TreeMap<>();
         if ("POST".equalsIgnoreCase(methodValue)) {
             String bodyString = RepeatedlyReadRequestWrapper.getBodyToString(request);
             if (StringUtil.isNotBlank(bodyString)) {
-                TreeMap<String, Object> bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
+                bodyMap = JSONObject.parseObject(bodyString, new TypeReference<>() {
                 });
-                httpModelDto.setBodyParamMap(bodyMap);
             }
-
         }
 
-        return httpModelDto;
-    }
+        HttpModelDto httpModelDto = new HttpModelDto();
+        httpModelDto.setIpAddress(ipAddress);
+        httpModelDto.setUrl(request.getRequestURL().toString());
+        httpModelDto.setPort(ConstantEnum.DEFAULT_PORT.getCode());
+        httpModelDto.setMethodValue(methodValue);
+        httpModelDto.setUrlParamMap(new TreeMap<>(urlParamMap));
+        httpModelDto.setBodyParamMap(bodyMap);
+        httpModelDto.setHeaderMap(headerMap);
 
-    /**
-     * 获取用于验签的数据对象
-     *
-     * @param httpModelDto 数据源
-     * @author captain
-     * @datetime 2021-09-27 14:08:45
-     */
-    public HttpModelDto getCheckInfoModel(HttpModelDto httpModelDto) {
-        HttpModelDto httpCheckModelDto = new HttpModelDto();
-        httpCheckModelDto.setMethodValue(httpModelDto.getMethodValue());
-        httpCheckModelDto.setUrlParamMap(httpModelDto.getUrlParamMap());
-        httpCheckModelDto.setBodyParamMap(httpModelDto.getBodyParamMap());
-        return httpCheckModelDto;
+        return httpModelDto;
     }
 }

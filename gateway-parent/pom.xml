@@ -20,7 +20,6 @@
 
     <modules>
         <module>gateway-core</module>
-        <module>gateway-tools</module>
     </modules>
 
     <properties>

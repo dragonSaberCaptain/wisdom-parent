@@ -23,7 +23,7 @@ public class ResultException extends RuntimeException {
 
     public ResultException(Object object) {
         if (object instanceof EnumDao) {
-            EnumDao enumInterface = (EnumDao) object;
+            var enumInterface = (EnumDao) object;
             this.code = enumInterface.getCode();
             this.msg = enumInterface.getMsg();
             this.subMsg = enumInterface.getSubMsg();

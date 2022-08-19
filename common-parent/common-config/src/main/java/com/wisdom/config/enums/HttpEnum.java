@@ -125,9 +125,9 @@ public enum HttpEnum implements EnumDao {
 
     public static HttpEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
-            for (HttpEnum resultEnum : values()) {
-                if (code.equals(resultEnum.getCode())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (code.equals(value.getCode())) {
+                    return value;
                 }
             }
         }
@@ -140,9 +140,9 @@ public enum HttpEnum implements EnumDao {
 
     public static HttpEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
-            for (HttpEnum resultEnum : values()) {
-                if (msg.equals(resultEnum.getMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (msg.equals(value.getMsg())) {
+                    return value;
                 }
             }
         }
@@ -151,9 +151,9 @@ public enum HttpEnum implements EnumDao {
 
     public final int findCodeByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
-            for (HttpEnum resultEnum : values()) {
-                if (msg.equals(resultEnum.getMsg())) {
-                    return Integer.parseInt(resultEnum.getCode());
+            for (var value : values()) {
+                if (msg.equals(value.getMsg())) {
+                    return Integer.parseInt(value.getCode());
                 }
             }
         }
@@ -163,9 +163,9 @@ public enum HttpEnum implements EnumDao {
 
     public static HttpEnum findBySubMsg(String subMsg) {
         if (StringUtils.isNotBlank(subMsg)) {
-            for (HttpEnum resultEnum : values()) {
-                if (subMsg.equals(resultEnum.getSubMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (subMsg.equals(value.getSubMsg())) {
+                    return value;
                 }
             }
         }
@@ -179,7 +179,7 @@ public enum HttpEnum implements EnumDao {
 
     @Override
     public int getCodeToInt() {
-        return Integer.valueOf(this.code);
+        return Integer.parseInt(this.code);
     }
 
     @Override

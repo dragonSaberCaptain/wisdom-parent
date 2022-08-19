@@ -56,9 +56,9 @@ public enum WeekEnum implements EnumDao {
 
     public static WeekEnum findByCode(String code) {
         if (StringUtils.isNotBlank(code)) {
-            for (WeekEnum resultEnum : values()) {
-                if (code.equalsIgnoreCase(resultEnum.getCode())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (code.equalsIgnoreCase(value.getCode())) {
+                    return value;
                 }
             }
         }
@@ -71,9 +71,9 @@ public enum WeekEnum implements EnumDao {
 
     public static WeekEnum findByMsg(String msg) {
         if (StringUtils.isNotBlank(msg)) {
-            for (WeekEnum resultEnum : values()) {
-                if (msg.equalsIgnoreCase(resultEnum.getMsg())) {
-                    return resultEnum;
+            for (var value : values()) {
+                if (msg.equalsIgnoreCase(value.getMsg())) {
+                    return value;
                 }
             }
         }
@@ -98,7 +98,7 @@ public enum WeekEnum implements EnumDao {
 
     @Override
     public int getCodeToInt() {
-        return Integer.valueOf(this.code);
+        return Integer.parseInt(this.code);
     }
 
     @Override

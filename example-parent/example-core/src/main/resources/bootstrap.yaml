@@ -2,7 +2,7 @@ server:
     port: 9527
 spring:
     profiles:
-        active: dev
+        active: prod
     application:
         name: example
     cloud:

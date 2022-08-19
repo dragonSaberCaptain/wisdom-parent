@@ -21,7 +21,7 @@ public class MybatisPlusConfig {
      */
     @Bean
     public MybatisPlusInterceptor MybatisPlusInterceptor() {
-        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        var mybatisPlusInterceptor = new MybatisPlusInterceptor();
         //乐观锁
         mybatisPlusInterceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
 

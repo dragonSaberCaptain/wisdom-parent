@@ -12,8 +12,5 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class BaseConfig {
-	/**
-	 * 盐md5后的值
-	 */
-	public static String MD5_SALT = "e5a5be7e769d12575d7ea8efa004b154";
+
 }
