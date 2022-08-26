@@ -2,11 +2,12 @@ package com.wisdom;
 
 import com.wisdom.config.dto.SystemInfoDto;
 import com.wisdom.config.enums.DateTimeEnum;
+import com.wisdom.constant.Constant;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.system.SpringContextUtil;
 import com.wisdom.tools.system.SystemUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -26,12 +27,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement //开启事务
 public class ExampleCoreApp {
     public static void main(String[] args) {
-        MDC.put("BIZ_ID", DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN));
+        MDC.put(Constant.BIZ_ID, DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN));
         ApplicationContext context = SpringApplication.run(ExampleCoreApp.class, args);
         SpringContextUtil.setApplicationContext(context);
         SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(ExampleCoreApp.class);
         String startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
         log.info(startUpInfo);
         System.out.println(startUpInfo);
+
     }
+
 }

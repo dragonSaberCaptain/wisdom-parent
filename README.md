@@ -6,7 +6,7 @@ Soredemo Sekai wa Utsukushii !!!
 
 #### 软件架构
 软件架构说明
-
+1.
 
 #### 安装教程
 

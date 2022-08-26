@@ -34,7 +34,7 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <!--springframework-->
         <spring_cloud_version>Hoxton.SR9</spring_cloud_version>
-        <alibaba_nacos_version>2.2.6.RELEASE</alibaba_nacos_version>
+        <alibaba_spring_cloud_version>2.2.6.RELEASE</alibaba_spring_cloud_version>
 
         <!--mysql驱动-->
         <mysql_version>8.0.28</mysql_version>
@@ -107,12 +107,6 @@
             <version>${lombok_version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-beans</artifactId>-->
-        <!--            <version>5.3.20</version>-->
-        <!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -128,7 +122,7 @@
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${alibaba_nacos_version}</version>
+                <version>${alibaba_spring_cloud_version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

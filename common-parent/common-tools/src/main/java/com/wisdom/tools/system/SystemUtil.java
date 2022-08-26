@@ -2,12 +2,16 @@ package com.wisdom.tools.system;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wisdom.config.dto.SystemInfoDto;
+import com.wisdom.constant.Constant;
 import com.wisdom.tools.file.FileUtil;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -38,8 +42,8 @@ public class SystemUtil {
      * 获取某个包下的所有文件
      *
      * @param packagePath 包名全路径
-     * @param addPath 是否返回 全路径
-     * @param addClass 是否返回 .class结尾
+     * @param addPath     是否返回 全路径
+     * @param addClass    是否返回 .class结尾
      * @return java.util.List<java.lang.String>
      * @author captain
      * @datetime 2022-06-13 10:34:04
@@ -98,24 +102,47 @@ public class SystemUtil {
      */
     public static SystemInfoDto printSystemInfo(Class<?> aClass) {
         SystemInfoDto systemInfoDto = new SystemInfoDto();
-        systemInfoDto.setOsName(System.getProperty("os.name"));
-        systemInfoDto.setOsArch(System.getProperty("os.arch"));
-        systemInfoDto.setOsVersion(System.getProperty("os.version"));
-        systemInfoDto.setJavaVmSpecificationVersion(System.getProperty("java.vm.specification.version"));
-        systemInfoDto.setJavaVmSpecificationVendor(System.getProperty("java.vm.specification.vendor"));
-        systemInfoDto.setJavaVmSpecificationName(System.getProperty("java.vm.specification.name"));
-        systemInfoDto.setJavaVmVersion(System.getProperty("java.vm.version"));
-        systemInfoDto.setJavaVmName(System.getProperty("java.vm.name"));
-        systemInfoDto.setJavaVmVendor(System.getProperty("java.vm.vendor"));
-        systemInfoDto.setJavaVersion(System.getProperty("java.version"));
+        systemInfoDto.setOsName(SystemUtils.OS_NAME);
+        systemInfoDto.setOsArch(SystemUtils.OS_ARCH);
+        systemInfoDto.setOsVersion(SystemUtils.OS_VERSION);
+        systemInfoDto.setJavaVmSpecificationVersion(SystemUtils.JAVA_VM_SPECIFICATION_VERSION);
+        systemInfoDto.setJavaVmSpecificationVendor(SystemUtils.JAVA_VM_SPECIFICATION_VENDOR);
+        systemInfoDto.setJavaVmSpecificationName(SystemUtils.JAVA_VM_SPECIFICATION_NAME);
+        systemInfoDto.setJavaVmVersion(SystemUtils.JAVA_VM_VERSION);
+        systemInfoDto.setJavaVmName(SystemUtils.JAVA_VM_NAME);
+        systemInfoDto.setJavaVmVendor(SystemUtils.JAVA_VM_VENDOR);
+        systemInfoDto.setJavaVersion(SystemUtils.JAVA_VERSION);
         systemInfoDto.setProviders(printProviders());
         systemInfoDto.setName(aClass.getName());
         systemInfoDto.setSimpleName(aClass.getSimpleName());
         if (StringUtil.isNotBlank(aClass.getName())) {
-            systemInfoDto.setServiceName(SpringContextUtil.getEnvironmentProperty("spring.application.name"));
-            systemInfoDto.setPort(SpringContextUtil.getEnvironmentProperty("server.port"));
-            systemInfoDto.setProfilesActive(SpringContextUtil.getEnvironmentProperty("spring.profiles.active"));
+            systemInfoDto.setServiceName(Constant.SPRING_APPLICATION_NAME);
+            systemInfoDto.setPort(Constant.SERVER_PORT);
+            systemInfoDto.setProfilesActive(Constant.SPRING_PROFILES_ACTIVE);
         }
+        try {
+            System.out.println("---------------------------------------------------------------------------------");
+            System.out.println(SystemUtils.getHostName()); //获取主机名称
+            System.out.println(InetAddress.getLocalHost().getHostName()); //获取本地主机名称
+            System.out.println(SystemUtils.getJavaHome()); //获取java_home根目录地址
+            System.out.println(SystemUtils.getJavaIoTmpDir()); //获取java io 临时文件存放地址
+            System.out.println(SystemUtils.getUserDir()); //获取系统根目录地址
+            System.out.println(SystemUtils.getUserHome()); //获取用户目录地址
+            System.out.println(SystemUtils.OS_NAME);
+            System.out.println(SystemUtils.OS_ARCH);
+            System.out.println(SystemUtils.OS_VERSION);
+            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_VERSION);
+            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_VENDOR);
+            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_NAME);
+            System.out.println(SystemUtils.JAVA_VM_VERSION);
+            System.out.println(SystemUtils.JAVA_VM_NAME);
+            System.out.println(SystemUtils.JAVA_VM_VENDOR);
+            System.out.println(SystemUtils.JAVA_VERSION);
+            System.out.println("---------------------------------------------------------------------------------");
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+
         ProcessHandle current = ProcessHandle.current();
         if (current.info().user().isPresent()) {
             systemInfoDto.setUser(current.info().user().get());
@@ -136,10 +163,6 @@ public class SystemUtil {
             systemInfoDto.setTotalCpuDuration(current.info().totalCpuDuration().get());
         }
         systemInfoDto.setPid(String.valueOf(ProcessHandle.current().pid()));
-//        if (String.valueOf(systemInfoDto.getOsName()).startsWith("Windows")) {
-//            String name = ManagementFactory.getRuntimeMXBean().getName();
-//            systemInfoDto.setPid(name.split("@")[0]);
-//        }
         log.info("系统信息(system info):{}", JSONObject.toJSONString(systemInfoDto));
         return systemInfoDto;
     }
@@ -154,7 +177,6 @@ public class SystemUtil {
     }
 
     public static SystemInfoDto systemInit(ApplicationContext context, Class<?> aClass) {
-
         return printSystemInfo(aClass);
     }
 

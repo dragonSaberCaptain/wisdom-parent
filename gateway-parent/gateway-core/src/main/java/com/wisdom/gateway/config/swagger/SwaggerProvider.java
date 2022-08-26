@@ -56,12 +56,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
             swaggerResource.setName(instance);
             swaggerResource.setUrl(url);
             swaggerResource.setSwaggerVersion(DocumentationType.OAS_30.getVersion());
-            //先尝试获取swagger文档信息,不知道怎么判断nocos服务是否存活,暂时用此方法,以后在优化
-//            String result = HttpUrlConnectionUtil.sendGetASyn("http://127.0.0.1" + url, null);
-//            if (StringUtil.isNotBlank(result)) {
-            //只生成请求成功的文档信息
             resources.add(swaggerResource);
-//            }
         });
         Collections.sort(resources);
         return resources;
