@@ -15,6 +15,8 @@ import com.wisdom.tools.certificate.asymmetric.MyKeyPair;
 import com.wisdom.tools.database.RedisDao;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jboss.logging.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,34 +49,40 @@ public class ApiInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        var bizId = request.getHeader("bizid");
+        MDC.put("BIZ_ID", bizId);
+
         //通用请求数据对象
         var requestInfoModel = getRequestInfoModel(request);
         var requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
         log.info("》通用请求记录开始【{}】通用请求记录结束《", requestInfoModelJson);
 
+        //关隘:判断不需要验证的,放行
         var roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) {
             return true;
         }
 
         //来自网关的签名
-        var gatewaySignData = request.getHeader("gateway_sign");
-        var gatewayBodyData = request.getHeader("gateway_sign_data");
+        var gatewaySign = request.getHeader("gatewaysign");
+        var gatewaySignMd5 = request.getHeader("gatewaysignmd5");
 
         //获取网关信息,只处理从网关过来的请求
-        if (StringUtil.isBlank(gatewaySignData) || StringUtil.isBlank(gatewayBodyData)) {
+        if (StringUtil.isBlank(gatewaySign) || StringUtil.isBlank(gatewaySignMd5)) {
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
 
+        //获取token
         var token = request.getHeaders(nacosCommonConfig.getTokenKey()).nextElement();
 
-        var systemSalt = redisDao.get(nacosCommonConfig.getSaltKey()) + nacosCommonConfig.getSalt();
-
-        systemSalt += token;
+        var dateTimeSalt = redisDao.get(nacosCommonConfig.getSaltKey());
+        var systemSalt = nacosCommonConfig.getSalt() + token + dateTimeSalt;
 
         //验证签名是否通过
-        var check = checkGatewaySign(gatewayBodyData, gatewaySignData, "gateway", systemSalt);
+        String key = DigestUtils.md5Hex("gateway" + "_" + systemSalt + "_KeyPair");
+        var check = checkGatewaySign(gatewaySignMd5 + key, gatewaySign, key);
         if (!check) {
+            log.info("签名验证不通过");
             throw new ResultException(HttpEnum.BAD_GATEWAY);
         }
         return true;
@@ -126,14 +134,13 @@ public class ApiInterceptor implements HandlerInterceptor {
      *
      * @param jsonDataSrc 数据源
      * @param sign        签名字符串
-     * @param appName     网关appName
-     * @param systemSalt  系统盐值
+     * @param key         key值
      * @author captain
      * @datetime 2021-09-27 14:06:22
      */
-    public boolean checkGatewaySign(String jsonDataSrc, String sign, String appName, String systemSalt) {
+    public boolean checkGatewaySign(String jsonDataSrc, String sign, String key) {
         //获取密匙对
-        String keyPairStr = redisDao.get(appName + "_" + systemSalt + "_KeyPair");
+        String keyPairStr = redisDao.get(key);
         if (keyPairStr == null) {
             return false;
         }
@@ -141,7 +148,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
         AsymmetricModel asymmetricModel = new AsymmetricModel();
         asymmetricModel.setMyKeyPair(myKeyPair);
-        asymmetricModel.setDataSource(jsonDataSrc + systemSalt);
+        asymmetricModel.setDataSource(jsonDataSrc);
         asymmetricModel.setSign(sign);
         AsymmetricUtil.signVerify(asymmetricModel);
 

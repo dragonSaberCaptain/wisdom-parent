@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,9 +47,9 @@ public class CertUtil {
      * 添加签名，验签，加密算法提供者
      */
     public static void addProvider() {
-        Security.removeProvider("BC");
-        log.info("add BC provider");
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.removeProvider("BC");
+//        log.info("add BC provider");
+//        Security.addProvider(new BouncyCastleProvider());
         printSysInfo();
     }
 

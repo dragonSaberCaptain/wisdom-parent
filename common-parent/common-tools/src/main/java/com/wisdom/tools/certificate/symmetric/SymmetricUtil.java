@@ -3,11 +3,9 @@ package com.wisdom.tools.certificate.symmetric;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Security;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -45,7 +43,7 @@ public class SymmetricUtil {
 
     public static SymmetricModel encryptData(SymmetricModel symmetricModel) throws Exception {
         SecretKeySpec secretKeySpec = initKey(symmetricModel);
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.addProvider(new BouncyCastleProvider());
         // 创建密码器
         Cipher cipher = Cipher.getInstance(symmetricModel.getEadAlgorithm());
         // 初始化为加密模式的密码
@@ -60,7 +58,7 @@ public class SymmetricUtil {
     public static SymmetricModel decodeData(SymmetricModel symmetricModel) throws Exception {
         SecretKeySpec secretKeySpec = initKey(symmetricModel);
 
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.addProvider(new BouncyCastleProvider());
         // 创建密码器
         Cipher cipher = Cipher.getInstance(symmetricModel.getEadAlgorithm());
         // 使用密钥初始化，设置为解密模式

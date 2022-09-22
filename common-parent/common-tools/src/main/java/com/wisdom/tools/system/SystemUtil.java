@@ -10,8 +10,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -119,28 +117,6 @@ public class SystemUtil {
             systemInfoDto.setServiceName(Constant.SPRING_APPLICATION_NAME);
             systemInfoDto.setPort(Constant.SERVER_PORT);
             systemInfoDto.setProfilesActive(Constant.SPRING_PROFILES_ACTIVE);
-        }
-        try {
-            System.out.println("---------------------------------------------------------------------------------");
-            System.out.println(SystemUtils.getHostName()); //获取主机名称
-            System.out.println(InetAddress.getLocalHost().getHostName()); //获取本地主机名称
-            System.out.println(SystemUtils.getJavaHome()); //获取java_home根目录地址
-            System.out.println(SystemUtils.getJavaIoTmpDir()); //获取java io 临时文件存放地址
-            System.out.println(SystemUtils.getUserDir()); //获取系统根目录地址
-            System.out.println(SystemUtils.getUserHome()); //获取用户目录地址
-            System.out.println(SystemUtils.OS_NAME);
-            System.out.println(SystemUtils.OS_ARCH);
-            System.out.println(SystemUtils.OS_VERSION);
-            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_VERSION);
-            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_VENDOR);
-            System.out.println(SystemUtils.JAVA_VM_SPECIFICATION_NAME);
-            System.out.println(SystemUtils.JAVA_VM_VERSION);
-            System.out.println(SystemUtils.JAVA_VM_NAME);
-            System.out.println(SystemUtils.JAVA_VM_VENDOR);
-            System.out.println(SystemUtils.JAVA_VERSION);
-            System.out.println("---------------------------------------------------------------------------------");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
         }
 
         ProcessHandle current = ProcessHandle.current();

@@ -18,6 +18,8 @@ import com.wisdom.tools.database.RedisDao;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jboss.logging.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,16 +55,19 @@ public class GatewayFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("网关处理开始");
+        String dateTime = DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN);
+        MDC.put("BIZ_ID", dateTime);
+
         var request = exchange.getRequest();
         var response = exchange.getResponse();
 
         //通用请求数据对象
         var requestInfoModel = getRequestInfoModel(request);
+
         var requestInfoModelJson = JSONObject.toJSONString(requestInfoModel);
         log.info("》通用请求记录开始【{}】通用请求记录结束《", requestInfoModelJson);
 
-        //判断不需要验证的,放行
+        //关隘:判断不需要验证的,放行
         var roadblock = roadblock(requestInfoModel.getUrl());
         if (roadblock) {
             return chain.filter(exchange);
@@ -80,13 +84,12 @@ public class GatewayFilter implements GlobalFilter, Ordered {
             return ResponseUtil.resultMsgToMono(ResultEnum.RESULT_ENUM_1008, response);
         }
 
+        var dateTimeSalt = redisDao.saveDefaultValue(nacosConfig.getSaltKey(), NumberEnum.SEVEN.getCodeToInt(), TimeUnit.DAYS);
         //设置网关盐值信息
-        var systemSalt = redisDao.save(nacosConfig.getSaltKey(), DateUtilByZoned.getDateTime(DateTimeEnum.DATETIME_PATTERN_MILLI_UN), NumberEnum.SEVEN.getCodeToInt(), TimeUnit.DAYS) + File.separator + nacosConfig.getSalt();
-        systemSalt += File.separator + token;
-        log.info("网关盐值信息:" + systemSalt);
+        var systemSalt = nacosConfig.getSalt() + token + dateTimeSalt;
 
         //网关签名处理
-        gatewayResultSign(requestInfoModel, systemSalt, request);
+        gatewayResultSign(requestInfoModel, systemSalt, dateTime, request);
         return chain.filter(exchange);
     }
 
@@ -227,16 +230,20 @@ public class GatewayFilter implements GlobalFilter, Ordered {
         return asymmetricModel.getSign();
     }
 
-    public void gatewayResultSign(HttpModelDto httpModelDto, String systemSalt, ServerHttpRequest request) {
-        var dataInfoJson = JSONObject.toJSONString(httpModelDto);
+    public void gatewayResultSign(HttpModelDto httpModelDto, String systemSalt, String bizId, ServerHttpRequest request) {
+        String bodyMd5 = DigestUtils.md5Hex(JSONObject.toJSONString(httpModelDto));
+
+        String systemSaltMD5 = DigestUtils.md5Hex(nacosConfig.getAppName() + "_" + systemSalt + "_KeyPair");
+
         //开始执行签名并且缓存
-        var sign = signAndCache(dataInfoJson + systemSalt, nacosConfig.getAppName() + "_" + systemSalt + "_KeyPair", 7, TimeUnit.DAYS);
+        var sign = signAndCache(bodyMd5 + systemSaltMD5, systemSaltMD5, NumberEnum.SEVEN.getCodeToInt(), TimeUnit.DAYS);
         log.info("网关签名信息:" + sign);
 
         //往请求头中添加网关签名
         Map<String, String> headersMap = new TreeMap<>();
-        headersMap.put("gateway_sign", sign);
-        headersMap.put("gateway_sign_data", dataInfoJson);
+        headersMap.put("gatewaysign", sign);
+        headersMap.put("gatewaysignmd5", bodyMd5);
+        headersMap.put("bizid", bizId);
 
         request.mutate().headers(httpHeaders -> httpHeaders.setAll(headersMap)).build();
     }

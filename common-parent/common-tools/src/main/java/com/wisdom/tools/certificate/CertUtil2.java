@@ -5,7 +5,6 @@ import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -137,8 +136,8 @@ public class CertUtil2 {
      * 添加签名，验签，加密算法提供者
      */
     public static void addProvider() {
-        Security.removeProvider("BC");
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.removeProvider("BC");
+//        Security.addProvider(new BouncyCastleProvider());
         printSysInfo();
     }
 

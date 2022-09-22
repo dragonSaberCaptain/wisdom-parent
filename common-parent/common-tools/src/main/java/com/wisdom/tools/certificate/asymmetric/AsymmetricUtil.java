@@ -6,7 +6,6 @@ import com.wisdom.config.exception.ResultException;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.Cipher;
 import java.security.*;
@@ -126,7 +125,7 @@ public class AsymmetricUtil {
 
             Cipher cipher;
             if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
-                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
                 cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
             } else {
                 cipher = Cipher.getInstance(keyFactory.getAlgorithm());
@@ -160,7 +159,7 @@ public class AsymmetricUtil {
 
         Cipher cipher;
         if (asymmetricModel.ALGORITHM_EC.equals(asymmetricModel.getCurrentAlgorithm())) {
-            Security.addProvider(new BouncyCastleProvider());
+//            Security.addProvider(new BouncyCastleProvider());
             cipher = Cipher.getInstance(asymmetricModel.getEadAlgorithm());
         } else {
             cipher = Cipher.getInstance(keyFactory.getAlgorithm());

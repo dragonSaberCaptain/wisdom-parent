@@ -37,6 +37,8 @@ public class HttpModelDto {
      * 请求来源
      */
     private String userAgent;
+
+    private String bizId;
     /**
      * 请求url带的参数
      */
