@@ -1,0 +1,37 @@
+{
+  "outPath": "target/smart-doc",
+  "serverUrl": "http://localhost:80",
+  "projectName": "auth-doc",
+  "showAuthor": true,
+  "requestExample": true,
+  "responseExample": true,
+  "displayActualType": false,
+  "sortByTitle": false,
+  "appToken": "849b008c73bf49669cb5a7198fa07e9c",
+  "openUrl": "http://127.0.0.1:7700/api",
+  "replace": true,
+  "debugEnvName": "本地环境",
+  "debugEnvUrl": "http://127.0.0.1:80",
+  "packageFilters": "com.wisdom.auth.controller",
+  "errorCodeDictionaries": [
+    {
+      "title": "http相关错误码",
+      "enumClassName": "com.wisdom.base.enums.HttpEnum",
+      "codeField": "code",
+      "descField": "msg"
+    },
+    {
+      "title": "返回结果相关错误码",
+      "enumClassName": "com.wisdom.base.enums.ResultEnum",
+      "codeField": "code",
+      "descField": "msg"
+    },
+    {
+      "title": "用于相关错误码",
+      "enumClassName": "com.wisdom.base.enums.UserEnum",
+      "codeField": "code",
+      "descField": "msg"
+    }
+  ]
+}
+

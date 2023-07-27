@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wisdom.auth.dao.UserDaoExt">
+
+    <!-- 通用查询映射结果 继承 -->
+    <resultMap id="BaseResultMap" type="com.wisdom.auth.entity.UserExt"
+               extends="com.wisdom.auth.dao.UserDao.BaseResultMap"/>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID
+        , CREATE_DATE_TIME, CREATE_ID, DEL_FLAG, REMARK, UP_DATE_TIME, UPDATE_ID, VERSION, ACCOUNT, PASSWORD
+    </sql>
+
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="searchBy">
+        <trim prefix="where" prefixOverrides="and|or">
+            <!-- 生成公共字段 -->
+            <!-- 生成普通字段 -->
+            <if test="createDateTime != null">and CREATE_DATE_TIME=#{createDateTime}</if>
+            <if test="createId != null">and CREATE_ID=#{createId}</if>
+            <if test="delFlag != null">and DEL_FLAG=#{delFlag}</if>
+            <if test="remark != null">and REMARK=#{remark}</if>
+            <if test="upDateTime != null">and UP_DATE_TIME=#{upDateTime}</if>
+            <if test="updateId != null">and UPDATE_ID=#{updateId}</if>
+            <if test="version != null">and VERSION=#{version}</if>
+            <if test="account != null">and ACCOUNT=#{account}</if>
+            <if test="password != null">and PASSWORD=#{password}</if>
+        </trim>
+    </sql>
+</mapper>

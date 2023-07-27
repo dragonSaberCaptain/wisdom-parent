@@ -1,0 +1,37 @@
+{
+  "outPath": "target/smart-doc",
+  "serverUrl": "http://localhost:80",
+  "projectName": "openai-doc",
+  "showAuthor": true,
+  "requestExample": true,
+  "responseExample": true,
+  "displayActualType": false,
+  "sortByTitle": false,
+  "appToken": "faae78d6508643519cc81b19ea9eb943",
+  "openUrl": "http://127.0.0.1:7700/api",
+  "replace": true,
+  "debugEnvName": "本地环境",
+  "debugEnvUrl": "http://127.0.0.1:80",
+  "packageFilters": "com.wisdom.openai.controller",
+  "errorCodeDictionaries": [
+    {
+      "title": "http相关错误码",
+      "enumClassName": "com.wisdom.base.enums.HttpEnum",
+      "codeField": "code",
+      "descField": "msg"
+    },
+    {
+      "title": "返回结果相关错误码",
+      "enumClassName": "com.wisdom.base.enums.ResultEnum",
+      "codeField": "code",
+      "descField": "msg"
+    },
+    {
+      "title": "用于相关错误码",
+      "enumClassName": "com.wisdom.base.enums.UserEnum",
+      "codeField": "code",
+      "descField": "msg"
+    }
+  ]
+}
+
