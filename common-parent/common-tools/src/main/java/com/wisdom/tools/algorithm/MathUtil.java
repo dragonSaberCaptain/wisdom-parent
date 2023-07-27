@@ -377,63 +377,137 @@ public class MathUtil {
         return answer;
     }
 
+    //局部内部类
+    int a = 0;
+
     /**
-     * 算法题5 · 第k大元素
-     * the Kth largest element
+     * 2426 打印素数
+     * 1≤n≤10000
+     * 素数是除了 1 和它自身外，不能整除其他自然数的数
      *
-     * @param k:    An integer
-     * @param nums: An array
-     * @return int
      * @author captain
-     * @datetime 2022-07-28 14:37:21
+     * @datetime 2022-11-30 14:01:40
      */
-    public static int kthLargestElement(int k, int[] nums) {
-        // write your code here
-        return -1;
+    public static void printPrimeNumbers(int n) {
+        for (int i = 1; i <= n; i += 2) { // 使用for循环遍历区间[2,n]
+            int flag = 1; //flag为1的时候表明这个数是素数
+            for (int a = 2; a <= Math.sqrt(i); a++) {
+                if (0 == i % a) {
+                    flag = 0;
+                    break;
+                }
+            }
+            if (flag == 1) {
+                if (i == 1) {
+                    System.out.println(2);
+                } else {
+                    System.out.println(i);
+                }
+            }
+        }
+    }
+
+    /**
+     * 1320 包含重复值
+     *
+     * @author captain
+     * @datetime 2022-11-30 15:14:08
+     */
+    public static boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int x : nums) {
+            if (!set.add(x)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 2168 · 打印三角九九乘法表
+     *
+     * @author captain
+     * @datetime 2023-01-11 10:09:15
+     */
+    public static void multiplicationTable() {
+        for (int i = 1; i <= 9; i++) {
+            for (int j = 1; j <= i; j++) {
+                System.out.print(j + "*" + i + "=" + (i * j) + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * 输入: n = 100
+     * 输出: 19
+     * 解释:
+     * 有8,18,28,38,48,58,68,78,80,81,82,83,84,85,86,87,88,89,98。
+     *
+     * @param n: count lucky numbers from 1 ~ n
+     * @return the numbers of lucky number
+     */
+    public static int luckyNumber(int n) {
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            int x = i;
+            while (x != 0) {
+                if (x % 10 == 8) {
+                    ans++;
+                    break;
+                }
+                x /= 10;
+            }
+        }
+        return ans;
+    }
+
+    public static int luckyNumber2(int n) {
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            if (Integer.toString(i).contains("8")) {
+                ans += 1;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * @param trees: the positions of trees.
+     * @param d:     the minimum beautiful interval.
+     * @return the minimum number of trees to remove to make trees beautiful.
+     * <p>
+     * [1,2,3,5,6]
+     */
+    public static int treePlanning(int[] trees, int d) {
+        int num = 0;
+        int i = trees.length - 1;
+        while (i > 0) {
+            if (trees[i] - trees[i - 1] < d) {
+                num += 1;
+                i -= 2;
+            } else {
+                i -= 1;
+            }
+        }
+        return num;
     }
 
     public static void main(String[] args) {
         MathUtil mathUtil = new MathUtil();
-//		System.out.println(mathUtil.aplusb(234, 432));
-//		System.out.println(mathUtil.insertFive(234));
-//		System.out.println(mathUtil.test(5, 109));
-//		System.out.println(mathUtil.digitCounts(5, 100));
+        //System.out.println(luckyNumber2(100));
+        int[] trees = {1, 6, 11, 16, 21, 26};
+        System.out.println(treePlanning(trees, 11));
+    }
 
-//        Scanner sc = new Scanner(System.in); //相似度匹配
-
-        //[[0, 2], [1, 5], [0, 9], [2, 15]]
-//        List<List<Integer>> operation = new ArrayList<>();
-//
-//        List<Integer> operationSub = new ArrayList<>();
-//        operationSub.add(0);
-//        operationSub.add(2);
-//        operation.add(operationSub);
-//
-//        List<Integer> operationSub1 = new ArrayList<>();
-//        operationSub1.add(1);
-//        operationSub1.add(5);
-//        operation.add(operationSub1);
-//
-//        List<Integer> operationSub2 = new ArrayList<>();
-//        operationSub2.add(0);
-//        operationSub2.add(9);
-//        operation.add(operationSub2);
-//
-//        List<Integer> operationSub3 = new ArrayList<>();
-//        operationSub3.add(2);
-//        operationSub3.add(15);
-//        operation.add(operationSub3);
-//
-//        System.out.println(longestLightingTime(operation));
-//        System.out.println(minItem(Arrays.asList(1, 1, 1, 2, 2, 3), 2));
-//        System.out.println(findNumber(new int[]{2, 1, 3, 1, 2, 2, 5, 4, 8, 9, 8, 8, 9, 0, 6, 4, 2, 1, 2, 4, 5, 6, 7, 8, 9, 0, 0, 9, 8, 7, 6, 5, 4, 3, 1, 1}));
-//        System.out.println(evaluation("true and false or true"));
-//        System.out.println(arrayGame(new int[]{3, 4, 6, 6, 3}));
-//        System.out.println(characterDeletion("They are students", "aeioau"));
-//        System.out.println(getRow(3));
-//        System.out.println(maxProfit(1, 10, new int[]{30, 59, 110}));
-//        System.out.println(weightCapacity(new int[]{67356, 233900, 982590, 372879, 415998, 461941, 98935, 239287, 433413, 36109, 887779, 857424, 928267, 49000, 321030, 230551, 332083, 580018, 932293, 851765, 688961, 989160, 222830, 425340, 21042, 386203, 878017, 246204, 194031, 837181, 87247, 909684, 26518, 908975, 361664, 213872, 744761, 278193, 434280, 60833}, 237733));
-//        System.out.println(weightCapacity(new int[]{1, 3, 5}, 7));
-        System.out.println(kthLargestElement(1, new int[]{1, 3, 5}));
+    public void method() {
+        final int a = 20;
+        class Inner {
+            final int a1 = a;
+            final int a2 = MathUtil.this.a;
+        }
+        Inner inner = new Inner();
+        System.out.println(inner.a1);
+        System.out.println(inner.a2);
     }
 }

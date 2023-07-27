@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
  * <p>
- * TODO (用一句话描述该类的作用)
+ * 公私钥对 对象
  *
  * @author captain
  * @version 1.0

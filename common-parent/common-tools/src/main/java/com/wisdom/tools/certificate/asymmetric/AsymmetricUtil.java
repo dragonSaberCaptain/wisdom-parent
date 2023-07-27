@@ -1,8 +1,8 @@
 package com.wisdom.tools.certificate.asymmetric;
 
-import com.wisdom.config.enums.DateTimeEnum;
-import com.wisdom.config.enums.HttpEnum;
-import com.wisdom.config.exception.ResultException;
+import com.wisdom.base.enums.DateTimeEnum;
+import com.wisdom.base.enums.HttpEnum;
+import com.wisdom.base.exception.ResultException;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;

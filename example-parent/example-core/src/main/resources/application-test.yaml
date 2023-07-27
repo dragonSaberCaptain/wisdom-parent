@@ -5,7 +5,7 @@ spring:
         hibernate:
             naming:
                 #忽略表名大小写转换
-                physical-strategy:  com.wisdom.config.jpa.IgnoreCaseConfig
+                physical-strategy: com.wisdom.core.tools.jpa.IgnoreCaseConfig
             #none 禁用
             #create 启动时删数据库中的表，然后创建，退出时不删除数据表 不推荐
             #create-drop 启动时删数据库中的表，然后创建，退出时删除数据表 如果表不存在报错 不推荐

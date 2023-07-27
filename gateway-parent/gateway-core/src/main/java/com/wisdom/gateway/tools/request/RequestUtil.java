@@ -1,7 +1,9 @@
 package com.wisdom.gateway.tools.request;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -87,5 +89,25 @@ public class RequestUtil {
         }
 
         return null;
+    }
+
+    /**
+     * 判断是否是上传文件
+     *
+     * @param mediaType MediaType
+     * @return Boolean
+     */
+    public static boolean isUploadFile(@Nullable MediaType mediaType) {
+        //String contentType = ctx.getContentType();
+        //return contentType == null ? false : contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart/");
+
+        if (Objects.isNull(mediaType)) {
+            return false;
+        }
+        return MediaType.MULTIPART_FORM_DATA.equals(mediaType)
+                || MediaType.IMAGE_GIF.equals(mediaType)
+                || MediaType.IMAGE_JPEG.equals(mediaType)
+                || MediaType.IMAGE_PNG.equals(mediaType)
+                || "multipart".equals(mediaType.getType());
     }
 }

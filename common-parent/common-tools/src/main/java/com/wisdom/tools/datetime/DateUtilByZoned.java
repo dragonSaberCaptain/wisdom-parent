@@ -1,7 +1,7 @@
 package com.wisdom.tools.datetime;
 
-import com.wisdom.config.enums.DateTimeEnum;
-import com.wisdom.config.enums.WeekEnum;
+import com.wisdom.base.enums.DateTimeEnum;
+import com.wisdom.base.enums.WeekEnum;
 
 import java.time.DayOfWeek;
 import java.time.ZoneId;
@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Objects;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -18,7 +19,7 @@ import java.time.temporal.TemporalAdjusters;
  * @version 1.0
  * @apiNote Java8日期时间工具类
  * ZonedDateTime：最完整的日期时间，包含时区和相对UTC或格林威治的时差。
- * @date 2021/6/28 14:28 星期一
+ * @dateTime 2021/6/28 14:28 星期一
  */
 public class DateUtilByZoned {
     public static ZonedDateTime now() {
@@ -301,10 +302,7 @@ public class DateUtilByZoned {
     public static String getDayOfWeekCn(ZonedDateTime zonedDateTime) {
         String weekDay = getDayOfWeek(zonedDateTime);
         WeekEnum weekDayCn = WeekEnum.findByCode(weekDay);
-        if (weekDayCn == null) {
-            return WeekEnum.UNKNOWN.getMsg();
-        }
-        return weekDayCn.getMsg();
+        return Objects.requireNonNullElse(weekDayCn, WeekEnum.UNKNOWN).getMsg();
     }
 
     //****************************************************************【main start】

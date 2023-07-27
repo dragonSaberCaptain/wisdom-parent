@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
 #end
 #end
 #if(${swagger2})
-@ApiModel(value = "${entity}对象 扩展", description = "$!{table.comment}")
+@ApiModel(description = "$!{table.comment}")
 #end
 public class ${entity} extends ${entity.substring(0, ${end})} {
 

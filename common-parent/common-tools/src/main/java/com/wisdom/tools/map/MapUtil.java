@@ -11,13 +11,13 @@ import java.util.Map;
  * @author captain
  * @version 1.0
  * @description TODO
- * @date 2021/8/9 11:29 星期一
+ * @dateTime 2021/8/9 11:29 星期一
  */
 public class MapUtil {
     /**
      * 将源map中的key格式化
      *
-     * @param sourceMap 源
+     * @param sourceMap    源
      * @param sourceFormat 源格式
      * @param targetFormat 目标格式
      * @author captain
@@ -81,5 +81,36 @@ public class MapUtil {
         Map<String, Object> resultMap = new HashMap<>();
         sourceMap.forEach((k, v) -> resultMap.put(k.toUpperCase(), v));
         return resultMap;
+    }
+
+    /**
+     * 按分隔符生成map
+     * 例如:func0B05MeterOperData.msg0B05YktTxnData.cardOrgPropJtb.interflowCardTYpe
+     *
+     * @param strKey 带分隔符的key
+     * @param value  值
+     * @return Map<Object>
+     * @author captain
+     * @datetime 2023-05-09 11:06:02
+     */
+    public static Map<String, Object> createMapBySplit(Map<String, Object> sendMap, String strKey, String value) {
+        String[] arrSplit = strKey.split("\\.");
+        for (int i = 0; i < arrSplit.length; i++) {
+            if (i == arrSplit.length - 1) {
+                Map<String, Object> lastMap = (Map<String, Object>) sendMap.get(arrSplit[i - 1]);
+                lastMap.put(arrSplit[i], value);
+                sendMap.put(arrSplit[i - 1], lastMap);
+            } else {
+                if (null == sendMap.get(arrSplit[i])) {
+                    sendMap.put(arrSplit[i], new HashMap<>());
+                }
+            }
+        }
+        for (int i = arrSplit.length - 2; i > 0; i--) {
+            Map<String, Object> curMap = (Map<String, Object>) sendMap.get(arrSplit[i]);
+            Map<String, Object> parentMap = (Map<String, Object>) sendMap.get(arrSplit[i - 1]);
+            parentMap.put(arrSplit[i], curMap);
+        }
+        return sendMap;
     }
 }

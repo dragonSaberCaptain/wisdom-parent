@@ -1,5 +1,6 @@
 package com.wisdom.tools.http;
 
+import com.wisdom.base.enums.ConstantEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
@@ -26,7 +27,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * @author captain
  * @version 1.0
  * @apiNote java自带的标准类HttpURLConnection去实现
- * @date 2021/6/28 10:05 星期一
+ * @dateTime 2021/6/28 10:05 星期一
  */
 @Slf4j
 public class HttpUrlConnectionUtil {
@@ -35,8 +36,7 @@ public class HttpUrlConnectionUtil {
 
     static {
         //初始化线程池
-        scheduledExecutorService = new ScheduledThreadPoolExecutor(25,
-                new BasicThreadFactory.Builder().namingPattern("HttpUrlConnection-schedule-pool-%d").daemon(true).build());
+        scheduledExecutorService = new ScheduledThreadPoolExecutor(25, new BasicThreadFactory.Builder().namingPattern("HttpUrlConnection-schedule-pool-%d").daemon(true).build());
     }
 
     /**
@@ -63,14 +63,19 @@ public class HttpUrlConnectionUtil {
             // 设置请求方式
             urlConnection.setRequestMethod(method);
             // 设置连接超时
-            urlConnection.setConnectTimeout(60000);
+            urlConnection.setConnectTimeout(600000);
             // 设置读取超时
-            urlConnection.setReadTimeout(60000);
+            urlConnection.setReadTimeout(600000);
 
-            setRequestProperty(urlConnection, addHeaderMap);
+            //initHeaderReq(urlConnection);
+            if (addHeaderMap != null) {
+                for (Map.Entry<String, Object> entry : addHeaderMap.entrySet()) {
+                    urlConnection.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            }
 
             // 只有当POST请求时才会执行此代码段
-            if (jsonStrParams != null && "POST".equalsIgnoreCase(urlConnection.getRequestMethod())) {
+            if (jsonStrParams != null && ConstantEnum.POST.getCode().equalsIgnoreCase(urlConnection.getRequestMethod())) {
                 // 设置输入可用
                 urlConnection.setDoInput(true);
                 // 设置输出可用
@@ -126,12 +131,12 @@ public class HttpUrlConnectionUtil {
      * @datetime 2021-08-23 10:52:58
      */
     public static String sendHttpAsyn(String url, String method, String jsonStrParams, Map<String, Object> addHeaderMap) {
-        Future future = scheduledExecutorService.submit(() ->
-                sendHttpSyn(url, method, jsonStrParams, addHeaderMap)
-        );
+        Future<String> future = scheduledExecutorService.submit(() -> sendHttpSyn(url, method, jsonStrParams, addHeaderMap));
         String str = null;
         try {
-            str = String.valueOf(future.get());
+            if (future.isDone()) {
+                str = String.valueOf(future.get());
+            }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -147,11 +152,11 @@ public class HttpUrlConnectionUtil {
     }
 
     public static String sendPostSyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
-        return sendHttpSyn(url, "POST", jsonStrParams, addHeaderMap);
+        return sendHttpSyn(url, ConstantEnum.POST.getCode(), jsonStrParams, addHeaderMap);
     }
 
     public static String sendPostASyn(String url, String jsonStrParams, Map<String, Object> addHeaderMap) {
-        return sendHttpAsyn(url, "POST", jsonStrParams, addHeaderMap);
+        return sendHttpAsyn(url, ConstantEnum.POST.getCode(), jsonStrParams, addHeaderMap);
     }
 
     public static String sendGetSyn(String url, String jsonStrParams) {
@@ -163,12 +168,13 @@ public class HttpUrlConnectionUtil {
     }
 
     public static String sendPostSyn(String url, String jsonStrParams) {
-        return sendHttpSyn(url, "POST", jsonStrParams, null);
+        return sendHttpSyn(url, ConstantEnum.POST.getCode(), jsonStrParams, null);
     }
 
     public static String sendPostASyn(String url, String jsonStrParams) {
-        return sendHttpAsyn(url, "POST", jsonStrParams, null);
+        return sendHttpAsyn(url, ConstantEnum.POST.getCode(), jsonStrParams, null);
     }
+
     /**
      * 设置请求头参数
      *
@@ -176,7 +182,7 @@ public class HttpUrlConnectionUtil {
      * @author captain
      * @datetime 2021-08-23 10:48:27
      */
-    private static void setRequestProperty(HttpURLConnection httpUrlConnection, Map<String, Object> addHeaderMap) {
+    private static void initHeaderReq(HttpURLConnection httpUrlConnection) {
         //设置接受的内容类型
         httpUrlConnection.setRequestProperty("Accept", "*/*");
         //Accept-Language 设置接受的语言 q是权重系数
@@ -191,12 +197,6 @@ public class HttpUrlConnectionUtil {
          * multipart/form-data ： 需要在表单中进行文件上传时，就需要使用该格式
          * */
         httpUrlConnection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-
-        if (addHeaderMap != null) {
-            for (Map.Entry<String, Object> entry : addHeaderMap.entrySet()) {
-                httpUrlConnection.setRequestProperty(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-        }
     }
 
     // SSL的socket工厂创建

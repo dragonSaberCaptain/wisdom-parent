@@ -1,6 +1,6 @@
 package com.wisdom.gateway.config;
 
-import com.wisdom.config.params.NacosCommonConfig;
+import com.wisdom.base.params.NacosCommonConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

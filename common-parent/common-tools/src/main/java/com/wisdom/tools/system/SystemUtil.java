@@ -1,8 +1,8 @@
 package com.wisdom.tools.system;
 
-import com.alibaba.fastjson.JSONObject;
-import com.wisdom.config.dto.SystemInfoDto;
-import com.wisdom.constant.Constant;
+import com.alibaba.fastjson2.JSON;
+import com.wisdom.base.dto.SystemInfoDto;
+import com.wisdom.tools.constant.Constant;
 import com.wisdom.tools.file.FileUtil;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author captain
  * @version 1.0
  * @apiNote 与系统相关工具类
- * @date 2021/7/5 15:54 星期一
+ * @dateTime 2021/7/5 15:54 星期一
  */
 @Slf4j
 public class SystemUtil {
@@ -139,7 +139,7 @@ public class SystemUtil {
             systemInfoDto.setTotalCpuDuration(current.info().totalCpuDuration().get());
         }
         systemInfoDto.setPid(String.valueOf(ProcessHandle.current().pid()));
-        log.info("系统信息(system info):{}", JSONObject.toJSONString(systemInfoDto));
+        log.info("系统信息(system info):{}", JSON.toJSONString(systemInfoDto));
         return systemInfoDto;
     }
 

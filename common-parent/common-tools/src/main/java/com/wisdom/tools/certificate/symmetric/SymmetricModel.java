@@ -1,6 +1,6 @@
 package com.wisdom.tools.certificate.symmetric;
 
-import lombok.*;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.nio.charset.StandardCharsets;

@@ -1,6 +1,6 @@
 package com.wisdom.tools.object;
 
-import com.wisdom.config.annotation.ResultFiled;
+import com.wisdom.base.annotation.ResultFiled;
 import com.wisdom.tools.string.StringUtil;
 
 import java.lang.reflect.Field;
@@ -13,7 +13,7 @@ import java.util.Map;
  * @author captain
  * @version 1.0
  * @apiNote 与Object相关的工具类
- * @date 2021/7/6 16:05 星期二
+ * @dateTime 2021/7/6 16:05 星期二
  */
 public class ObjectUtil {
 
@@ -43,8 +43,7 @@ public class ObjectUtil {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> getResultMap(Object obj) {
         Map<String, Object> resultMap = new LinkedHashMap<>();
-        if (obj instanceof Enum) {
-            Enum curEnum = (Enum) obj;
+        if (obj instanceof Enum curEnum) {
             Class clazz = curEnum.getDeclaringClass();
 
             Field[] declaredFields = clazz.getDeclaredFields();

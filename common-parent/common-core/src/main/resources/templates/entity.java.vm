@@ -55,7 +55,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(appliesTo = "${table.name.toUpperCase()}", comment = "$!{table.comment}")
 #end
 #if(${swagger2})
-@ApiModel(value = "${entity}对象", description = "$!{table.comment}")
+@ApiModel(description = "$!{table.comment}")
 #end
 #if(${superEntityClass})
 public class ${entity} extends ${superEntityClass}#if(${activeRecord})<${entity}>#end {

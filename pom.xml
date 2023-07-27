@@ -8,10 +8,11 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>common-parent</module>
         <module>example-parent</module>
+        <module>common-parent</module>
         <module>gateway-parent</module>
         <module>auth-parent</module>
+        <module>openai-parent</module>
     </modules>
 
     <!--项目的名字,maven产生的文档用-->
@@ -19,83 +20,100 @@
     <!--项目主页的URL,maven产生的文档用-->
     <url>http://www.${project.artifactId}.com</url>
     <!--项目描述-->
-    <description>${project.artifactId}-${version} project for wisdom</description>
+    <description>${project.artifactId}-${project.version} project for wisdom</description>
 
     <properties>
-        <java_version>11</java_version>
+        <java_version>17</java_version>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+        <maven.compiler.encoding>${encoding}</maven.compiler.encoding>
+        <maven.compiler.source>${java_version}</maven.compiler.source>
+        <maven.compiler.target>${java_version}</maven.compiler.target>
+
         <!--springframework-->
-        <spring_boot_version>2.3.12.RELEASE</spring_boot_version>
-        <spring_cloud_version>Hoxton.SR12</spring_cloud_version>
-        <alibaba_spring_cloud_version>2.2.9.RELEASE</alibaba_spring_cloud_version>
+        <spring_boot_version>2.7.14</spring_boot_version>
+        <spring_cloud_version>2021.0.5</spring_cloud_version>
+        <alibaba_spring_cloud_version>2021.0.5.0</alibaba_spring_cloud_version>
 
         <!--mysql驱动-->
-        <mysql_version>8.0.28</mysql_version>
-        <!--oracle驱动-->
-        <ojdbc6_version>11.2.0</ojdbc6_version>
-        <!--ORM框架及持久层框架-->
-        <mybatis_plus_version>3.4.0</mybatis_plus_version>
-        <!--druid连接池-->
-        <druid_version>1.2.11</druid_version>
-        <!--JSON处理-->
-        <fastjson_version>2.0.10</fastjson_version>
+        <mysql_connector_java_version>8.0.26</mysql_connector_java_version>
+        <ojdbc8_version>12.2.0.1</ojdbc8_version>
 
-        <!--日志-->
-        <commons_logging_version>1.2</commons_logging_version>
-        <slf4j_version>1.7.30</slf4j_version>
-        <log4j_version>1.2.7</log4j_version>
+        <!--mybatis-->
+        <mybatis_spring_boot>3.0.2</mybatis_spring_boot>
+        <!--代码简化-->
+        <lombok_version>1.18.28</lombok_version>
 
-        <!--google guava工具集-->
-        <guava_version>30.1.1-jre</guava_version>
+        <!-- ====================apache start======================== -->
         <!--apache 通用工具集-->
-        <commons_lang3_version>3.7</commons_lang3_version>
+        <commons_lang3_version>3.12.0</commons_lang3_version>
+        <!--apache io处理-->
+        <commons_io_version>2.12.0</commons_io_version>
         <!--apache 摘要运算、编码解码-->
-        <commons_codec_version>1.11</commons_codec_version>
+        <commons_codec_version>1.15</commons_codec_version>
+
         <!--apache 模板引擎-->
-        <velocity_version>1.7</velocity_version>
-        <!--分页-->
-        <pagehelper_version>5.1.4</pagehelper_version>
-        <!--接口文档-->
-        <swagger_version>3.0.0</swagger_version>
-        <!--图片-->
-        <thumbnailator_version>0.4.8</thumbnailator_version>
+        <velocity_engine_core_version>2.3</velocity_engine_core_version>
+
+        <!--apache excel文件-->
+        <poi_version>5.2.3</poi_version>
+        <!-- ====================apache end======================== -->
+
+        <!--ORM框架及持久层框架-->
+        <mybatis_plus_version>3.4.1</mybatis_plus_version>
+
+        <!-- ====================alibaba start ======================== -->
+        <!--druid连接池-->
+        <druid_version>1.2.18</druid_version>
+        <fastjson2_version>2.0.33</fastjson2_version>
+        <!-- ====================alibaba end ======================== -->
+
+        <!--图片处理-->
+        <thumbnailator_version>0.4.19</thumbnailator_version>
+
+        <!--实现压缩-->
+        <tukaaniXZ_version>1.9</tukaaniXZ_version>
+
+        <!--压缩处理-->
+        <zip_version>2.9.0</zip_version>
+        <sevenZ_version>16.02-2.01</sevenZ_version>
+
+        <!--httpclient 网络请求-->
+        <httpclient_version>4.5.14</httpclient_version>
+
+        <!-- ====================google start ======================== -->
+        <!--google guava工具集-->
+        <guava_version>31.1-jre</guava_version>
+        <gson_version>2.10.1</gson_version>
+        <!-- ====================google end ======================== -->
+
         <!--测试-->
         <junit_version>4.13.2</junit_version>
-        <!--代码简化-->
-        <lombok_version>1.18.20</lombok_version>
-        <!--excel文件-->
-        <poi_version>4.1.2</poi_version>
-        <!--html标签解析-->
-        <jsoup_version>1.13.1</jsoup_version>
-        <!--yaml文件解析-->
-        <snakeyaml_version>1.30</snakeyaml_version>
-        <!--httpclient 网络请求-->
-        <httpclient_version>4.5.13</httpclient_version>
-        <!--security_oauth2 权限-->
-        <security_oauth2_version>2.3.2.RELEASE</security_oauth2_version>
+
+        <!--响应式编程-->
+        <reactor_core_version>3.5.6</reactor_core_version>
+
+        <!--java工具集-->
+        <hutool_version>5.8.20</hutool_version>
+
+        <!--汉语拼音工具类-->
+        <pinyin4j_version>2.5.1</pinyin4j_version>
+        <!--HTML解析器-->
+        <jsoup_version>1.16.1</jsoup_version>
+
+        <jakarta_servlet_api>6.0.0</jakarta_servlet_api>
+
+        <!--接口文档 -->
+        <swagger_version>3.0.0</swagger_version>
     </properties>
 
+    <!--compile(默认,传递到依赖的项目中。适用于所有阶段，会随着项目一起发布)-->
+    <!--provided(由JDK或者容器提供,只能作用在编译和测试时，同时没有传递性)-->
+    <!--runtime(作用在运行和测试时,如JDBC驱动，适用运行和测试阶段)-->
+    <!--test(只在测试时使用，用于编译和运行测试代码。不会随项目发布)-->
+    <!--system(在系统中要以外部JAR包的形式提供，maven不会查找它,配合systemPath属性使用)-->
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit_version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons_lang3_version}</version>
-        </dependency>
-
-        <!-- ====================lombok ======================== -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -103,8 +121,20 @@
             <scope>provided</scope>
         </dependency>
 
-    </dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit_version}</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool_version}</version>
+        </dependency>
+
+    </dependencies>
     <dependencyManagement>
         <dependencies>
             <!-- spring boot 依赖 -->
@@ -132,42 +162,39 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- ====================commons-logging ======================== -->
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons_logging_version}</version>
-            </dependency>
-
-            <!-- ====================fastjson ======================== -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson_version}</version>
-            </dependency>
-
-            <!-- ====================guava ======================== -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava_version}</version>
-            </dependency>
-
-            <!-- ====================mysql ======================== -->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql_version}</version>
+                <version>${mysql_connector_java_version}</version>
             </dependency>
 
-            <!-- ====================oracle ======================== -->
             <dependency>
                 <groupId>oracle.jdbc.driver</groupId>
-                <artifactId>ojdbc6</artifactId>
-                <version>${ojdbc6_version}</version>
+                <artifactId>ojdbc8</artifactId>
+                <version>${ojdbc8_version}</version>
             </dependency>
 
-            <!-- ====================mybatis ======================== -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis_spring_boot}</version>
+            </dependency>
+
+            <!-- ====================alibaba start======================== -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2_version}</version>
+            </dependency>
+            <!-- ====================alibaba end======================== -->
+
+            <!-- ====================mybatis plus start======================== -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
@@ -179,28 +206,45 @@
                 <artifactId>mybatis-plus-generator</artifactId>
                 <version>${mybatis_plus_version}</version>
             </dependency>
+            <!-- ====================mybatis plus end======================== -->
 
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>${thumbnailator_version}</version>
+            </dependency>
+
+            <!-- ====================apache start======================== -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
-                <artifactId>velocity</artifactId>
-                <version>${velocity_version}</version>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity_engine_core_version}</version>
             </dependency>
 
-            <!-- ====================druid ======================== -->
             <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid_version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons_lang3_version}</version>
             </dependency>
 
-            <!-- ====================swagger ======================== -->
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>${swagger_version}</version>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons_codec_version}</version>
             </dependency>
 
-            <!-- ====================poi start======================== -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons_io_version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient_version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi</artifactId>
@@ -213,89 +257,118 @@
                 <version>${poi_version}</version>
             </dependency>
 
+            <!--            <dependency>-->
+            <!--                <groupId>org.apache.poi</groupId>-->
+            <!--                <artifactId>poi-ooxml-schemas</artifactId>-->
+            <!--                <version>${poi_version}</version>-->
+            <!--            </dependency>-->
+            <!-- ====================apache end======================== -->
+
+            <!-- ====================google start ======================== -->
             <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml-schemas</artifactId>
-                <version>${poi_version}</version>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson_version}</version>
+            </dependency>
+            <!-- ====================google end ======================== -->
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger_version}</version>
             </dependency>
 
-            <!-- ====================thumbnailator======================== -->
             <dependency>
-                <groupId>net.coobird</groupId>
-                <artifactId>thumbnailator</artifactId>
-                <version>${thumbnailator_version}</version>
+                <groupId>io.projectreactor</groupId>
+                <artifactId>reactor-core</artifactId>
+                <version>${reactor_core_version}</version>
             </dependency>
 
-            <!-- ====================html标签解析 ======================== -->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>${pinyin4j_version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup_version}</version>
             </dependency>
 
-            <!-- ====================yaml文件解析 ======================== -->
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml_version}</version>
+                <groupId>org.tukaani</groupId>
+                <artifactId>xz</artifactId>
+                <version>${tukaaniXZ_version}</version>
             </dependency>
 
-            <!-- ====================httpclient======================== -->
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpclient_version}</version>
+                <groupId>net.lingala.zip4j</groupId>
+                <artifactId>zip4j</artifactId>
+                <version>${zip_version}</version>
             </dependency>
 
-            <!-- ====================security-oauth2======================== -->
             <dependency>
-                <groupId>org.springframework.security.oauth</groupId>
-                <artifactId>spring-security-oauth2</artifactId>
-                <version>${security_oauth2_version}</version>
+                <groupId>net.sf.sevenzipjbinding</groupId>
+                <artifactId>sevenzipjbinding</artifactId>
+                <version>${sevenZ_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.sevenzipjbinding</groupId>
+                <artifactId>sevenzipjbinding-all-platforms</artifactId>
+                <version>${sevenZ_version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <!--定义了编译、打包、部署的项目名称-->
-        <finalName>${project.artifactId}-${version}</finalName>
-
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
-            <!--maven中的编译器，可以指定编译jdk版本-->
+            <!--接口文档 生成插件 smart-doc begin-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.0</version>
+                <groupId>com.github.shalousun</groupId>
+                <artifactId>smart-doc-maven-plugin</artifactId>
+                <version>2.6.7</version>
+                <executions>
+                    <execution>
+                        <!-- mvn执行以下命令时候，会执行goal-->
+                        <phase>install</phase>
+                        <goals>
+                            <!--smart-doc提供了html、openapi、markdown等goal，可按需配置-->
+                            <goal>html</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <source>${java_version}</source>
-                    <target>${java_version}</target>
-                    <!--指定编译的格式-->
-                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <!--指定生成文档的使用的配置文件,配置文件放在自己的项目中-->
+                    <configFile>${basedir}/src/main/resources/smart-doc.json</configFile>
+                    <!--指定项目名称-->
+                    <projectName>wisdom-doc</projectName>
+                    <!--smart-doc实现自动分析依赖树加载第三方依赖的源码，如果一些框架依赖库加载不到导致报错，这时请使用excludes排除掉-->
+                    <excludes>
+                        <!--格式为：groupId:artifactId;参考如下-->
+                        <!--也可以支持正则式如：com.alibaba:.* -->
+                        <exclude>com.alibaba:fastjson</exclude>
+                    </excludes>
+                    <!--includes配置用于配置加载外部依赖源码,配置后插件会按照配置项加载外部源代码而不是自动加载所有，因此使用时需要注意-->
+                    <!--smart-doc能自动分析依赖树加载所有依赖源码，原则上会影响文档构建效率，因此你可以使用includes来让插件加载你配置的组件-->
+                    <includes>
+                        <!-- 使用了mybatis-plus的Page分页需要include所使用的源码包 -->
+                        <include>com.baomidou:mybatis-plus-extension</include>
+                        <!-- 使用了mybatis-plus的IPage分页需要include mybatis-plus-core-->
+                        <include>com.baomidou:mybatis-plus-core</include>
+                        <!-- 如果配置了includes的情况下， 使用了jpa的分页需要include所使用的源码包 -->
+                        <include>org.springframework.data:spring-data-commons</include>
+                    </includes>
                 </configuration>
             </plugin>
+            <!--smart-doc end-->
         </plugins>
-
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>*</include>
-                    <include>*/*</include>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                    <include>**/*.yml</include>
-                    <include>**/*.yaml</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 </project>

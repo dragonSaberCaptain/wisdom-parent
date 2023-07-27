@@ -1,12 +1,14 @@
 package com.wisdom.tools.system;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson2.JSON;
+import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -15,8 +17,7 @@ import java.util.Properties;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- * <p>
- * 资源读取工具类
+ * 资源读取工具类 用于获取项目中的配置文件
  *
  * @author captain
  * @version 1.0
@@ -26,96 +27,67 @@ import java.util.Properties;
 @Slf4j
 @Accessors(chain = true)
 public class ReaderResUtil {
-	private static Map<String, Object> parmsMap = new HashMap<>();
+    /**
+     * 单例
+     */
+    public static final ReaderResUtil instance = new ReaderResUtil();
+    public static boolean isYamlRes;
+    private static Map<String, Object> parmsMap = new HashMap<>();
 
-	/**
-	 * 单例
-	 */
-	public static final ReaderResUtil instance = new ReaderResUtil();
+    public void initByPath(String path, String fileType) throws FileNotFoundException {
+        initByInputStream(new FileInputStream(path), fileType);
+    }
 
-	public static boolean isYamlRes;
+    public void initByInputStream(InputStream inputStream, String fileType) {
+        if (parmsMap.size() == 0) {
+            try {
+                if ("properties".equals(fileType)) {
+                    Properties properties = new Properties();
+                    properties.load(inputStream);
+                    parmsMap = JSON.parseObject(JSON.toJSONString(properties), new TypeToken<Map<String, Object>>() {
+                    }.getType());
+                    isYamlRes = false;
+                } else if ("yaml".equals(fileType) || "yml".equals(fileType)) {
+                    Yaml tepYaml = new Yaml();
+                    parmsMap = tepYaml.loadAs(inputStream, HashMap.class);
+                    isYamlRes = true;
+                }
+            } catch (Exception e) {
+                log.error("read" + fileType + " failed !", e);
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 
-//	public void initYaml(Class<?> clazz, String resName) {
-//		if (parmsMap.size() == 0) {
-//			Yaml tepYaml = new Yaml();
-//			try {
-//				InputStream inputStream = clazz.getResourceAsStream(resName);
-//				parmsMap = tepYaml.loadAs(inputStream, HashMap.class);
-//				inputStream.close();
-//			} catch (Exception e) {
-//				log.error("Init yaml failed !", e);
-//			}
-//		}
-//	}
-
-	public void init(Class<?> clazz, String resName) {
-		if (parmsMap.size() == 0) {
-			InputStream inputStream = null;
-			try {
-				String resType = resName.substring(resName.lastIndexOf(".") + 1);
-				inputStream = clazz.getResourceAsStream(resName);
-				if ("properties".equals(resType)) {
-					Properties properties = new Properties();
-					properties.load(inputStream);
-					parmsMap = JSONObject.parseObject(JSONObject.toJSONString(properties), new TypeReference<>() {
-					});
-					isYamlRes = false;
-				} else if ("yaml".equals(resType) || "yml".equals(resType)) {
-					Yaml tepYaml = new Yaml();
-					parmsMap = tepYaml.loadAs(inputStream, HashMap.class);
-					isYamlRes = true;
-				}
-			} catch (Exception e) {
-				log.error("init " + resName + " failed !", e);
-			} finally {
-				if (inputStream != null) {
-					try {
-						inputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-//	public void initProperties(Class<?> clzz) {
-//		if (properties.size() == 0) {
-//			try {
-//				URL url = clzz.getProtectionDomain().getCodeSource().getLocation();
-//				int lastX = url.toURI().getPath().lastIndexOf("/");
-//				String path = url.toURI().getPath().substring(0, lastX);
-//				InputStream inputStream = new FileInputStream(path + File.separator + "application.yaml");
-//				Yaml tepYaml = new Yaml();
-//				properties = tepYaml.loadAs(inputStream, HashMap.class);
-//			} catch (Exception e) {
-//				log.error("Init yaml failed !", e);
-//			}
-//		}
-//	}
-
-	/**
-	 * get property
-	 */
-	public Object getValueByKey(String key) {
-		String separator = ".";
-		String[] separatorKeys = null;
-		if (isYamlRes && key.contains(separator)) {
-			separatorKeys = key.split("\\.");
-		} else {
-			return parmsMap.get(key);
-		}
-		Map<String, Object> finalValue = new HashMap<>();
-		for (int i = 0; i < separatorKeys.length - 1; i++) {
-			if (i == 0) {
-				finalValue = (Map) parmsMap.get(separatorKeys[i]);
-				continue;
-			}
-			if (finalValue == null) {
-				break;
-			}
-			finalValue = (Map) finalValue.get(separatorKeys[i]);
-		}
-		return finalValue == null ? null : finalValue.get(separatorKeys[separatorKeys.length - 1]);
-	}
+    /**
+     * get property
+     */
+    public Object getValueByKey(String key) {
+        String separator = ".";
+        String[] separatorKeys = null;
+        if (isYamlRes && key.contains(separator)) {
+            separatorKeys = key.split("\\.");
+        } else {
+            return parmsMap.get(key);
+        }
+        Map<String, Object> finalValue = new HashMap<>();
+        for (int i = 0; i < separatorKeys.length - 1; i++) {
+            if (i == 0) {
+                finalValue = (Map) parmsMap.get(separatorKeys[i]);
+                continue;
+            }
+            if (finalValue == null) {
+                break;
+            }
+            finalValue = (Map) finalValue.get(separatorKeys[i]);
+        }
+        return finalValue == null ? null : finalValue.get(separatorKeys[separatorKeys.length - 1]);
+    }
 }

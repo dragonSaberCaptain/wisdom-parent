@@ -1,13 +1,14 @@
 package com.wisdom.tools.excel;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -20,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Copyright © 2021 dragonSaberCaptain. All rights reserved.
@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
  * @author captain
  * @version 1.0
  * @apiNote excel 导入导出 最低jdk1.8
- * @date 2021/7/17 14:25 星期六
+ * @dateTime 2021/7/17 14:25 星期六
  */
-@Slf4j
 public class ExcelUtil {
+    private static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
     //每页数据总量
     private static final int SHEETSIZE = 5000;
     // 下拉限制开始行
@@ -75,7 +75,7 @@ public class ExcelUtil {
      *
      * @param excelData    导出数据
      * @param outputStream 输出流
-     * @author captain  2021-07-22 10:15:44
+     * @author created by captain on 2021-07-22 10:15:44
      */
     public static void listToExecl(ExcelData excelData, OutputStream outputStream) {
         Workbook workbook = createWorkbook(excelData.getFileType());
@@ -84,7 +84,6 @@ public class ExcelUtil {
         CellStyle textStyle = workbook.createCellStyle();
         DataFormat format = workbook.createDataFormat();
         textStyle.setDataFormat(format.getFormat("@"));
-
         try {
             if (excelData.isTemplate()) {
                 Sheet sheet = workbook.createSheet();
@@ -110,11 +109,10 @@ public class ExcelUtil {
                     tmpMap.put(tmpCellValue, strCol);
                 }
 
-                for (int i = 0; i < firstCell.size(); i++) {
-                    String tmpCellValue = String.valueOf(firstCell.get(i));
+                for (String tmpCellValue : firstCell) {
                     String strCol = tmpMap.get(tmpCellValue);
                     //该列存在下拉
-                    List<ExcelTemplateData> dataList = dataOptions.stream().filter(sub -> sub.getKey().equals(tmpCellValue)).collect(Collectors.toList());
+                    List<ExcelTemplateData> dataList = dataOptions.stream().filter(sub -> sub.getKey().equals(tmpCellValue)).toList();
                     for (ExcelTemplateData templateData : dataList) {
                         //判断是普通下拉还是级联下拉
                         if ("3".equals(templateData.getOptionsType())) {
@@ -138,14 +136,14 @@ public class ExcelUtil {
                 if (data.size() % SHEETSIZE > 0) {
                     pages += 1;
                 }
-                log.info("导出的excel总的sheet页数:" + pages);
+                logger.info("导出的excel总的sheet页数:" + pages);
 
                 // 添加数据
                 for (int i = 0; i < pages; i++) {
                     int rowNum = 0;
                     // 计算每页的起始数据和结束数据
                     int startIndex = i * SHEETSIZE;
-                    int endIndex = (i + 1) * SHEETSIZE - 1 > data.size() ? data.size() : (i + 1) * SHEETSIZE - 1;
+                    int endIndex = Math.min((i + 1) * SHEETSIZE - 1, data.size());
 
                     // 创建每页，并创建第一行
                     Sheet sheet = workbook.createSheet();
@@ -184,7 +182,7 @@ public class ExcelUtil {
                         item = data.get(j);
                         if (item instanceof Map) {
                             for (int h = 0; h < enTitles.size(); h++) {
-                                Map<String, Object> map = (Map<String, Object>) item;
+                                Map<String, Object> map = (Map) item;
                                 Object o = map.get(enTitles.get(h));
                                 String value = o == null ? "" : String.valueOf(o);
 
@@ -199,11 +197,11 @@ public class ExcelUtil {
                             if (enTitles.size() > 0) {
                                 for (int k = 0; k < enTitles.size(); k++) {
                                     String subEn = enTitles.get(k);
-                                    for (int h = 0; h < declaredFields.length; h++) {
-                                        declaredFields[h].setAccessible(true);
-                                        String subName = declaredFields[h].getName().toLowerCase();
+                                    for (Field declaredField : declaredFields) {
+                                        declaredField.setAccessible(true);
+                                        String subName = declaredField.getName().toLowerCase();
                                         if (subEn.equalsIgnoreCase(subName)) {
-                                            Object o = declaredFields[h].get(item);
+                                            Object o = declaredField.get(item);
                                             String value = o == null ? "" : String.valueOf(o);
 
                                             //设置单元格格式为"文本"
@@ -218,7 +216,7 @@ public class ExcelUtil {
                                 for (int k = 0; k < declaredFields.length; k++) {
                                     declaredFields[k].setAccessible(true);
                                     String subName = declaredFields[k].getName().toLowerCase();
-                                    if (enTitles.indexOf(subName) != -1) {
+                                    if (enTitles.contains(subName)) {
                                         Object o = declaredFields[k].get(item);
                                         String value = o == null ? "" : String.valueOf(o);
 
@@ -238,20 +236,18 @@ public class ExcelUtil {
             // 将创建好的数据写入输出流
             workbook.write(outputStream);
         } catch (Exception e) {
-            log.error("ExcelUtil--listToExecl", e);
+            logger.error("ExcelUtil--listToExecl", e);
             e.printStackTrace();
         } finally {
             try {
-                if (workbook != null) {
-                    // 关闭workbook
-                    workbook.close();
-                }
+                // 关闭workbook
+                workbook.close();
                 // 关闭输出流
                 if (outputStream != null) {
                     outputStream.close();
                 }
             } catch (IOException e) {
-                log.error("IO异常,关闭失败", e);
+                logger.error("IO异常,关闭失败", e);
                 e.printStackTrace();
             }
         }
@@ -264,7 +260,7 @@ public class ExcelUtil {
      * @param entityClazz 要转换的类
      * @param inputStream 输入流
      * @return java.util.List<T>
-     * @author captain  2021-07-22 10:16:51
+     * @author created by captain on 2021-07-22 10:16:51
      */
     public static <T> List<T> execlToList(ExcelData excelData, Class<T> entityClazz, InputStream inputStream) {
         Workbook workbook = createWorkbook(excelData.getFileType(), inputStream);
@@ -273,7 +269,7 @@ public class ExcelUtil {
             // 得到excel中sheet总数
             int sheetcount = workbook.getNumberOfSheets();
             if (sheetcount == 0) {
-                log.error("Excel文件中没有任何数据");
+                logger.error("Excel文件中没有任何数据");
                 throw new Exception("Excel文件中没有任何数据");
             }
 
@@ -313,7 +309,7 @@ public class ExcelUtil {
                 for (String cnName : fields.keySet()) {
                     if (!excelFieldNameList.contains(cnName)) {
                         //如果有列名不存在，则抛出异常，提示错误
-                        log.error("Excel中缺少必要的字段，或字段名称有误:" + cnName);
+                        logger.error("Excel中缺少必要的字段，或字段名称有误:" + cnName);
                         throw new Exception("Excel中缺少必要的字段，或字段名称有误:" + cnName);
                     }
                 }
@@ -327,9 +323,7 @@ public class ExcelUtil {
                     for (int k = row.getFirstCellNum(); k < row.getLastCellNum(); k++) {
                         Cell cell = row.getCell(k);
                         Object cellValue = getCellValue(cell);
-                        if (cellValue == null || "".equals(cellValue)) {
-                            isNull = true;
-                        } else {
+                        if (null != cellValue && !"".equals(cellValue)) {
                             isNull = false;
                             break;
                         }
@@ -339,7 +333,7 @@ public class ExcelUtil {
                     }
 
                     // 根据泛型创建实体类
-                    T entity = entityClazz.getDeclaredConstructor().newInstance();
+                    T entity = entityClazz.newInstance();
                     // 给对象中的字段赋值
                     for (Map.Entry<String, String> entry : fields.entrySet()) {
                         // 获取中文字段名
@@ -351,7 +345,7 @@ public class ExcelUtil {
                         Cell cell = row.getCell(colIndex);
                         // 获取当前单元格中的内容
                         Object tmpValue = getCellValue(cell);
-                        if (tmpValue == null || "".equals(tmpValue)) {
+                        if (null == tmpValue || "".equals(tmpValue)) {
                             continue;
                         }
                         // 给对象赋值
@@ -361,7 +355,7 @@ public class ExcelUtil {
                 }
             }
         } catch (Exception e) {
-            log.error("ExcelUtil--execlToList", e);
+            logger.error("ExcelUtil--execlToList", e);
             e.printStackTrace();
         } finally {
             try {
@@ -372,7 +366,7 @@ public class ExcelUtil {
                     inputStream.close();
                 }
             } catch (IOException e) {
-                log.error("IO异常,关闭失败", e);
+                logger.error("IO异常,关闭失败", e);
                 e.printStackTrace();
             }
         }
@@ -383,7 +377,7 @@ public class ExcelUtil {
         if (cell == null) {
             return null;
         }
-        Object tmpValue = null;
+        Object tmpValue;
         switch (cell.getCellType()) {
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
@@ -419,13 +413,13 @@ public class ExcelUtil {
      * @param fieldName  字段名
      * @param fieldValue 字段值
      * @param obj        对象
-     * @author captain  2021-07-22 10:17:49
+     * @author created by captain on 2021-07-22 10:17:49
      */
     private static void setFieldValueByName(String fieldName,
                                             Object fieldValue, Object obj) {
         Field field = getFieldByName(fieldName, obj.getClass());
         if (field == null) {
-            log.error(obj.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
+            logger.error(obj.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
             return;
         }
         field.setAccessible(true);
@@ -456,21 +450,21 @@ public class ExcelUtil {
                 try {
                     field.set(obj, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(tmpValue));
                 } catch (ParseException e) {
-                    log.info("Date类型的常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    logger.info("Date类型的常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, new SimpleDateFormat("yyyyMMddHHmmss").parse(tmpValue));
                 }
             } else if (ZonedDateTime.class == fieldType) {
                 try {
                     field.set(obj, ZonedDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())));
                 } catch (DateTimeParseException e) {
-                    log.info("ZonedDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    logger.info("ZonedDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, ZonedDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.systemDefault())));
                 }
             } else if (LocalDateTime.class == fieldType) {
                 try {
                     field.set(obj, LocalDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 } catch (DateTimeParseException e) {
-                    log.info("LocalDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
+                    logger.info("LocalDateTime类型常规格式转换错误,尝试yyyyMMddHHmmss格式转换");
                     field.set(obj, LocalDateTime.parse(tmpValue, DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 }
             } else if (String.class == fieldType) {
@@ -479,7 +473,7 @@ public class ExcelUtil {
                 field.set(obj, fieldValue);
             }
         } catch (Exception e) {
-            log.error("ExcelUtil--setFieldValueByName", e);
+            logger.error("ExcelUtil--setFieldValueByName", e);
             e.printStackTrace();
         }
     }
@@ -490,7 +484,7 @@ public class ExcelUtil {
      * @param fieldName 字段名
      * @param clazz     包含该字段的类
      * @return java.lang.reflect.Field 字段
-     * @author captain  2021-07-22 10:18:33
+     * @author created by captain on 2021-07-22 10:18:33
      */
     private static Field getFieldByName(String fieldName, Class<?> clazz) {
         // 拿到本类的所有字段
@@ -519,7 +513,7 @@ public class ExcelUtil {
      * @param column      下拉列表所在列 从'A'开始
      * @param fromRow     下拉限制开始行
      * @param endRow      下拉限制结束行
-     * @author captain  2021-07-22 10:19:26
+     * @author created by captain on 2021-07-22 10:19:26
      */
     public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object options, String column, int fromRow, int endRow) {
         String hiddenSheetName = "hideSheet" + workbook.getNumberOfSheets();
@@ -529,11 +523,10 @@ public class ExcelUtil {
         if (options instanceof List) {
             List tmpList = (List) options;
             int rowIndex = 0;
+            int columnIndex = 0;
             for (Object option : tmpList) {
-                int columnIndex = 0;
                 Row row = optionsSheet.createRow(rowIndex++);
-                Cell cell = row.createCell(columnIndex);
-                columnIndex++;
+                Cell cell = row.createCell(columnIndex++);
                 cell.setCellValue(String.valueOf(option));
             }
             if (workbook.getName(listFormula) == null) {
@@ -560,7 +553,7 @@ public class ExcelUtil {
      * @param valueColumn 级联下拉列表位置
      * @param fromRow     级联限制开始行
      * @param endRow      级联限制结束行
-     * @author captain  2021-07-22 10:20:47
+     * @author created by captain on 2021-07-22 10:20:47
      */
     public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn,
                                             int fromRow, int endRow) {
@@ -569,7 +562,7 @@ public class ExcelUtil {
         List<Object> firstLevelItems = new ArrayList<>();
 
         if (optionsData instanceof Map) {
-            Map<String, List<Object>> options = (Map<String, List<Object>>) optionsData;
+            Map<String, List<Object>> options = (Map) optionsData;
             int rowIndex = 0;
             for (Map.Entry<String, List<Object>> entry : options.entrySet()) {
                 String entryKey = entry.getKey();
@@ -578,7 +571,7 @@ public class ExcelUtil {
 
                 int columnIndex = 0;
                 Row row = hiddenSheet.createRow(rowIndex++);
-                Cell cell = null;
+                Cell cell;
 
                 for (Object child : children) {
                     cell = row.createCell(columnIndex++);
@@ -596,9 +589,9 @@ public class ExcelUtil {
 
                 String listFormula;
                 if (targetSheet instanceof HSSFSheet) {
-                    listFormula = "INDIRECT($" + keyColumn + "1)";
+                    listFormula = "INDIRECT(CONCATENATE(\"_\",$" + keyColumn + "1))";
                 } else {
-                    listFormula = "INDIRECT($" + keyColumn + "2)";
+                    listFormula = "INDIRECT(CONCATENATE(\"_\",$" + keyColumn + "2))";
                 }
                 addValidationData(targetSheet, listFormula, fromRow, endRow, firstCol, lastCol);
             }
@@ -620,7 +613,7 @@ public class ExcelUtil {
      * @param valueColumn 匹配到的内容列（例如 网址）
      * @param fromRow     下拉限制开始行
      * @param endRow      下拉限制结束行
-     * @author captain  2021-07-22 10:21:34
+     * @author created by captain on 2021-07-22 10:21:34
      */
     public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String
             valueColumn, int fromRow, int endRow) {
@@ -628,7 +621,7 @@ public class ExcelUtil {
         Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
 
         if (optionsData instanceof Map) {
-            Map<String, Object> options = (Map<String, Object>) optionsData;
+            Map<String, Object> options = (Map) optionsData;
             // init the search region(A and B columns in hiddenSheet)
             int rowIndex = 0;
             for (Map.Entry<String, Object> kv : options.entrySet()) {
@@ -683,7 +676,7 @@ public class ExcelUtil {
      * @param nameName 要添加的名字
      * @param formula  公式
      * @return org.apache.poi.ss.usermodel.Name
-     * @author captian
+     * @author created by captian on 2021-07-22 10:22:06
      */
     private static Name createName(Workbook workbook, String nameName, String formula) {
         nameName = formatNameName(nameName);
@@ -697,9 +690,8 @@ public class ExcelUtil {
      * 隐藏excel中的sheet页
      *
      * @param workbook 要隐藏的excel
-     * @param start  需要隐藏的 sheet开始索引
-     * @author captain
-     * @datetime 2022-03-08 10:14:59
+     * @param start    需要隐藏的 sheet开始索引
+     * @author created by captian on 2021-07-22 10:23:42
      */
     private static void hideTempDataSheet(Workbook workbook, int start) {
         for (int i = start; i < workbook.getNumberOfSheets(); i++) {
@@ -711,7 +703,7 @@ public class ExcelUtil {
      * 遍历并隐藏工作表名带hide的表
      *
      * @param workbook 要隐藏的excel
-     * @author captain  2021-07-19 10:02:45
+     * @author created by captain on 2021-07-19 10:02:45
      */
     private static void hideTempDataSheet(Workbook workbook) {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -727,14 +719,14 @@ public class ExcelUtil {
      *
      * @param name 名称
      * @return java.lang.String
-     * @author captain  2021-07-22 10:24:41
+     * @author created by captain on 2021-07-22 10:24:41
      */
     static String formatNameName(String name) {
         name = name.replaceAll(" ", "").replaceAll("-", "_").replaceAll(":", ".");
-        if (Character.isDigit(name.charAt(0))) {
+        String ch = "hideParent";
+        if (!name.contains(ch)) {
             name = "_" + name;
         }
-
         return name;
     }
 
@@ -743,7 +735,7 @@ public class ExcelUtil {
      *
      * @param columnIndex 要转换的下标
      * @return java.lang.String
-     * @author captain  2021-07-22 10:25:04
+     * @author created by captain on 2021-07-22 10:25:04
      */
     public static String excelColIndexToStr(int columnIndex) {
         if (columnIndex < 0) {
@@ -765,7 +757,7 @@ public class ExcelUtil {
      *
      * @param colStr 要计算的字符串
      * @return int
-     * @author captain  2021-07-22 10:25:56
+     * @author created by captain on 2021-07-22 10:25:56
      */
     public static int getCharSumByStr(String colStr) {
         int sum = 0;
@@ -781,7 +773,7 @@ public class ExcelUtil {
      *
      * @param colStr 要转换的列字母
      * @return int
-     * @author captain  2021-07-22 10:26:50
+     * @author created by captain on 2021-07-22 10:26:50
      */
     public static int excelColStrToNum(String colStr) {
         int num = 0;
@@ -805,7 +797,7 @@ public class ExcelUtil {
      * @param fileType 文件类型
      * @param in       输入流
      * @return org.apache.poi.ss.usermodel.Workbook
-     * @author captain  2021-07-22 10:29:17
+     * @author created by captain on 2021-07-22 10:29:17
      */
     public static Workbook createWorkbook(String fileType, InputStream in) {
         Workbook workbook = null;
@@ -813,10 +805,8 @@ public class ExcelUtil {
             if (fileType.contains("xlsx")) {
                 if (in != null) {
                     workbook = new SXSSFWorkbook(new XSSFWorkbook(in));
-//                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in), SHEETSIZE);
                 } else {
                     workbook = new SXSSFWorkbook();
-//                    workbook = new SXSSFWorkbook(SHEETSIZE);
                 }
             } else if (fileType.contains("xls")) {
                 if (in != null) {
@@ -826,38 +816,15 @@ public class ExcelUtil {
                 }
             }
             if (workbook == null) {
-                log.error("文件格式不正确,workbook创建失败");
+                logger.error("文件格式不正确,workbook创建失败");
                 throw new Exception("文件格式不正确,workbook创建失败");
             }
         } catch (Exception e) {
-            log.error("ExcelUtil--createWorkbook", e);
+            logger.error("ExcelUtil--createWorkbook", e);
             e.printStackTrace();
         }
         return workbook;
     }
-
-//    /**
-//     * 给输出流设置响应头参数
-//     *
-//     * @param fullFileName 输出流名称
-//     * @return java.io.OutputStream
-//     * @author captain  2021-07-22 10:30:32
-//     */
-//    public static OutputStream getOutputStream(String fullFileName, HttpServletResponse response) {
-//        //设置response的属性
-//        response.reset();
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("application/msexcel");
-//        response.addHeader("Access-Control-Allow-Origin", "*");
-//        OutputStream outputStream = null;
-//        try {
-//            response.setHeader("Content-Disposition", "attachment; filename=" + new String(fullFileName.getBytes("utf-8"), "ISO-8859-1"));
-//            outputStream = response.getOutputStream();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return outputStream;
-//    }
 
     /**
      * 隐藏列

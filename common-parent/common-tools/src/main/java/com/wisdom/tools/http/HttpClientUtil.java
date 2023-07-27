@@ -43,9 +43,9 @@ import java.util.Set;
 /**
  * Copyright © 2017 captain. All rights reserved.
  *
- * @Description: HttpClient
+ * @description: HttpClient
  * @author: captain
- * @date: 2017年8月28日 上午9:08:24
+ * @dateTime: 2017年8月28日 上午9:08:24
  */
 @Slf4j
 public class HttpClientUtil {
@@ -56,8 +56,8 @@ public class HttpClientUtil {
     private final static int CONNECT_ROUTE = 20;// 每个路由基础的连接数
     private final static String ENCODE_CHARSET = "utf-8";// 响应报文解码字符集
     private final static String RESP_CONTENT = "通信失败";
-    private static PoolingHttpClientConnectionManager connManager;
-    private static CloseableHttpClient httpClient;
+    private static final PoolingHttpClientConnectionManager connManager;
+    private static final CloseableHttpClient httpClient;
 
     static {
         ConnectionSocketFactory plainsf = PlainConnectionSocketFactory

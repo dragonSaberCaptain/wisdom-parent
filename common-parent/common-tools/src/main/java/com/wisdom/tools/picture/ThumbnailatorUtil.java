@@ -2,6 +2,7 @@ package com.wisdom.tools.picture;
 
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Position;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -10,7 +11,7 @@ import java.io.*;
  * Copyright © 2018 dragonSaberCaptain. All rights reserved.
  *
  * @author dragonSaberCaptain
- * @date 2018-05-10 11:31 星期四
+ * @dateTime 2018-05-10 11:31 星期四
  */
 public class ThumbnailatorUtil {
     /**

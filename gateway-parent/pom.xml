@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -15,22 +16,29 @@
     <name>${project.artifactId}</name>
     <!--项目主页的URL,maven产生的文档用-->
     <url>http://www.${project.artifactId}.com</url>
-    <!--项目描述-->
-    <description>${project.artifactId}-${project.version} project for wisdom</description>
-
     <modules>
         <module>gateway-core</module>
     </modules>
 
-    <properties>
-
-    </properties>
+    <!--项目描述-->
+    <description>${project.artifactId}-${project.version} project for wisdom</description>
 
     <dependencies>
         <dependency>
             <groupId>com.wisdom</groupId>
             <artifactId>common-tools</artifactId>
             <version>${project.parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-jpa</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -38,10 +46,12 @@
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
 
+        <!--负载均衡-->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -61,14 +71,7 @@
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-nacos</artifactId>
         </dependency>
-
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <!--定义了编译、打包、部署的项目名称-->

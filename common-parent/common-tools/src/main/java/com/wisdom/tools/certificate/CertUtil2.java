@@ -1,6 +1,6 @@
 package com.wisdom.tools.certificate;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
 import com.wisdom.tools.string.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -157,7 +157,7 @@ public class CertUtil2 {
         systemInfoMap.put("java_version", System.getProperty("java.version"));
         systemInfoMap.put("java.vm.vendor", System.getProperty("java.vm.vendor"));
         systemInfoMap.put("providers", printProviders());
-        log.info("系统信息(system info):" + JSONObject.toJSONString(systemInfoMap));
+        log.info("系统信息(system info):" + JSON.toJSONString(systemInfoMap));
     }
 
     /**

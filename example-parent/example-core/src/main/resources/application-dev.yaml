@@ -5,10 +5,14 @@ spring:
         hibernate:
             naming:
                 #忽略表名大小写转换,列名全大写 兼容oracle
-                physical-strategy:  com.wisdom.config.jpa.IgnoreCaseConfig
+                physical-strategy: com.wisdom.core.tools.jpa.IgnoreCaseConfig
             #none 禁用
             #create 启动时删数据库中的表，然后创建，退出时不删除数据表 不推荐
             #create-drop 启动时删数据库中的表，然后创建，退出时删除数据表 如果表不存在报错 不推荐
             #update 如果启动时表格式不一致则更新表，原有数据保留
             #validate 项目启动表结构进行校验 如果不一致则报错
             ddl-auto: update
+#openai:
+#    base-url: https://captain-ai.club/
+#    token: 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
+#    timeout: 10

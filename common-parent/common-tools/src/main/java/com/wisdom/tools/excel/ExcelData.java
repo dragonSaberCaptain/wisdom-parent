@@ -9,7 +9,7 @@ import java.util.Map;
  * @author captain
  * @version 1.0
  * @apiNote excel导入导出实体类
- * @date 2021/7/15 10:04 星期四
+ * @dateTime 2021/7/15 10:04 星期四
  */
 public class ExcelData {
     /**
@@ -35,7 +35,6 @@ public class ExcelData {
      * false-导出 true-模板
      */
     private boolean isTemplate = false;
-
     /**
      * 设置导出数据
      */

@@ -1,7 +1,7 @@
 package com.wisdom;
 
-import com.wisdom.config.dto.SystemInfoDto;
-import com.wisdom.config.enums.DateTimeEnum;
+import com.wisdom.base.dto.SystemInfoDto;
+import com.wisdom.base.enums.DateTimeEnum;
 import com.wisdom.tools.datetime.DateUtilByZoned;
 import com.wisdom.tools.system.SpringContextUtil;
 import com.wisdom.tools.system.SystemUtil;
@@ -31,7 +31,7 @@ public class AuthCoreApp {
         SpringContextUtil.setApplicationContext(context);
         SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(AuthCoreApp.class);
         String startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
-        log.info(startUpInfo);
         System.out.println(startUpInfo);
+        log.info(startUpInfo);
     }
 }
