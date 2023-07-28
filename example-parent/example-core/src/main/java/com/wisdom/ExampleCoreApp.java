@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
+ * 版权创建时间:2023/7/28 下午5:37
+ * 当前项目名:wisdom-parent
+ * 当前模块名:example-core
+ * 当前文件的权限定名:com.wisdom.ExampleCoreApp
+ * 当前文件的名称:ExampleCoreApp.java
+ * 当前文件的类名:ExampleCoreApp
+ * 上一次文件修改的日期时间:2023/7/28 下午5:35
+ *
+ */
+
 package com.wisdom;
 
 import com.wisdom.base.dto.SystemInfoDto;
@@ -16,12 +28,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * Copyright © 2018 dragonSaberCaptain. All rights reserved.
- *
- * @author captain
- * @dateTime 2018-07-25 17:58 星期三
- */
 @Slf4j
 @EnableAsync
 @EnableDiscoveryClient //注册到注册中心
