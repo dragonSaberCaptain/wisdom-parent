@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
- * 版权创建时间:2023/7/28 下午5:38
+ * 版权创建时间:2023/7/28 下午5:39
  * 当前项目名:wisdom-parent
  * 当前模块名:example-core
  * 当前文件的权限定名:com.wisdom.ExampleCoreApp
@@ -41,7 +41,6 @@ public class ExampleCoreApp {
         SystemInfoDto systemInfoDto = SystemUtil.printSystemInfo(ExampleCoreApp.class);
         String startUpInfo = systemInfoDto.getSimpleName() + " service start on port:" + systemInfoDto.getPort() + " successful !!!";
         System.out.println(startUpInfo);
-        System.out.println("test");
         log.info(startUpInfo);
     }
 }
