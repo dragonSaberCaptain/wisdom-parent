@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
+ * 当前项目名:wisdom-parent
+ * 当前模块名:common-tools
+ * 当前文件的权限定名:com.wisdom.tools.excel.ExcelUtil
+ * 当前文件的名称:ExcelUtil.java
+ * 当前文件的类名:ExcelUtil
+ * 上一次文件修改的日期时间:2023/8/10 下午4:27
+ *
+ */
+
 package com.wisdom.tools.excel;
 
 
@@ -10,8 +21,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,15 +34,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- *
- * @author captain
- * @version 1.0
- * @apiNote excel 导入导出 最低jdk1.8
- * @dateTime 2021/7/17 14:25 星期六
- */
 public class ExcelUtil {
     private static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
     //每页数据总量
@@ -112,7 +118,7 @@ public class ExcelUtil {
                 for (String tmpCellValue : firstCell) {
                     String strCol = tmpMap.get(tmpCellValue);
                     //该列存在下拉
-                    List<ExcelTemplateData> dataList = dataOptions.stream().filter(sub -> sub.getKey().equals(tmpCellValue)).toList();
+                    List<ExcelTemplateData> dataList = dataOptions.stream().filter(sub -> sub.getKey().equals(tmpCellValue)).collect(Collectors.toList());
                     for (ExcelTemplateData templateData : dataList) {
                         //判断是普通下拉还是级联下拉
                         if ("3".equals(templateData.getOptionsType())) {
@@ -253,6 +259,20 @@ public class ExcelUtil {
         }
     }
 
+    public static <T> List<T> execlToList(ExcelData excelData, Class<T> entityClazz, String fileFullPath) {
+        return execlToList(excelData, entityClazz, new File(fileFullPath));
+    }
+
+    public static <T> List<T> execlToList(ExcelData excelData, Class<T> entityClazz, File file) {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return execlToList(excelData, entityClazz, inputStream);
+    }
+
     /**
      * excel 导入
      *
@@ -289,7 +309,7 @@ public class ExcelUtil {
                 if (sheet.getSheetName().contains("hide")) {
                     continue;
                 }
-                Row firstRow = sheet.getRow(0);
+                Row firstRow = sheet.getRow(excelData.getStartRowIndex());
 
                 int cellLength = firstRow.getLastCellNum();
                 List<String> excelFieldNameList = new ArrayList<>();
@@ -300,9 +320,11 @@ public class ExcelUtil {
                 for (int f = 0; f < cellLength; f++) {
                     Cell cell = firstRow.getCell(f);
                     String fieldName = String.valueOf(cell).trim();
-                    excelFieldNameList.add(fieldName);
-                    //将列名和列号放入Map中,这样通过列名就可以拿到列号
-                    colMap.put(fieldName, f);
+                    if (!"".equals(fieldName)) {
+                        excelFieldNameList.add(fieldName);
+                        //将列名和列号放入Map中,这样通过列名就可以拿到列号
+                        colMap.put(fieldName, f);
+                    }
                 }
 
                 //判断需要的字段在Excel中是否都存在
@@ -315,7 +337,7 @@ public class ExcelUtil {
                 }
 
                 // 将sheet转换为list
-                for (int j = 1; j <= sheet.getLastRowNum(); j++) {
+                for (int j = excelData.getStartRowIndex() + 1; j <= sheet.getLastRowNum(); j++) {
                     Row row = sheet.getRow(j);
 
                     //先判断当前行是否有数据
@@ -333,7 +355,7 @@ public class ExcelUtil {
                     }
 
                     // 根据泛型创建实体类
-                    T entity = entityClazz.newInstance();
+                    T entity = entityClazz.getDeclaredConstructor().newInstance();
                     // 给对象中的字段赋值
                     for (Map.Entry<String, String> entry : fields.entrySet()) {
                         // 获取中文字段名
@@ -415,8 +437,7 @@ public class ExcelUtil {
      * @param obj        对象
      * @author created by captain on 2021-07-22 10:17:49
      */
-    private static void setFieldValueByName(String fieldName,
-                                            Object fieldValue, Object obj) {
+    private static void setFieldValueByName(String fieldName, Object fieldValue, Object obj) {
         Field field = getFieldByName(fieldName, obj.getClass());
         if (field == null) {
             logger.error(obj.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
@@ -523,10 +544,9 @@ public class ExcelUtil {
         if (options instanceof List) {
             List tmpList = (List) options;
             int rowIndex = 0;
-            int columnIndex = 0;
             for (Object option : tmpList) {
                 Row row = optionsSheet.createRow(rowIndex++);
-                Cell cell = row.createCell(columnIndex++);
+                Cell cell = row.createCell(0);
                 cell.setCellValue(String.valueOf(option));
             }
             if (workbook.getName(listFormula) == null) {
@@ -555,8 +575,7 @@ public class ExcelUtil {
      * @param endRow      级联限制结束行
      * @author created by captain on 2021-07-22 10:20:47
      */
-    public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn,
-                                            int fromRow, int endRow) {
+    public static void addValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn, int fromRow, int endRow) {
         String hiddenSheetName = "hideSheet" + workbook.getNumberOfSheets();
         Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
         List<Object> firstLevelItems = new ArrayList<>();
@@ -615,8 +634,7 @@ public class ExcelUtil {
      * @param endRow      下拉限制结束行
      * @author created by captain on 2021-07-22 10:21:34
      */
-    public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String
-            valueColumn, int fromRow, int endRow) {
+    public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn, int fromRow, int endRow) {
         String hiddenSheetName = "hideAutoSheet" + workbook.getNumberOfSheets();
         Sheet hiddenSheet = workbook.createSheet(hiddenSheetName);
 
@@ -656,8 +674,7 @@ public class ExcelUtil {
         }
     }
 
-    public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String
-            valueColumn) {
+    public static void addAutoMatchValidationToSheet(Workbook workbook, Sheet targetSheet, Object optionsData, String keyColumn, String valueColumn) {
         addAutoMatchValidationToSheet(workbook, targetSheet, optionsData, keyColumn, valueColumn, FROMROW, ENDROW);
     }
 
@@ -804,9 +821,9 @@ public class ExcelUtil {
         try {
             if (fileType.contains("xlsx")) {
                 if (in != null) {
-                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in));
+                    workbook = new SXSSFWorkbook(new XSSFWorkbook(in), -1);
                 } else {
-                    workbook = new SXSSFWorkbook();
+                    workbook = new SXSSFWorkbook(-1);
                 }
             } else if (fileType.contains("xls")) {
                 if (in != null) {
@@ -824,6 +841,29 @@ public class ExcelUtil {
             e.printStackTrace();
         }
         return workbook;
+    }
+
+    /**
+     * 给输出流设置响应头参数
+     *
+     * @param fullFileName 输出流名称
+     * @return java.io.OutputStream
+     * @author created by captain on 2021-07-22 10:30:32
+     */
+    public static OutputStream getOutputStream(String fullFileName, HttpServletResponse response) {
+        //设置response的属性
+        response.reset();
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/msexcel");
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        OutputStream outputStream = null;
+        try {
+            response.setHeader("Content-Disposition", "attachment; filename=" + new String(fullFileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
+            outputStream = response.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outputStream;
     }
 
     /**

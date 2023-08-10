@@ -1,16 +1,19 @@
+/*
+ * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
+ * 当前项目名:wisdom-parent
+ * 当前模块名:common-tools
+ * 当前文件的权限定名:com.wisdom.tools.excel.ExcelData
+ * 当前文件的名称:ExcelData.java
+ * 当前文件的类名:ExcelData
+ * 上一次文件修改的日期时间:2023/8/10 下午4:27
+ *
+ */
+
 package com.wisdom.tools.excel;
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- *
- * @author captain
- * @version 1.0
- * @apiNote excel导入导出实体类
- * @dateTime 2021/7/15 10:04 星期四
- */
 public class ExcelData {
     /**
      * 文件名 不带后缀
@@ -35,6 +38,7 @@ public class ExcelData {
      * false-导出 true-模板
      */
     private boolean isTemplate = false;
+
     /**
      * 设置导出数据
      */
@@ -45,6 +49,10 @@ public class ExcelData {
      */
     private List<String> firstCell;
 
+    /**
+     * 设置起始行所在位置
+     */
+    private int startRowIndex = 0;
     /**
      * 设置下拉数据
      */
@@ -90,10 +98,6 @@ public class ExcelData {
         this.fileType = fileType;
     }
 
-    public void setFullFileName(String fullFileName) {
-        this.fullFileName = fullFileName;
-    }
-
     public String getFullFileName() {
         if (fullFileName != null) {
             return this.fullFileName;
@@ -102,6 +106,10 @@ public class ExcelData {
             return fileName + fileType;
         }
         return fileName + "." + fileType;
+    }
+
+    public void setFullFileName(String fullFileName) {
+        this.fullFileName = fullFileName;
     }
 
     public String getFileName() {
@@ -118,5 +126,13 @@ public class ExcelData {
 
     public void setFields(Map<String, String> fields) {
         this.fields = fields;
+    }
+
+    public int getStartRowIndex() {
+        return startRowIndex;
+    }
+
+    public void setStartRowIndex(int startRowIndex) {
+        this.startRowIndex = startRowIndex;
     }
 }

@@ -1,13 +1,16 @@
+/*
+ * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
+ * 当前项目名:wisdom-parent
+ * 当前模块名:common-tools
+ * 当前文件的权限定名:com.wisdom.tools.excel.ExcelTemplateData
+ * 当前文件的名称:ExcelTemplateData.java
+ * 当前文件的类名:ExcelTemplateData
+ * 上一次文件修改的日期时间:2023/8/10 下午4:27
+ *
+ */
+
 package com.wisdom.tools.excel;
 
-/**
- * Copyright © 2021 dragonSaberCaptain. All rights reserved.
- *
- * @author captain
- * @version 1.0
- * @apiNote excel模板
- * @dateTime 2021/7/15 17:17 星期四
- */
 public class ExcelTemplateData {
     /**
      * 属性名称
