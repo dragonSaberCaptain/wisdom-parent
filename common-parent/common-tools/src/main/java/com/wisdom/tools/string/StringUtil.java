@@ -1,15 +1,175 @@
+/*
+ * Copyright (c) 2023 dragonSaberCaptain.All rights reserved.
+ * 当前项目名:wisdom-parent
+ * 当前模块名:common-tools
+ * 当前文件的权限定名:com.wisdom.tools.string.StringUtil
+ * 当前文件的名称:StringUtil.java
+ * 当前文件的类名:StringUtil
+ * 上一次文件修改的日期时间:2023/8/17 下午2:43
+ *
+ */
+
 package com.wisdom.tools.string;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * Copyright © 2018 dragonSaberCaptain. All rights reserved.
- * 字符串工具类
- *
- * @author dragonSaberCaptain
- * @dateTime 2018-07-31 15:11 星期二
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class StringUtil extends StringUtils {
+    /**
+     * 数字
+     */
+    public static final String NUMBER = "0123456789";
+    /**
+     * 字母
+     */
+    public static final String ALPHABET = "abcdefghijklmnopqrstuvwyxz";
+    /**
+     * 符号
+     */
+    public static final String SYMBOL = "~!@#$%^&*()_+[]{};,.<>?-=";
+
+    public static List<String> getStr(int length, boolean assignLen, boolean includeNumber, boolean includeAlphabet, boolean includeSymbol) {
+        StringBuilder sb = new StringBuilder();
+        if (includeNumber) {
+            sb.append(NUMBER);
+        }
+        if (includeAlphabet) {
+            sb.append(ALPHABET);
+            sb.append(ALPHABET.toUpperCase());
+        }
+        if (includeSymbol) {
+            sb.append(SYMBOL);
+        }
+        char[] chars = sb.toString().toCharArray();
+        List<String> strings = new ArrayList<>(chars.length);
+        for (int i = 0; i < chars.length; i++) {
+            strings.add(i, String.valueOf(chars[i]));
+        }
+        return getAllLists(strings, assignLen, length);
+    }
+
+    /**
+     * 获取指定的字符
+     *
+     * @param minLen          字符最小长度
+     * @param maxLen          字符最大长度
+     * @param includeNumber   是否包含数字
+     * @param includeAlphabet 是否包含字母
+     * @param includeSymbol   是否包含字符
+     */
+    public static List<String> getStr(int minLen, int maxLen, boolean includeNumber, boolean includeAlphabet, boolean includeSymbol) {
+        StringBuilder sb = new StringBuilder();
+        if (includeNumber) {
+            sb.append(NUMBER);
+        }
+        if (includeAlphabet) {
+            sb.append(ALPHABET);
+            sb.append(ALPHABET.toUpperCase());
+        }
+        if (includeSymbol) {
+            sb.append(SYMBOL);
+        }
+        char[] chars = sb.toString().toCharArray();
+        List<String> strings = new ArrayList<>(chars.length);
+        for (int i = 0; i < chars.length; i++) {
+            strings.add(i, String.valueOf(chars[i]));
+        }
+        return getAllLists(strings, minLen, maxLen);
+    }
+
+    public static List<String> getAllLists(List<String> elements, int minLen, int maxLen) {
+        List<String> allLists = new ArrayList<>();
+        if (maxLen == 1) {
+            return elements;
+        } else {
+            if (maxLen > minLen) {
+                allLists.addAll(elements);
+            }
+            List<String> allSublists = getAllLists(elements, minLen, maxLen - 1);
+            for (int i = 0; i < elements.size(); i++) {
+                for (int j = 0; j < allSublists.size(); j++) {
+                    allLists.add(elements.get(i) + allSublists.get(j));
+                }
+            }
+            return allLists;
+        }
+    }
+
+    /**
+     * 获取指定位数的数据集合
+     *
+     * @param elements 基类字符数组
+     * @param length   指定字符串位数
+     */
+    public static List<String> getAllLists(List<String> elements, boolean assignLen, int length) {
+        List<String> allLists = new ArrayList<>();
+        if (length == 1) {
+            return elements;
+        } else {
+            if (!assignLen) {
+                allLists.addAll(elements);
+            }
+            List<String> allSublists = getAllLists(elements, assignLen, length - 1);
+            for (int i = 0; i < elements.size(); i++) {
+                for (int j = 0; j < allSublists.size(); j++) {
+                    allLists.add(elements.get(i) + allSublists.get(j));
+                }
+            }
+            return allLists;
+        }
+    }
+
+    /**
+     * 获取数字字符集合
+     */
+    public static List<String> getNumberStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, true, false, false);
+    }
+
+    /**
+     * 获取字母字符集合
+     */
+    public static List<String> getAlphabetStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, false, true, false);
+    }
+
+    /**
+     * 获取特殊符号字符集合
+     */
+    public static List<String> getSymbolStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, false, false, true);
+    }
+
+    /**
+     * 获取全部字符集合，包含数字，字母，特殊字符
+     */
+    public static List<String> getFullStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, true, true, true);
+    }
+
+    /**
+     * 获取数字字母集合
+     */
+    public static List<String> getNumberAlphabetStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, true, true, false);
+    }
+
+    /**
+     * 获取数字特殊字符集合
+     */
+    public static List<String> getNumberSymbolStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, true, false, true);
+    }
+
+    /**
+     * 获取字母特殊字符集合
+     */
+    public static List<String> getAlphabetSymbolStr(int minLen, int maxLen) {
+        return getStr(minLen, maxLen, false, true, true);
+    }
+
     /**
      * 对字符加星号处理:把从开始位置到结束位置的字符串以给定符号代替
      * 例如：begin：2  end：7
@@ -57,8 +217,7 @@ public class StringUtil extends StringUtils {
     /**
      * 对字符加星号处理：保留前N位和后N位，其他的字符以星号代替
      */
-    public static String replaceRangeNum(String sourceStr, int frontNum,
-                                         int endNum) {
+    public static String replaceRangeNum(String sourceStr, int frontNum, int endNum) {
         return new String(replaceRangeIndex(sourceStr.toCharArray(), frontNum, sourceStr.length() - endNum));
     }
 
@@ -84,8 +243,7 @@ public class StringUtil extends StringUtils {
      * @author dragonSaberCaptain
      * @dateTime 2018-07-31 15:24:55
      */
-    public static String retainFour(String sourceStr, int frontNum,
-                                    int endNum, char symbol) {
+    public static String retainFour(String sourceStr, int frontNum, int endNum, char symbol) {
         StringBuilder sb = new StringBuilder(sourceStr);
         String repeat = StringUtils.repeat(symbol, 4);
         return sb.replace(frontNum, sb.length() - endNum, repeat).toString();
@@ -94,8 +252,7 @@ public class StringUtil extends StringUtils {
     /**
      * 对字符加星号处理：保留前N位和后N位，其他的字符以4个星号(*)代替
      */
-    public static String retainFour(String sourceStr, int frontNum,
-                                    int endNum) {
+    public static String retainFour(String sourceStr, int frontNum, int endNum) {
         return retainFour(sourceStr, frontNum, endNum, "*".charAt(0));
     }
 
@@ -246,7 +403,7 @@ public class StringUtil extends StringUtils {
      * @datetime 2022-03-08 17:48:55
      */
     public static String addSymbol(String strSource, long len, boolean isLeft, char symbol) {
-        if (strSource.length() == len) {
+        if (strSource.length() >= len) {
             return strSource;
         }
         StringBuilder strBuilder = new StringBuilder(strSource);
@@ -306,5 +463,10 @@ public class StringUtil extends StringUtils {
 //        System.out.println("手机号保留4个" + retainFourToPhone(phoneStr));
 //        System.out.println("身份证保留4个" + retainFourToIdCard(idCardStr));
 //        System.out.println(firstToCase(testStr, true));
+        List<String> str = getStr(3, 3, true, false, false);
+        System.out.println("str size:" + str.size());
+        for (String s : str) {
+            System.out.print(s + ",");
+        }
     }
 }
